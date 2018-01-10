@@ -1,0 +1,13 @@
+# Add any directories, files, or patterns you don't want to be tracked by version control
+out/
+target/
+*.class
+
+*.iml
+.idea/
+
+.classpath
+.settings/
+.project
+
+.DS_Store
