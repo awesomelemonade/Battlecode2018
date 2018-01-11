@@ -50,6 +50,18 @@ public class Unit {
 	public boolean canBlink(MapLocation location) {
 		return gcInstance.getBcGameController().canBlink(id, location.getBcMapLocation());
 	}
+
+	public Unit[] senseNearbyUnitsByTeam(long radius, Team team) {
+		return Util.toArray(gcInstance.getBcGameController().senseNearbyUnitsByTeam(bcUnit.location().mapLocation(), radius, team.getBcTeam()));
+	}
+
+	public Unit[] senseNearbyUnitsByType(long radius, UnitType type) {
+		return Util.toArray(gcInstance.getBcGameController().senseNearbyUnitsByType(bcUnit.location().mapLocation(), radius, type.getBcUnitType()));
+	}
+
+	public Unit[] senseNearbyUnits(long radius) {
+		return Util.toArray(gcInstance.getBcGameController().senseNearbyUnits(bcUnit.location().mapLocation(), radius));
+	}
 	
 	public boolean canBlueprint(UnitType unitType, Direction direction) {
 		return gcInstance.getBcGameController().canBlueprint(id, unitType.getBcUnitType(), direction.getBcDirection());
@@ -102,6 +114,10 @@ public class Unit {
 	public boolean canUnload(Direction direction) {
 		return gcInstance.getBcGameController().canUnload(id, direction.getBcDirection());
 	}
+
+	public void unload(Direction direction) {
+		gcInstance.getBcGameController().unload(id, direction.getBcDirection());
+	}
 	
 	public void disintegrate() {
 		gcInstance.getBcGameController().disintegrateUnit(id);
@@ -113,6 +129,14 @@ public class Unit {
 	
 	public void heal(Unit target) {
 		gcInstance.getBcGameController().heal(id, target.getId());
+	}
+
+	public long health() {
+		return bcUnit.health();
+	}
+
+	public long maxHealth() {
+		return bcUnit.maxHealth();
 	}
 	
 	public boolean isAttackReady() {

@@ -8,7 +8,6 @@ public class MarsPlayer {
 	public static void execute() {
 		GameController gc = GameController.INSTANCE;
 		while(true) {
-			System.out.println("Current round: " + gc.getRoundNumber());
 
 			for (Unit unit: gc.getMyUnits()) {
 				Direction randomDirection = Direction.randomDirection();

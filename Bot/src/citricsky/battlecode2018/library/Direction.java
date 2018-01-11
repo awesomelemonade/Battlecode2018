@@ -12,8 +12,9 @@ public enum Direction {
 	WEST      (-1,  0, West),
 	NORTHWEST (-1, -1, Northwest);
 
-	private Vector offset;
+	private static int LENGTH = 8;
 
+	private Vector offset;
 	private bc.Direction bcDirection;
 
 	Direction(int x, int y, bc.Direction bcDirection) {
@@ -22,15 +23,15 @@ public enum Direction {
 	}
 
 	public Direction getOpposite() {
-		return Direction.values()[(this.ordinal() + 4) % 8];
+		return Direction.values()[(this.ordinal() + 4) % LENGTH];
 	}
 
 	public Direction rotateClockwise() {
-		return Direction.values()[(this.ordinal() + 1) % 8];
+		return Direction.values()[(this.ordinal() + 1) % LENGTH];
 	}
 
 	public Direction rotateCounterClockwise() {
-		return Direction.values()[(this.ordinal() + 7) % 8];
+		return Direction.values()[(this.ordinal() + 7) % LENGTH];
 	}
 
 	public Vector getVectorOffset() {
@@ -65,6 +66,6 @@ public enum Direction {
 	}
 
 	public static Direction randomDirection() {
-		return Direction.values()[(int) (Math.random() * 8)];
+		return Direction.values()[(int) (Math.random() * LENGTH)];
 	}
 }
