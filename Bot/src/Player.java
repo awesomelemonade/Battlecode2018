@@ -5,9 +5,9 @@ import citricsky.battlecode2018.main.MarsPlayer;
 
 public class Player {
 	public static void main(String[] args) {
-		if(GameController.INSTANCE.getPlanet()==Planet.EARTH) {
+		if (GameController.INSTANCE.getPlanet()==Planet.EARTH) {
 			EarthPlayer.execute();
-		}else {
+		} else {
 			MarsPlayer.execute();
 		}
 	}
