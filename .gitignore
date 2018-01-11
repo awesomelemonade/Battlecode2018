@@ -4,6 +4,7 @@
 /Bot/.classpath
 /Bot/.project
 /Bot/.settings/
+/Bot/bin/
 *.iml
 .idea/
 out/
