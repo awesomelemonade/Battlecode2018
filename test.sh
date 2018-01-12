@@ -12,8 +12,7 @@ mkdir replays
 
 cp -r $PWD/Bot/src/* ./Bot/
 
-alias python3='~ubuntu/.pyenv/versions/general/bin/python'
-alias pip3='~ubuntu/.pyenv/versions/general/bin/pip'
+sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
 bash ./battlecode.sh -p1 Bot -p2 examplefuncsplayer-python -m testmap
 
 cp -r replays $dir/
