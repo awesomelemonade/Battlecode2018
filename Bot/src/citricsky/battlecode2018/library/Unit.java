@@ -16,6 +16,7 @@ public class Unit {
 		this.id = bcUnit.id();
 		this.team = Team.valueOf(bcUnit.team());
 		this.type = UnitType.valueOf(bcUnit.unitType());
+		this.location = new Location(bcUnit.location());
 	}
 	
 	public void attack(Unit target) {

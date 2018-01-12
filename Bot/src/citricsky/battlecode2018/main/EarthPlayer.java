@@ -14,13 +14,16 @@ public class EarthPlayer {
 		while(true) {
 			System.out.println("R: " + gc.getRoundNumber() + "; K: " + gc.getCurrentKarbonite());
 			
-			// Workers move first
 			for(Unit unit: gc.getMyUnits()) {
 				if(unit.getType()==UnitType.WORKER) {
-					
+					if(!tryBuild(unit, UnitType.FACTORY)) {
+						Direction direction = Direction.randomDirection();
+						if(unit.canMove(direction)&&unit.isMoveReady()) {
+							unit.move(direction);
+						}
+					}
 				}
 			}
-			//TODO
 			
 			gc.yield();
 		}
@@ -28,11 +31,34 @@ public class EarthPlayer {
 	public static boolean tryBuild(Unit unit, UnitType type) {
 		for(Direction direction: Direction.values()) {
 			if(unit.canBlueprint(type, direction)) {
-				int neighbors = Util.getNeighbors(unit.getLocation(), (mapLocation)->mapLocation.isOccupiable());
+				int neighbors = Util.getNeighbors(unit.getLocation().getMapLocation().getOffsetLocation(direction),
+						(mapLocation)->mapLocation.isOccupiable());
 				if(Util.canBuild(neighbors)) {
 					unit.blueprint(type, direction);
+					return true;
 				}
 			}
 		}
+		if(unit.isMoveReady()) {
+			for(Direction moveDirection: Direction.values()) {
+				if(!unit.canMove(moveDirection)) {
+					continue;
+				}
+				for(Direction blueprintDirection: Direction.values()) {
+					MapLocation proposal = unit.getLocation().getMapLocation()
+							.getOffsetLocation(moveDirection).getOffsetLocation(blueprintDirection);
+					if(!proposal.isOccupiable()) {
+						continue;
+					}
+					int neighbors = Util.getNeighbors(proposal, (mapLocation)->mapLocation.isOccupiable());
+					if(Util.canBuild(neighbors)) {
+						unit.move(moveDirection);
+						unit.blueprint(type, blueprintDirection);
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }
