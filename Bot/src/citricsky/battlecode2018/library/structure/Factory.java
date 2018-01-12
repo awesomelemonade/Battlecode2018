@@ -1,4 +1,4 @@
-package citricsky.battlecode2018.library.Structure;
+package citricsky.battlecode2018.library.structure;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;

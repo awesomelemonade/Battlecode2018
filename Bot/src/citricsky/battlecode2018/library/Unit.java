@@ -177,7 +177,7 @@ public class Unit {
 	
 	/**
 	 * Loads a robot into this structure
-	 * @param target Robot to Load
+	 * @param target robot to Load
 	 */
 	public void load(Unit target) {
 		gcInstance.getBcGameController().load(id, target.getId());

@@ -1,7 +1,7 @@
 package citricsky.battlecode2018.library;
 
-import citricsky.battlecode2018.library.Robot.*;
-import citricsky.battlecode2018.library.Structure.*;
+import citricsky.battlecode2018.library.robot.*;
+import citricsky.battlecode2018.library.structure.*;
 
 public class Util {
 	public static Unit[] toArray(bc.VecUnit vecUnit) {

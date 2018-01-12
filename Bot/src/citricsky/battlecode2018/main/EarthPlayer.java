@@ -1,8 +1,8 @@
 package citricsky.battlecode2018.main;
 
 import citricsky.battlecode2018.library.GameController;
-import citricsky.battlecode2018.library.Robot.Robot;
-import citricsky.battlecode2018.library.Structure.Factory;
+import citricsky.battlecode2018.library.robot.Robot;
+import citricsky.battlecode2018.library.structure.Factory;
 import citricsky.battlecode2018.library.Unit;
 
 public class EarthPlayer {

@@ -1,8 +1,8 @@
-package citricsky.battlecode2018.library.Robot;
+package citricsky.battlecode2018.library.robot;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
-import citricsky.battlecode2018.library.Structure.Structure;
+import citricsky.battlecode2018.library.structure.Structure;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 

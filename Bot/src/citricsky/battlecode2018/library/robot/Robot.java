@@ -1,4 +1,4 @@
-package citricsky.battlecode2018.library.Robot;
+package citricsky.battlecode2018.library.robot;
 
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.Unit;
