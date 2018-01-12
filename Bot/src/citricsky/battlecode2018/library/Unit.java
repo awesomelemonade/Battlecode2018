@@ -1,6 +1,5 @@
 package citricsky.battlecode2018.library;
 
-@SuppressWarnings("unused")
 public class Unit {
 	protected bc.Unit bcUnit;
 	
@@ -131,12 +130,12 @@ public class Unit {
 		gcInstance.getBcGameController().heal(id, target.getId());
 	}
 
-	public long health() {
-		return bcUnit.health();
+	public int getHealth() {
+		return (int)bcUnit.health();
 	}
 
-	public long maxHealth() {
-		return bcUnit.maxHealth();
+	public int getMaxHealth() {
+		return (int)bcUnit.maxHealth();
 	}
 	
 	public boolean isAttackReady() {

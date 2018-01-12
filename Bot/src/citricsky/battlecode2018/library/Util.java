@@ -1,23 +1,11 @@
 package citricsky.battlecode2018.library;
 
-import citricsky.battlecode2018.library.robot.*;
-import citricsky.battlecode2018.library.structure.*;
-
 public class Util {
 	public static Unit[] toArray(bc.VecUnit vecUnit) {
 		Unit[] units = new Unit[(int) vecUnit.size()];
 
 		for (int i = 0, len = units.length; i < len; ++i) {
-			switch(UnitType.valueOf(vecUnit.get(i).unitType())) {
-				case WORKER:
-					units[i] = new Worker(vecUnit.get(i));
-					break;
-				case FACTORY:
-					units[i] = new Factory(vecUnit.get(i));
-					break;
-				default:
-					units[i] = new Unit(vecUnit.get(i));
-			}
+			units[i] = new Unit(vecUnit.get(i));
 		}
 
 		return units;
