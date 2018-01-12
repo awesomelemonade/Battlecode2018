@@ -10,6 +10,10 @@ public class MapLocation {
 		this.position = position;
 	}
 
+	public MapLocation getOffsetLocation(Direction direction) {
+		return new MapLocation(planet, position.add(direction.getOffsetVector()));
+	}
+	
 	public Planet getPlanet() {
 		return planet;
 	}

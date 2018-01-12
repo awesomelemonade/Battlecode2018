@@ -34,7 +34,7 @@ public enum Direction {
 		return Direction.values()[(this.ordinal() + 7) % LENGTH];
 	}
 
-	public Vector getVectorOffset() {
+	public Vector getOffsetVector() {
 		return offset;
 	}
 
