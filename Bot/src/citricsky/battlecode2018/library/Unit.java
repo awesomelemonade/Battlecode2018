@@ -51,15 +51,15 @@ public class Unit {
 	}
 
 	public Unit[] senseNearbyUnitsByTeam(long radius, Team team) {
-		return Util.toArray(gcInstance.getBcGameController().senseNearbyUnitsByTeam(bcUnit.location().mapLocation(), radius, team.getBcTeam()));
+		return LibraryUtil.toArray(gcInstance.getBcGameController().senseNearbyUnitsByTeam(bcUnit.location().mapLocation(), radius, team.getBcTeam()));
 	}
 
 	public Unit[] senseNearbyUnitsByType(long radius, UnitType type) {
-		return Util.toArray(gcInstance.getBcGameController().senseNearbyUnitsByType(bcUnit.location().mapLocation(), radius, type.getBcUnitType()));
+		return LibraryUtil.toArray(gcInstance.getBcGameController().senseNearbyUnitsByType(bcUnit.location().mapLocation(), radius, type.getBcUnitType()));
 	}
 
 	public Unit[] senseNearbyUnits(long radius) {
-		return Util.toArray(gcInstance.getBcGameController().senseNearbyUnits(bcUnit.location().mapLocation(), radius));
+		return LibraryUtil.toArray(gcInstance.getBcGameController().senseNearbyUnits(bcUnit.location().mapLocation(), radius));
 	}
 	
 	public boolean canBlueprint(UnitType unitType, Direction direction) {

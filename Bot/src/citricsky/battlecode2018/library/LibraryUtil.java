@@ -1,6 +1,6 @@
 package citricsky.battlecode2018.library;
 
-public class Util {
+public class LibraryUtil {
 	public static Unit[] toArray(bc.VecUnit vecUnit) {
 		Unit[] units = new Unit[(int) vecUnit.size()];
 

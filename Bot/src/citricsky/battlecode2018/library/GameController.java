@@ -91,15 +91,15 @@ public enum GameController {
 	}
 
 	public Unit[] getMyUnits(){
-		return Util.toArray(bcGameController.myUnits());
+		return LibraryUtil.toArray(bcGameController.myUnits());
 	}
 
 	public Unit[] getAllUnits() {
-		return Util.toArray(bcGameController.units());
+		return LibraryUtil.toArray(bcGameController.units());
 	}
 
 	public Unit[] getUnitsInSpace() {
-		return Util.toArray(bcGameController.unitsInSpace());
+		return LibraryUtil.toArray(bcGameController.unitsInSpace());
 	}
 
 	public Planet getPlanet() {

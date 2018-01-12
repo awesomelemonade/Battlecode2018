@@ -11,7 +11,7 @@ public enum Planet {
 	}
 
 	public int[] getTeamArray() {
-		return Util.toArray(GameController.INSTANCE.getBcGameController().getTeamArray(bcPlanet));
+		return LibraryUtil.toArray(GameController.INSTANCE.getBcGameController().getTeamArray(bcPlanet));
 	}
 
 	//TODO
