@@ -2,7 +2,7 @@
 
 dir=$PWD
 
-cd ~ubuntu/bc-scaffold
+cd ~ubuntu/bc18-scaffold
 
 git reset --hard
 git pull
