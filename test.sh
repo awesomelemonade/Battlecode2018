@@ -4,11 +4,12 @@ dir=$PWD
 
 cd ~ubuntu/bc18-scaffold
 
-git reset --hard
-git pull
+#git reset --hard
+#git clean -fdx
+#git pull
 
-mkdir Bot
-mkdir replays
+mkdir -p Bot
+mkdir -p replays
 
 cp -r $dir/Bot/src/* ./Bot/
 
