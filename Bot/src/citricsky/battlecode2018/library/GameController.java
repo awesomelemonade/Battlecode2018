@@ -29,26 +29,7 @@ public enum GameController {
 	public int getCurrentFlightDuration() {
 		return (int) bcGameController.currentDurationOfFlight();
 	}
-	
-	//MapLocation related
-	public boolean isOccupiable(MapLocation location) { //TODO
-		return bcGameController.isOccupiable(location.getBcMapLocation())==1;
-	}
 
-	public boolean hasUnitAtLocation(MapLocation location) { //TODO
-		return GameController.INSTANCE.getBcGameController().hasUnitAtLocation(location.getBcMapLocation());
-	}
-
-	public int getKarboniteCount(MapLocation location) { //TODO
-		return (int) bcGameController.karboniteAt(location.getBcMapLocation());
-	}
-
-	//sensing? TODO
-	//VecMapLocation allLocationsWithin(MapLocation location, long radiusSquared)
-	//VecUnit senseNearbyUnits(MapLocation location, long radius)
-	//VecUnit senseNearbyUnitsByTeam(MapLocation location, long radius, Team team)
-	//VecUnit senseNearbyUnitsByType(MapLocation location, long radius, UnitType type)
-	//Unit senseUnitAtLocation(MapLocation location)
 	//Patterns
 
 	public void getAsteroidPattern() { //TODO
