@@ -14,6 +14,6 @@ cp -r $PWD/Bot/src/* ./Bot/
 
 alias python3='~ubuntu/.pyenv/versions/general/bin/python'
 alias pip3='~ubuntu/.pyenv/versions/general/bin/pip'
-./battlecode.sh -p1 examplefuncsplayer-java -p2 examplefuncsplayer-python -m testmap
+bash ./battlecode.sh -p1 examplefuncsplayer-java -p2 examplefuncsplayer-python -m testmap
 
 cp -r replays $PWD/
