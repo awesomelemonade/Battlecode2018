@@ -27,12 +27,22 @@ public class MapLocation {
 	public Vector getPosition() {
 		return position;
 	}
-
-	//sensing? TODO
-	//VecMapLocation allLocationsWithin(MapLocation location, long radiusSquared)
-	//VecUnit senseNearbyUnits(MapLocation location, long radius)
-	//VecUnit senseNearbyUnitsByTeam(MapLocation location, long radius, Team team)
-	//VecUnit senseNearbyUnitsByType(MapLocation location, long radius, UnitType type)
+	
+	public MapLocation[] getAllMapLocationsWithin(int radiusSquared) {
+		return LibraryUtil.toArray(GameController.INSTANCE.getBcGameController().allLocationsWithin(bcMapLocation, radiusSquared));
+	}
+	
+	public Unit[] senseNearbyUnits(int radiusSquared) {
+		return LibraryUtil.toArray(GameController.INSTANCE.getBcGameController().senseNearbyUnits(bcMapLocation, radiusSquared));
+	}
+	
+	public Unit[] senseNearbyUnitsByTeam(int radiusSquared, Team team) {
+		return LibraryUtil.toArray(GameController.INSTANCE.getBcGameController().senseNearbyUnitsByTeam(bcMapLocation, radiusSquared, team.getBcTeam()));
+	}
+	
+	public Unit[] senseNearbyUnitsByType(int radiusSquared, UnitType type) {
+		return LibraryUtil.toArray(GameController.INSTANCE.getBcGameController().senseNearbyUnitsByType(bcMapLocation, radiusSquared, type.getBcUnitType()));
+	}
 	
 	public Unit getUnit() {
 		return new Unit(GameController.INSTANCE.getBcGameController().senseUnitAtLocation(bcMapLocation));
