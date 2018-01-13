@@ -35,6 +35,10 @@ mkdir -p Bot
 mkdir -p replays
 
 cp -r $dir/Bot/src/* ./Bot/
+
+cd examplefuncsplayer-java
+echo "$(sed '$s/java /java -Xmx256m /' run.sh)" > run.sh
+cd ..
 cp examplefuncsplayer-java/run.sh ./Bot/
 
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
