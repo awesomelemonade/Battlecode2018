@@ -37,13 +37,11 @@ mkdir -p replays
 cp -r $dir/Bot/src/* ./Bot/
 
 cd examplefuncsplayer-java
-echo "$(sed '$s/java /java -Xmx256m /' run.sh)" > run.sh
+echo "$(sed '$s/java /java -Xmx128m /' run.sh)" > run.sh
 cd ..
 cp examplefuncsplayer-java/run.sh ./Bot/
 
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
-
-ulimit -f 256000
 
 rungame -p2 examplefuncsplayer-python -m socket
 rungame -p2 examplefuncsplayer-python -m bananas
