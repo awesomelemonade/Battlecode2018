@@ -47,7 +47,7 @@ cp -r replays $dir/
 cd $dir/replays
 touch "$NUMWINS of $NUMGAMES games won"
 
-if [[ $NUMWINS <= $(( NUMGAMES / 2 )) ]]; then
+if [[ ! $NUMWINS > $(( NUMGAMES / 2 )) ]]; then
     exit 1
 fi
 exit 0
