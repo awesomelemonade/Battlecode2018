@@ -4,6 +4,7 @@ public enum Planet {
 	EARTH(bc.Planet.Earth),
 	MARS(bc.Planet.Mars);
 
+	private static final int BUFFER = 2;
 	private bc.Planet bcPlanet;
 	private PlanetMap startingMap;
 	private MapLocation[][] mapLocations;
@@ -11,16 +12,19 @@ public enum Planet {
 	Planet(bc.Planet bcPlanet) {
 		this.bcPlanet = bcPlanet;
 		this.startingMap = new PlanetMap(GameController.INSTANCE.getBcGameController().startingMap(bcPlanet));
-		this.mapLocations = new MapLocation[startingMap.getWidth()+2][startingMap.getHeight()+2];
+		this.mapLocations = new MapLocation[startingMap.getWidth()+BUFFER*2][startingMap.getHeight()+BUFFER*2];
+	}
+	
+	private void initMapLocations() {
 		for(int i=0;i<mapLocations.length;++i) {
 			for(int j=0;j<mapLocations[0].length;++j) {
-				mapLocations[i][j] = new MapLocation(new bc.MapLocation(bcPlanet, i-1, j-1));
+				mapLocations[i][j] = new MapLocation(new bc.MapLocation(bcPlanet, i-BUFFER, j-BUFFER));
 			}
 		}
 	}
 	
 	public MapLocation getMapLocation(int x, int y) {
-		return mapLocations[x+1][y+1];
+		return mapLocations[x+BUFFER][y+BUFFER];
 	}
 	
 	public MapLocation getMapLocation(Vector position) {
@@ -43,6 +47,12 @@ public enum Planet {
 		return bcPlanet;
 	}
 
+	public static void init() {
+		for(Planet planet: Planet.values()) {
+			planet.initMapLocations();
+		}
+	}
+	
 	protected static Planet valueOf(bc.Planet bcPlanet) {
 		switch(bcPlanet) {
 			case Earth:
