@@ -12,8 +12,8 @@ public enum Direction {
 	WEST      (-1,  0, West),
 	NORTHWEST (-1, -1, Northwest);
 
-	private static int LENGTH = 8;
-
+	private static final int LENGTH = 8;
+	
 	private Vector offset;
 	private bc.Direction bcDirection;
 

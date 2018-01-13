@@ -15,6 +15,10 @@ public class PlanetMap {
 		return (int)bcPlanetMap.getHeight();
 	}
 	
+	public Planet getPlanet() {
+		return Planet.valueOf(bcPlanetMap.getPlanet());
+	}
+	
 	public Unit[] getInitialUnits() {
 		return LibraryUtil.toArray(bcPlanetMap.getInitial_units());
 	}

@@ -8,6 +8,7 @@ import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.util.Util;
 
 public class EarthPlayer {
+	private static PlanMap planMap;
 	public static void execute() {
 		GameController gc = GameController.INSTANCE;
 		while(true) {
@@ -88,10 +89,12 @@ public class EarthPlayer {
 	public static boolean tryBlueprint(Unit unit, UnitType type) {
 		for(Direction direction: Direction.values()) {
 			if(unit.canBlueprint(type, direction)) {
-				int neighbors = Util.getNeighbors(unit.getLocation().getMapLocation().getOffsetLocation(direction),
-						(mapLocation)->mapLocation.hasUnitAtLocation()&&(mapLocation.getUnit().getType()==UnitType.FACTORY||mapLocation.getUnit().getType()==UnitType.ROCKET)||(!mapLocation.isOnMap())||(!mapLocation.isOccupiable())||(!mapLocation.isPassableTerrain()));
+				MapLocation offsetLocation = unit.getLocation().getMapLocation().getOffsetLocation(direction);
+				int neighbors = Util.getNeighbors(offsetLocation,
+						(mapLocation)->planMap.isPassable(mapLocation.getPosition()));
 				if(Util.canBuild(neighbors)) {
 					unit.blueprint(type, direction);
+					planMap.setStructure(offsetLocation.getPosition(), type);
 					return true;
 				}
 			}
