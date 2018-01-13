@@ -1,7 +1,6 @@
 package citricsky.battlecode2018.main;
 
 import citricsky.battlecode2018.library.GameController;
-import citricsky.battlecode2018.library.Unit;
 
 public class MarsPlayer {
 	public static void execute() {
