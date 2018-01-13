@@ -12,9 +12,9 @@ public enum Planet {
 		this.bcPlanet = bcPlanet;
 		this.startingMap = new PlanetMap(GameController.INSTANCE.getBcGameController().startingMap(bcPlanet));
 		this.mapLocations = new MapLocation[startingMap.getWidth()+2][startingMap.getHeight()+2];
-		for(int i=-1;i<=mapLocations.length;++i) {
-			for(int j=-1;j<=mapLocations[0].length;++j) {
-				mapLocations[i][j] = new MapLocation(new bc.MapLocation(bcPlanet, i, j));
+		for(int i=0;i<mapLocations.length+2;++i) {
+			for(int j=0;j<mapLocations[0].length+2;++j) {
+				mapLocations[i][j] = new MapLocation(new bc.MapLocation(bcPlanet, i-1, j-1));
 			}
 		}
 	}
