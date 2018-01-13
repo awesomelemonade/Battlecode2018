@@ -27,6 +27,12 @@ public class PlanMap {
 			}
 		}
 	}
+	public int getWidth() {
+		return data.length;
+	}
+	public int getHeight() {
+		return data[0].length;
+	}
 	public boolean isOnMap(Vector position) {
 		return position.getX() >= 0 && position.getX() < data.length &&
 				position.getY() >= 0 && position.getY() < data[0].length;

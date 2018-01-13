@@ -3,6 +3,7 @@ package citricsky.battlecode2018.main;
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
+import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.util.Util;
@@ -11,6 +12,7 @@ public class EarthPlayer {
 	private static PlanMap planMap;
 	public static void execute() {
 		GameController gc = GameController.INSTANCE;
+		planMap = new PlanMap(Planet.EARTH.getStartingMap());
 		while(true) {
 			System.out.println("R: " + gc.getRoundNumber() + "; K: " + gc.getCurrentKarbonite());
 			

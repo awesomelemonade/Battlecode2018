@@ -38,4 +38,13 @@ public class Vector {
 	public Vector invert() {
 		return new Vector(-x, -y);
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Vector) {
+			Vector vector = (Vector)o;
+			return x == vector.getX() && y == vector.getY();
+		}
+		return false;
+	}
 }
