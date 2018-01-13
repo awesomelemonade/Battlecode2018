@@ -19,7 +19,7 @@ public class PlanMap {
 	private void init(PlanetMap map) {
 		for(int i=0;i<data.length;++i) {
 			for(int j=0;j<data[0].length;++j) {
-				MapLocation location = new MapLocation(map.getPlanet(), new Vector(i, j));
+				MapLocation location = map.getPlanet().getMapLocation(i, j);
 				data[i][j][DataType.TERRAIN.getIndex()] = starterMap.isPassableTerrainAt(location)?0:1;
 				data[i][j][DataType.KARBONITE.getIndex()] = starterMap.getInitialKarboniteAt(location);
 				data[i][j][DataType.STRUCTURE.getIndex()] = -1;

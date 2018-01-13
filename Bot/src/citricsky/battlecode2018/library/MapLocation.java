@@ -5,20 +5,14 @@ public class MapLocation {
 	private Planet planet;
 	private Vector position;
 
-	public MapLocation(bc.MapLocation bcMapLocation) {
+	protected MapLocation(bc.MapLocation bcMapLocation) {
 		this.bcMapLocation = bcMapLocation;
 		this.planet = Planet.valueOf(bcMapLocation.getPlanet());
 		this.position = new Vector(bcMapLocation.getX(), bcMapLocation.getY());
 	}
-	
-	public MapLocation(Planet planet, Vector position) {
-		this.bcMapLocation = new bc.MapLocation(planet.getBcPlanet(), position.getX(), position.getY());
-		this.planet = planet;
-		this.position = position;
-	}
 
 	public MapLocation getOffsetLocation(Direction direction) {
-		return new MapLocation(planet, position.add(direction.getOffsetVector()));
+		return planet.getMapLocation(position.add(direction.getOffsetVector()));
 	}
 	
 	public boolean isPassableTerrain() {

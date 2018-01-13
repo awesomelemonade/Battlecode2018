@@ -7,7 +7,7 @@ public class Location {
 	public Location(bc.Location bcLocation) {
 		this.bcLocation = bcLocation;
 		if(bcLocation.isOnMap()) {
-			this.mapLocation = new MapLocation(bcLocation.mapLocation());
+			this.mapLocation = Planet.getMapLocation(bcLocation.mapLocation());
 		}else {
 			this.mapLocation = null;
 		}

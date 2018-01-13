@@ -6,6 +6,7 @@ import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.util.Util;
 
 public class EarthPlayer {
@@ -13,22 +14,28 @@ public class EarthPlayer {
 	public static void execute() {
 		GameController gc = GameController.INSTANCE;
 		planMap = new PlanMap(Planet.EARTH.getStartingMap());
+		UnitType[] researchOrder = new UnitType[]
+				{UnitType.KNIGHT, UnitType.KNIGHT, UnitType.KNIGHT, UnitType.ROCKET,
+						UnitType.HEALER, UnitType.HEALER, UnitType.HEALER};
+		for(UnitType research: researchOrder) {
+			gc.queueResearch(research);
+		}
 		while(true) {
 			System.out.println("R: " + gc.getRoundNumber() + "; K: " + gc.getCurrentKarbonite());
 			
 			for(Unit unit: gc.getMyUnits()) {
-				if(unit.getType()==UnitType.WORKER) {
+				if(unit.getType() == UnitType.WORKER) {
 					if(!tryBlueprint(unit, UnitType.FACTORY)) {
 						if(!tryBuild(unit)) {
 							Direction direction = Direction.randomDirection();
-							if(unit.isMoveReady()&&unit.canMove(direction)) {
+							if(unit.isMoveReady() && unit.canMove(direction)) {
 								unit.move(direction);
 							}
 						}
 					}
 					//TODO: Harvesting of Karbonite
 				}
-				if(unit.getType()==UnitType.FACTORY) {
+				if(unit.getType() == UnitType.FACTORY) {
 					if(unit.canProduceRobot(UnitType.KNIGHT)) {
 						unit.produceRobot(UnitType.KNIGHT);
 					}
@@ -39,9 +46,27 @@ public class EarthPlayer {
 					}
 				}
 				if(unit.getType()==UnitType.KNIGHT) {
-					Direction direction = Direction.randomDirection();
-					if(unit.isMoveReady()&&unit.canMove(direction)) {
-						unit.move(direction);
+					BFSDestination bfs = new BFSDestination(unit.getLocation().getMapLocation().getPosition());
+					bfs.process(vector -> Planet.EARTH.getMapLocation(vector).hasUnitAtLocation() &&
+							Planet.EARTH.getMapLocation(vector).getUnit().getTeam() != gc.getTeam());
+					if(bfs.getQueue().isEmpty()) {
+						Direction direction = Direction.randomDirection();
+						if(unit.isMoveReady() && unit.canMove(direction)) {
+							unit.move(direction);
+						}
+					}else {
+						Vector enemyPosition = bfs.getQueue().peekLast();
+						Direction direction = bfs.trace(enemyPosition, unit.getLocation().getMapLocation().getPosition()).getOpposite();
+						if(unit.isMoveReady() && unit.canMove(direction)) {
+							unit.move(direction);
+						}
+						Unit enemyUnit = Planet.EARTH.getMapLocation(enemyPosition).getUnit();
+						if(unit.isAttackReady() && unit.canJavelin(enemyUnit)) {
+							unit.javelin(enemyUnit);
+						}
+						if(unit.isAttackReady() && unit.canAttack(enemyUnit)) {
+							unit.attack(enemyUnit);
+						}
 					}
 				}
 			}

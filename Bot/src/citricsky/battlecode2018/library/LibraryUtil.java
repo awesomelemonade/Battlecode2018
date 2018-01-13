@@ -35,7 +35,7 @@ public class LibraryUtil {
 		MapLocation[] array = new MapLocation[(int) vecMapLocation.size()];
 		
 		for(int i = 0, len = array.length; i < len; ++i) {
-			array[i] = new MapLocation(vecMapLocation.get(i));
+			array[i] = Planet.getMapLocation(vecMapLocation.get(i));
 		}
 		
 		return array;
