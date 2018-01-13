@@ -9,6 +9,7 @@ public enum GameController {
 
 	public void init() {
 		this.bcGameController = new bc.GameController();
+		Planet.init();
 		this.planet = Planet.valueOf(bcGameController.planet());
 		this.team = Team.valueOf(bcGameController.team());
 	}

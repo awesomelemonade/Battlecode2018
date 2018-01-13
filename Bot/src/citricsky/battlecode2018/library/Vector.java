@@ -47,4 +47,9 @@ public class Vector {
 		}
 		return false;
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("Vector[%d, %d]", x, y);
+	}
 }

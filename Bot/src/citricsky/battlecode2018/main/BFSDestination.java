@@ -11,7 +11,8 @@ public class BFSDestination {
 	private PlanMap planMap;
 	private Direction[][] data;
 	private Deque<Vector> queue;
-	public BFSDestination(Vector destination) {
+	public BFSDestination(PlanMap planMap, Vector destination) {
+		this.planMap = planMap;
 		this.data = new Direction[planMap.getWidth()][planMap.getHeight()];
 		this.queue = new ArrayDeque<Vector>();
 		queue.add(destination);

@@ -24,6 +24,9 @@ public class EarthPlayer {
 			System.out.println("R: " + gc.getRoundNumber() + "; K: " + gc.getCurrentKarbonite());
 			
 			for(Unit unit: gc.getMyUnits()) {
+				if(!unit.getLocation().isOnMap()) {
+					continue;
+				}
 				if(unit.getType() == UnitType.WORKER) {
 					if(!tryBlueprint(unit, UnitType.FACTORY)) {
 						if(!tryBuild(unit)) {
@@ -46,7 +49,7 @@ public class EarthPlayer {
 					}
 				}
 				if(unit.getType()==UnitType.KNIGHT) {
-					BFSDestination bfs = new BFSDestination(unit.getLocation().getMapLocation().getPosition());
+					BFSDestination bfs = new BFSDestination(planMap, unit.getLocation().getMapLocation().getPosition());
 					bfs.process(vector -> Planet.EARTH.getMapLocation(vector).hasUnitAtLocation() &&
 							Planet.EARTH.getMapLocation(vector).getUnit().getTeam() != gc.getTeam());
 					if(bfs.getQueue().isEmpty()) {
@@ -117,12 +120,14 @@ public class EarthPlayer {
 		for(Direction direction: Direction.values()) {
 			if(unit.canBlueprint(type, direction)) {
 				MapLocation offsetLocation = unit.getLocation().getMapLocation().getOffsetLocation(direction);
-				int neighbors = Util.getNeighbors(offsetLocation,
-						(mapLocation)->planMap.isPassable(mapLocation.getPosition()));
-				if(Util.canBuild(neighbors)) {
-					unit.blueprint(type, direction);
-					planMap.setStructure(offsetLocation.getPosition(), type);
-					return true;
+				if(offsetLocation.isOnMap()) {
+					int neighbors = Util.getNeighbors(offsetLocation,
+							(mapLocation)->planMap.isPassable(mapLocation.getPosition()));
+					if(Util.canBuild(neighbors)) {
+						unit.blueprint(type, direction);
+						planMap.setStructure(offsetLocation.getPosition(), type);
+						return true;
+					}
 				}
 			}
 		}
