@@ -11,7 +11,7 @@ function rungame() {
     cpulimit -l 40 -z -i $CMD | tee $LOGFILE
     WINNER=$(tail -1 $LOGFILE | cut -f4 -d' ' )
     sed -i "1 i\$CMD"
-    if [[ $WINNER == "1" ]]; then
+    if [[ $WINNER == "2" ]]; then
         NUMWINS=$(( NUMWINS + 1 ))
         mv $LOGFILE replays/log_${NUMGAMES}_W.txt
     fi
