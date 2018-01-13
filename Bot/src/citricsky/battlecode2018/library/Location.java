@@ -6,7 +6,11 @@ public class Location {
 	
 	public Location(bc.Location bcLocation) {
 		this.bcLocation = bcLocation;
-		this.mapLocation = new MapLocation(bcLocation.mapLocation());
+		if(bcLocation.isOnMap()) {
+			this.mapLocation = new MapLocation(bcLocation.mapLocation());
+		}else {
+			this.mapLocation = null;
+		}
 	}
 	public boolean isInSpace() {
 		return bcLocation.isInSpace();

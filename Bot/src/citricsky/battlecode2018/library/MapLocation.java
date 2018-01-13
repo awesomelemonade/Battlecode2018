@@ -12,6 +12,7 @@ public class MapLocation {
 	}
 	
 	public MapLocation(Planet planet, Vector position) {
+		this.bcMapLocation = new bc.MapLocation(planet.getBcPlanet(), position.getX(), position.getY());
 		this.planet = planet;
 		this.position = position;
 	}
@@ -69,10 +70,6 @@ public class MapLocation {
 	}
 	
 	protected bc.MapLocation getBcMapLocation(){
-		if (bcMapLocation==null) {
-			bcMapLocation = new bc.MapLocation(planet.getBcPlanet(), position.getX(), position.getY());
-		}
-
 		return bcMapLocation;
 	}
 }
