@@ -30,7 +30,7 @@ public class Util {
 		return true;
 	}
 	public static int floodFill(int neighbors, int bit) {
-		if(((neighbors | (1 << bit)) & 1) == 1) {
+		if(((neighbors >>> bit) & 1) == 1) {
 			return neighbors; //already filled
 		}else {
 			neighbors = neighbors | (1 << bit);
@@ -76,6 +76,13 @@ public class Util {
 			if(predicate.test(location.getOffsetLocation(direction))) {
 				neighbors = neighbors | (1 << direction.ordinal());
 			}
+		}
+		return neighbors;
+	}
+	public static int getNeighbors(Direction... directions) {
+		int neighbors = 0;
+		for(Direction direction: directions) {
+			neighbors = neighbors | (1 << direction.ordinal());
 		}
 		return neighbors;
 	}
