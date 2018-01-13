@@ -5,7 +5,7 @@ NUMGAMES=0
 
 function rungame() {
     CMD="./battlecode.sh -p1 Bot $@"
-    LOGFILE="replays/log_${NUMGAMES}_L.txt"
+    LOGFILE="log_${NUMGAMES}"
 
     echo $CMD
     cpulimit -l 40 -z -i $CMD | tee $LOGFILE
@@ -13,7 +13,9 @@ function rungame() {
     sed -i "1 i\$CMD"
     if [[ $WINNER == "2" ]]; then
         NUMWINS=$(( NUMWINS + 1 ))
-        mv $LOGFILE replays/log_${NUMGAMES}_W.txt
+        mv $LOGFILE log_${NUMGAMES}_W.txt
+    else
+        mv $LOGFILE log_${NUMGAMES}_L.txt
     fi
     NUMGAMES=$(( NUMGAMES + 1 ))
 }
@@ -42,6 +44,7 @@ ulimit -f 256000
 rungame -p2 examplefuncsplayer-python -m socket
 rungame -p2 examplefuncsplayer-python -m bananas
 
+mv log_* replays/
 cp -r replays $dir/
 
 cd $dir/replays
