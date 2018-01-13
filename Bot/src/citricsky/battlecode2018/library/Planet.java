@@ -5,18 +5,19 @@ public enum Planet {
 	MARS(bc.Planet.Mars);
 
 	private bc.Planet bcPlanet;
+	private PlanetMap planetMap;
 
 	Planet(bc.Planet bcPlanet) {
 		this.bcPlanet = bcPlanet;
+		this.planetMap = new PlanetMap(GameController.INSTANCE.getBcGameController().startingMap(bcPlanet));
 	}
 
 	public int[] getTeamArray() {
 		return LibraryUtil.toArray(GameController.INSTANCE.getBcGameController().getTeamArray(bcPlanet));
 	}
-
-	//TODO
-	public void getStartingMap() {
-		//return GameController.INSTANCE.getBcGameController().startingMap(bcPlanet);
+	
+	public PlanetMap getStartingMap() {
+		return planetMap;
 	}
 
 	protected bc.Planet getBcPlanet(){

@@ -46,7 +46,7 @@ public class EarthPlayer {
 		for(Direction direction: Direction.values()) {
 			if(unit.canBlueprint(type, direction)) {
 				int neighbors = Util.getNeighbors(unit.getLocation().getMapLocation().getOffsetLocation(direction),
-						(mapLocation)->mapLocation.isOccupiable());
+						(mapLocation)->(!mapLocation.isOccupiable())||(!mapLocation.isOnMap())||(!mapLocation.isPassableTerrain()));
 				if(Util.canBuild(neighbors)) {
 					unit.blueprint(type, direction);
 					return true;

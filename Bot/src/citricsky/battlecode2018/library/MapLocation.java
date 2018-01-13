@@ -20,6 +20,14 @@ public class MapLocation {
 		return new MapLocation(planet, position.add(direction.getOffsetVector()));
 	}
 	
+	public boolean isPassableTerrain() {
+		return planet.getStartingMap().isPassableTerrainAt(this);
+	}
+	
+	public boolean isOnMap() {
+		return planet.getStartingMap().isOnMap(this);
+	}
+	
 	public Planet getPlanet() {
 		return planet;
 	}
