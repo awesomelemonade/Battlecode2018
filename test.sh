@@ -8,6 +8,7 @@ function rungame() {
     LOGFILE="log_${NUMGAMES}"
 
     echo $CMD
+    ulimit -v 128000
     cpulimit -l 40 -z -i $CMD | tee $LOGFILE
     WINNER=$(tail -1 $LOGFILE | cut -f4 -d' ' )
     sed -i "1 i\$CMD"
@@ -35,10 +36,6 @@ mkdir -p Bot
 mkdir -p replays
 
 cp -r $dir/Bot/src/* ./Bot/
-
-cd examplefuncsplayer-java
-echo "$(sed '$s/java /java -Xmx128m /' run.sh)" > run.sh
-cd ..
 cp examplefuncsplayer-java/run.sh ./Bot/
 
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
