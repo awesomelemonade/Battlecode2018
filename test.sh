@@ -63,14 +63,14 @@ cd "${DIR}"
 
 git reset --hard
 git clean -fdx
-git pull
 
 # Previous successful bot
 mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
 
 git checkout ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}
+git pull
 cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_prev/"
-echo RUN_SCRIPT > "${SCAFFOLD_DIR}/Bot_prev/run.sh"
+echo ${RUN_SCRIPT} > "${SCAFFOLD_DIR}/Bot_prev/run.sh"
 BOTS+=("Bot_prev")
 
 git checkout ${GIT_BRANCH}
@@ -80,8 +80,9 @@ if [[ ${GIT_BRANCH} != "master" ]]; then
     mkdir -p "${SCAFFOLD_DIR}/Bot_master"
 
     git checkout origin/master
+    git pull
     cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_master/"
-    echo RUN_SCRIPT > "${SCAFFOLD_DIR}/Bot_master/run.sh"
+    echo ${RUN_SCRIPT} > "${SCAFFOLD_DIR}/Bot_master/run.sh"
     BOTS+=("Bot_master")
 
     git checkout ${GIT_BRANCH}
@@ -90,7 +91,7 @@ fi
 # Copy the current bot
 mkdir -p "${SCAFFOLD_DIR}/Bot"
 cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot/"
-echo RUN_SCRIPT > "${SCAFFOLD_DIR}/Bot/run.sh"
+echo ${RUN_SCRIPT} > "${SCAFFOLD_DIR}/Bot/run.sh"
 
 cd "${SCAFFOLD_DIR}"
 
