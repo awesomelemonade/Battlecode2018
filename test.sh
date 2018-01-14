@@ -70,7 +70,7 @@ echo "<ul>" > links.html
 for i in *.bc18; do
     NAME="${i/replay_/${1}_}"
     scp "$i" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${NAME}"
-    echo "<li><a href=\"https://pantherman594.com/tinyview/?fname=$(urlencode $NAME)\">Replay ${NAME}</a></li>" >> links.html
+    echo "<li><a href=\"https://pantherman594.com/tinyview/?fname=$(urlencode /replays/$NAME)\">Replay ${NAME}</a></li>" >> links.html
 done
 echo "</ul>" >> links.html
 

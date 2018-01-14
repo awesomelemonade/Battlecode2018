@@ -34,66 +34,70 @@ public class EarthPlayer {
 			}
 
 			for (Unit unit : gc.getMyUnitsByFilter(unit -> unit.getLocation().isOnMap())) { // Using a predicate up here, so there is a smaller array in memory
+				try {
 				/*if (!unit.getLocation().isOnMap()) {
 					continue;
 				}*/
-				if (!enemyInRange) {
-					//TODO: do something
-				}
-				if (unit.getType() == UnitType.WORKER) {
-					if (!tryBlueprint(unit, UnitType.FACTORY)) {
-						if (!tryBuild(unit)) {
-							Direction direction = Direction.randomDirection();
-							if (unit.isMoveReady() && unit.canMove(direction)) {
-								unit.move(direction);
+					if (!enemyInRange) {
+						//TODO: do something
+					}
+					if (unit.getType() == UnitType.WORKER) {
+						if (!tryBlueprint(unit, UnitType.FACTORY)) {
+							if (!tryBuild(unit)) {
+								Direction direction = Direction.randomDirection();
+								if (unit.isMoveReady() && unit.canMove(direction)) {
+									unit.move(direction);
+								}
 							}
 						}
+						//TODO: Harvesting of Karbonite
+						continue;
 					}
-					//TODO: Harvesting of Karbonite
-					continue;
-				}
-				if (unit.getType() == UnitType.FACTORY) {
-					if (unit.canProduceRobot(UnitType.KNIGHT)) {
-						unit.produceRobot(UnitType.KNIGHT);
-					}
-					int garrisonSize = unit.getGarrisonUnitIds().length;
-					if (garrisonSize > 0) {
-						for (Direction direction : Direction.values()) {
-							if (unit.canUnload(direction)) {
-								unit.unload(direction);
-								if (--garrisonSize == 0) {
-									break;
+					if (unit.getType() == UnitType.FACTORY) {
+						if (unit.canProduceRobot(UnitType.KNIGHT)) {
+							unit.produceRobot(UnitType.KNIGHT);
+						}
+						int garrisonSize = unit.getGarrisonUnitIds().length;
+						if (garrisonSize > 0) {
+							for (Direction direction : Direction.values()) {
+								if (unit.canUnload(direction)) {
+									unit.unload(direction);
+									if (--garrisonSize == 0) {
+										break;
+									}
 								}
 							}
 						}
 					}
-				}
-				if(unit.getType()==UnitType.KNIGHT) {
-					BFSDestination bfs = new BFSDestination(planMap.getWidth(), planMap.getHeight(),
-							unit.getLocation().getMapLocation().getPosition());
-					bfs.process(vector -> planMap.isPassable(vector),
-							vector -> Planet.EARTH.getMapLocation(vector).hasUnitAtLocation() &&
-							Planet.EARTH.getMapLocation(vector).getUnit().getTeam() != gc.getTeam());
-					if (bfs.getQueue().isEmpty()) {
-						Direction direction = Direction.randomDirection();
-						if (unit.isMoveReady() && unit.canMove(direction)) {
-							unit.move(direction);
+					if (unit.getType() == UnitType.KNIGHT) {
+						BFSDestination bfs = new BFSDestination(planMap.getWidth(), planMap.getHeight(),
+								unit.getLocation().getMapLocation().getPosition());
+						bfs.process(vector -> planMap.isPassable(vector),
+								vector -> Planet.EARTH.getMapLocation(vector).hasUnitAtLocation() &&
+										Planet.EARTH.getMapLocation(vector).getUnit().getTeam() != gc.getTeam());
+						if (bfs.getQueue().isEmpty()) {
+							Direction direction = Direction.randomDirection();
+							if (unit.isMoveReady() && unit.canMove(direction)) {
+								unit.move(direction);
+							}
+						} else {
+							Vector enemyPosition = bfs.getQueue().peekLast();
+							Direction direction = bfs.trace(enemyPosition, unit.getLocation().getMapLocation().getPosition()).getOpposite();
+							if (unit.isMoveReady() && unit.canMove(direction)) {
+								unit.move(direction);
+							}
+							Unit enemyUnit = Planet.EARTH.getMapLocation(enemyPosition).getUnit();
+							if (unit.isAttackReady() && unit.canJavelin(enemyUnit) && unit.getAbilityHeat() < unit.getAbilityCooldown()) {
+								unit.javelin(enemyUnit);
+							}
+							if (unit.isAttackReady() && unit.canAttack(enemyUnit)) {
+								unit.attack(enemyUnit);
+							}
 						}
-					} else {
-						Vector enemyPosition = bfs.getQueue().peekLast();
-						Direction direction = bfs.trace(enemyPosition, unit.getLocation().getMapLocation().getPosition()).getOpposite();
-						if (unit.isMoveReady() && unit.canMove(direction)) {
-							unit.move(direction);
-						}
-						Unit enemyUnit = Planet.EARTH.getMapLocation(enemyPosition).getUnit();
-						if (unit.isAttackReady() && unit.canJavelin(enemyUnit) && unit.getAbilityHeat() < unit.getAbilityCooldown()) {
-							unit.javelin(enemyUnit);
-						}
-						if (unit.isAttackReady() && unit.canAttack(enemyUnit)) {
-							unit.attack(enemyUnit);
-						}
+						//continue; // Unnecessary
 					}
-					//continue; // Unnecessary
+				} catch (Exception e) {
+					e.printStackTrace();
 				}
 			}
 			gc.yield();
