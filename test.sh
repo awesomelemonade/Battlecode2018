@@ -48,7 +48,7 @@ urlencode() {
 }
 
 DIR=$PWD
-SCAFFOLD_DIR="~ubuntu/bc18-scaffold"
+SCAFFOLD_DIR=~ubuntu/bc18-scaffold
 
 cd "${SCAFFOLD_DIR}"
 
@@ -59,7 +59,7 @@ git pull
 RUN_SCRIPT="$(cat examplefuncsplayer-java/run.sh)"
 mkdir -p replays
 
-cd ${DIR}
+cd "${DIR}"
 
 git reset --hard
 git clean -fdx
@@ -100,9 +100,9 @@ for bot in ${BOTS}; do
 done
 
 mv log_* replays/
-cp -r replays ${DIR}/
+cp -r replays "${DIR}/"
 
-cd ${DIR}/replays
+cd "${DIR}/replays"
 echo "<ul>" > links.html
 for i in *.bc18; do
     NAME="${i/replay_/${BUILD_NUMBER}_}"
