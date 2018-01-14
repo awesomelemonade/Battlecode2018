@@ -7,7 +7,6 @@ public class MarsPlayer {
 		GameController gc = GameController.INSTANCE;
 
 		while(true) {
-			System.out.println("R: " + gc.getRoundNumber() + "; K: " + gc.getCurrentKarbonite());
 			gc.yield();
 		}
 	}

@@ -12,6 +12,8 @@ public enum Direction {
 	WEST      (-1,  0, West),
 	NORTHWEST (-1,  1, Northwest);
 
+	public static final Direction[] CARDINAL_DIRECTIONS = new Direction[]
+			{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
 	private static final int LENGTH = 8;
 	
 	private Vector offset;

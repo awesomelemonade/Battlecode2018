@@ -54,6 +54,9 @@ public class PlanMap {
 	public void setOwner(Vector position, Unit unit) {
 		data[position.getX()][position.getY()][DataType.OWNER.getIndex()] = unit.getId();
 	}
+	public int getKarbonite(Vector position) {
+		return data[position.getX()][position.getY()][DataType.KARBONITE.getIndex()];
+	}
 	public enum DataType {
 		TERRAIN(0, x->x==0), KARBONITE(1, x->true), STRUCTURE(2, x->x<0), OWNER(3, x->true);
 		private int index;
