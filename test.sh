@@ -63,6 +63,7 @@ cd "${DIR}"
 
 git reset --hard
 git clean -fdx
+git checkout dev-main
 git pull --all
 
 echo Copying previous successful bot
