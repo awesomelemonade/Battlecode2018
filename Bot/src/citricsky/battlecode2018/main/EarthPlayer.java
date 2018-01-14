@@ -14,9 +14,12 @@ import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.unithandler.BFSHandler;
 import citricsky.battlecode2018.unithandler.FactoryHandler;
+import citricsky.battlecode2018.unithandler.PathfinderTask;
 import citricsky.battlecode2018.unithandler.UnitHandler;
-import citricsky.battlecode2018.unithandler.WorkerHarvestHandler;
+import citricsky.battlecode2018.unithandler.WorkerBlueprintTask;
+import citricsky.battlecode2018.unithandler.WorkerHarvestTask;
 import citricsky.battlecode2018.util.Util;
 
 public class EarthPlayer {
@@ -31,12 +34,21 @@ public class EarthPlayer {
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
 		}
+		Map<UnitType, Set<PathfinderTask>> pathfinderTasks = new HashMap<UnitType, Set<PathfinderTask>>();
 		Map<UnitType, Set<Function<Unit, UnitHandler>>> handlers = new HashMap<UnitType, Set<Function<Unit, UnitHandler>>>();
 		for(UnitType unitType: UnitType.values()) {
 			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
+			pathfinderTasks.put(unitType, new HashSet<PathfinderTask>());
 		}
-		handlers.get(UnitType.WORKER).add(unit -> new WorkerHarvestHandler(unit));
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
 		handlers.get(UnitType.FACTORY).add(unit -> new FactoryHandler(unit));
+		for(UnitType unitType: pathfinderTasks.keySet()) {
+			if(!pathfinderTasks.get(unitType).isEmpty()) {
+				handlers.get(unitType).add(unit -> new BFSHandler(unit,
+						pathfinderTasks.get(unitType).toArray(new PathfinderTask[] {})));
+			}
+		}
 		while (true) {
 			Unit[] myUnits = gc.getMyUnits();
 			Map<UnitHandler, Integer> priorities = new HashMap<UnitHandler, Integer>();
@@ -86,45 +98,6 @@ public class EarthPlayer {
 				try {
 					if (!enemyInRange) {
 						//TODO: do something
-					}
-					if (unit.getType() == UnitType.WORKER) {
-						if (!tryBlueprint(unit, UnitType.FACTORY)) {
-							if (!tryBuild(unit)) {
-								BFS bfs = new BFS(unit.getLocation().getMapLocation());
-								bfs.process(location -> planMap.isPassable(location.getPosition()), location -> {
-									if(gc.canSenseLocation(location)){
-										if(location.getKarboniteCount()>0) {
-											return true;
-										}
-										if(location.hasUnitAtLocation()) {
-											if(location.getUnit().isStructure()) {
-												return !location.getUnit().isStructureBuilt();
-											}
-										}
-									}else {
-										if(planMap.getKarbonite(location.getPosition())>0) {
-											return true;
-										}
-									}
-									return false;
-								});
-								if(bfs.getQueue().isEmpty()) {
-									Direction direction = Direction.randomDirection();
-									if (unit.isMoveReady() && unit.canMove(direction)) {
-										unit.move(direction);
-									}
-								}else {
-									MapLocation workLocation = bfs.getQueue().peekLast();
-									Direction direction = bfs.trace(workLocation.getPosition(),
-											unit.getLocation().getMapLocation().getPosition());
-									if(unit.isMoveReady() && unit.canMove(direction)) {
-										unit.move(direction);
-									}
-								}
-							}
-						}
-						//TODO: Harvesting of Karbonite
-						continue;
 					}
 					if (unit.getType() == UnitType.KNIGHT) {
 						BFS bfs = new BFS(unit.getLocation().getMapLocation());

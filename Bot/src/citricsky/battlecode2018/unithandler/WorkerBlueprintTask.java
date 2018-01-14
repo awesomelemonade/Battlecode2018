@@ -9,7 +9,7 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.util.Util;
 
-public class WorkerBlueprintHandler implements PathfinderTask {
+public class WorkerBlueprintTask implements PathfinderTask {
 	private static final Predicate<MapLocation> PASSABLE_PREDICATE = location -> {
 		if(location.isPassableTerrain()) {
 			return true;
@@ -29,7 +29,7 @@ public class WorkerBlueprintHandler implements PathfinderTask {
 	@Override
 	public void execute(Unit unit, MapLocation location, Direction direction) {
 		if(unit.getLocation().getMapLocation().equals(location)) {
-			if(unit.canBlueprint(UnitType.FACTORY, direction)) {
+			if(!unit.hasWorkerActed() && unit.canBlueprint(UnitType.FACTORY, direction)) {
 				unit.blueprint(UnitType.FACTORY, direction);
 			}
 		}
