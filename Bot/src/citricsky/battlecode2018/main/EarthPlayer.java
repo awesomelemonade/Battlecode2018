@@ -1,5 +1,13 @@
 package citricsky.battlecode2018.main;
 
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.PriorityQueue;
+import java.util.Set;
+import java.util.function.Function;
+
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
@@ -7,6 +15,8 @@ import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.unithandler.UnitHandler;
+import citricsky.battlecode2018.unithandler.WorkerHarvestHandler;
 import citricsky.battlecode2018.util.Util;
 
 public class EarthPlayer {
@@ -21,7 +31,41 @@ public class EarthPlayer {
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
 		}
+		Map<UnitType, Set<Function<Unit, UnitHandler>>> handlers = new HashMap<UnitType, Set<Function<Unit, UnitHandler>>>();
+		for(UnitType unitType: UnitType.values()) {
+			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
+		}
+		handlers.get(UnitType.WORKER).add(unit -> new WorkerHarvestHandler(unit));
 		while (true) {
+			Unit[] myUnits = gc.getMyUnits();
+			Map<UnitHandler, Integer> priorities = new HashMap<UnitHandler, Integer>();
+			PriorityQueue<UnitHandler> queue = new PriorityQueue<UnitHandler>(myUnits.length, new Comparator<UnitHandler>() {
+				@Override
+				public int compare(UnitHandler a, UnitHandler b) {
+					return Integer.compare(priorities.get(a), priorities.get(b));
+				}
+			});
+			for(Unit unit: myUnits) {
+				UnitHandler bestHandler = null;
+				int bestPriority = -Integer.MAX_VALUE;
+				for(Function<Unit, UnitHandler> function: handlers.get(unit.getType())) {
+					UnitHandler handler = function.apply(unit);
+					int priority = handler.getPriority(bestPriority);
+					if(priority > bestPriority) {
+						bestPriority = priority;
+						bestHandler = handler;
+					}
+				}
+				if(bestHandler != null) {
+					priorities.put(bestHandler, bestPriority);
+					queue.add(bestHandler);
+				}
+			}
+			while(!queue.isEmpty()) {
+				UnitHandler handler = queue.poll();
+				handler.execute();
+			}
+			
 			//Unit[] enemyRobots = gc.getAllUnitsByFilter((unit -> unit.getTeam() != gc.getTeam() && !unit.isStructure()));
 
 			boolean enemyInRange = true;
