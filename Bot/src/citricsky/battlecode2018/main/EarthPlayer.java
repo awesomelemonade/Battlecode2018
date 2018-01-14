@@ -14,13 +14,13 @@ import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.task.WorkerBlueprintFactoryTask;
+import citricsky.battlecode2018.task.WorkerBuildTask;
+import citricsky.battlecode2018.task.WorkerHarvestTask;
 import citricsky.battlecode2018.unithandler.BFSHandler;
 import citricsky.battlecode2018.unithandler.FactoryHandler;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 import citricsky.battlecode2018.unithandler.UnitHandler;
-import citricsky.battlecode2018.unithandler.WorkerBlueprintFactoryTask;
-import citricsky.battlecode2018.unithandler.WorkerBuildTask;
-import citricsky.battlecode2018.unithandler.WorkerHarvestTask;
 import citricsky.battlecode2018.util.Util;
 
 public class EarthPlayer {

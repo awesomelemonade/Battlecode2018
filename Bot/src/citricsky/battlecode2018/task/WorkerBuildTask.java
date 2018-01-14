@@ -1,4 +1,4 @@
-package citricsky.battlecode2018.unithandler;
+package citricsky.battlecode2018.task;
 
 import java.util.function.Predicate;
 
@@ -6,6 +6,7 @@ import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class WorkerBuildTask implements PathfinderTask {
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
