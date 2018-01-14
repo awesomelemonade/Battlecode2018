@@ -54,7 +54,7 @@ cd "${SCAFFOLD_DIR}"
 
 git reset --hard
 git clean -fdx
-git fetch --all
+git pull
 
 RUN_SCRIPT="$(cat examplefuncsplayer-java/run.sh)"
 mkdir -p replays
@@ -63,7 +63,7 @@ cd "${DIR}"
 
 git reset --hard
 git clean -fdx
-git fetch --all
+git pull --all
 
 echo Copying previous successful bot
 mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
@@ -114,7 +114,7 @@ for i in *.bc18; do
 done
 echo "</ul>" >> links.html
 
-ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git fetch --all"
+ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git pull"
 
 touch "$NUMWINS of $NUMGAMES games won"
 
