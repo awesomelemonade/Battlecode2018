@@ -15,6 +15,8 @@ import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.unithandler.FactoryProduceHandler;
+import citricsky.battlecode2018.unithandler.FactoryUnloadHandler;
 import citricsky.battlecode2018.unithandler.UnitHandler;
 import citricsky.battlecode2018.unithandler.WorkerHarvestHandler;
 import citricsky.battlecode2018.util.Util;
@@ -36,6 +38,8 @@ public class EarthPlayer {
 			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
 		}
 		handlers.get(UnitType.WORKER).add(unit -> new WorkerHarvestHandler(unit));
+		handlers.get(UnitType.FACTORY).add(unit -> new FactoryProduceHandler(unit));
+		handlers.get(UnitType.FACTORY).add(unit -> new FactoryUnloadHandler(unit));
 		while (true) {
 			Unit[] myUnits = gc.getMyUnits();
 			Map<UnitHandler, Integer> priorities = new HashMap<UnitHandler, Integer>();
@@ -51,9 +55,14 @@ public class EarthPlayer {
 				for(Function<Unit, UnitHandler> function: handlers.get(unit.getType())) {
 					UnitHandler handler = function.apply(unit);
 					int priority = handler.getPriority(bestPriority);
-					if(priority > bestPriority) {
-						bestPriority = priority;
-						bestHandler = handler;
+					if(handler.isRequired()) {
+						priorities.put(handler, priority);
+						queue.add(handler);
+					}else {
+						if(priority > bestPriority) {
+							bestPriority = priority;
+							bestHandler = handler;
+						}
 					}
 				}
 				if(bestHandler != null) {
@@ -120,22 +129,6 @@ public class EarthPlayer {
 						}
 						//TODO: Harvesting of Karbonite
 						continue;
-					}
-					if (unit.getType() == UnitType.FACTORY) {
-						if (unit.canProduceRobot(UnitType.KNIGHT)) {
-							unit.produceRobot(UnitType.KNIGHT);
-						}
-						int garrisonSize = unit.getGarrisonUnitIds().length;
-						if (garrisonSize > 0) {
-							for (Direction direction : Direction.values()) {
-								if (unit.canUnload(direction)) {
-									unit.unload(direction);
-									if (--garrisonSize == 0) {
-										break;
-									}
-								}
-							}
-						}
 					}
 					if (unit.getType() == UnitType.KNIGHT) {
 						BFSDestination bfs = new BFSDestination(planMap.getWidth(), planMap.getHeight(),

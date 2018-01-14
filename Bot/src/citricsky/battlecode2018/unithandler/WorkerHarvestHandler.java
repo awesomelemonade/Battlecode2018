@@ -10,7 +10,7 @@ public class WorkerHarvestHandler implements UnitHandler {
 	
 	@Override
 	public int getPriority(int priority) {
-		return 0;
+		return -Integer.MAX_VALUE;
 	}
 
 	@Override
