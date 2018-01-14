@@ -15,8 +15,10 @@ function rungame() {
     if [[ $WINNER == "2" ]]; then
         NUMWINS=$(( NUMWINS + 1 ))
         mv $LOGFILE log_${NUMGAMES}_W.txt
+        mv replays/replay_${NUMGAMES}.bc18 replays/replay_${NUMGAMES}_W.bc18
     else
         mv $LOGFILE log_${NUMGAMES}_L.txt
+        mv replays/replay_${NUMGAMES}.bc18 replays/replay_${NUMGAMES}_L.bc18
     fi
     NUMGAMES=$(( NUMGAMES + 1 ))
 }
@@ -46,11 +48,14 @@ rungame -p2 examplefuncsplayer-python -m bananas
 mv log_* replays/
 cp -r replays $dir/
 
-cd ~ubuntu/bc18-tinyview
-git clone
-cp -r . $dir/replays
-
 cd $dir/replays
+mkdir toCopy
+for i in *bc18; do
+    NAME="${i/replay_/${1}_/}"
+    scp "$i" "ubuntu@ssh.pantherman594.com:/var/www/replays/${NAME}"
+    echo "<a href=\"${NAME}\">Replay ${NAME}</a>" >> links.html
+done
+
 touch "$NUMWINS of $NUMGAMES games won"
 
 if [[ ! $NUMWINS > $(( NUMGAMES / 2 )) ]]; then
