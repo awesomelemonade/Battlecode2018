@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BUILD_NUMBER="$1"
-BRANCH_NAME="$2"
+GIT_BRANCH="$2"
 GIT_PREVIOUS_SUCCESSFUL_COMMIT="$3"
 
 NUMWINS=0
@@ -63,6 +63,7 @@ cd "${DIR}"
 
 git reset --hard
 git clean -fdx
+git pull
 
 # Previous successful bot
 mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
@@ -72,24 +73,26 @@ cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_prev/"
 echo RUN_SCRIPT > "${SCAFFOLD_DIR}/Bot_prev/run.sh"
 BOTS+=("Bot_prev")
 
-git checkout ${BRANCH_NAME}
+git checkout ${GIT_BRANCH}
 
 # Master branch bot, if not on master branch
-if [[ ${BRANCH_NAME} != "master" ]]; then
+if [[ ${GIT_BRANCH} != "master" ]]; then
     mkdir -p "${SCAFFOLD_DIR}/Bot_master"
 
-    git checkout master
+    git checkout origin/master
     cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_master/"
     echo RUN_SCRIPT > "${SCAFFOLD_DIR}/Bot_master/run.sh"
     BOTS+=("Bot_master")
 
-    git checkout ${BRANCH_NAME}
+    git checkout ${GIT_BRANCH}
 fi
 
 # Copy the current bot
 mkdir -p "${SCAFFOLD_DIR}/Bot"
 cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot/"
 echo RUN_SCRIPT > "${SCAFFOLD_DIR}/Bot/run.sh"
+
+cd "${SCAFFOLD_DIR}"
 
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
 
