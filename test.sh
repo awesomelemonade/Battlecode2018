@@ -1,8 +1,8 @@
 #!/bin/bash
 
-BUILD_NUMBER="$1"
-GIT_BRANCH=$(echo $2 | cut -f2 -d'/')
-GIT_PREVIOUS_SUCCESSFUL_COMMIT="$3"
+BUILD_NUMBER="${1}"
+GIT_BRANCH=$(echo ${2} | cut -f2 -d'/')
+GIT_PREVIOUS_SUCCESSFUL_COMMIT="${3}"
 
 NUMWINS=0
 NUMGAMES=0
@@ -11,14 +11,14 @@ MAPS=("socket" "bananas")
 BOTS=("examplefuncsplayer-python")
 
 rungame() {
-    CMD="./battlecode.sh -p1 Bot $@"
+    CMD="./battlecode.sh -p1 Bot ${@}"
     LOGFILE="log_${NUMGAMES}"
 
     echo ">>>> Run CMD: ${CMD}"
     #ulimit -v 256000
     cpulimit -l 40 -z -i ${CMD} | tee ${LOGFILE}
     WINNER=$(tail -1 ${LOGFILE} | cut -f4 -d' ')
-    sed -i "1 i\$CMD"
+    sed -i "1 i\$CMD" ${LOGFILE}
     if [[ ${WINNER} == "2" ]]; then
         NUMWINS=$(( NUMWINS + 1 ))
         mv ${LOGFILE} log_${NUMGAMES}_W.txt
@@ -32,15 +32,15 @@ rungame() {
 
 urlencode() {
     # urlencode <string>
-    old_lc_collate=$LC_COLLATE
+    old_lc_collate=${LC_COLLATE}
     LC_COLLATE=C
 
     local length="${#1}"
     for (( i = 0; i < length; i++ )); do
         local c="${1:i:1}"
         case ${c} in
-            [a-zA-Z0-9.~_-]) printf "$c" ;;
-            *) printf '%%%02X' "'$c" ;;
+            [a-zA-Z0-9.~_-]) printf "${c}" ;;
+            *) printf '%%%02X' "'${c}" ;;
         esac
     done
 
@@ -97,9 +97,11 @@ cd "${SCAFFOLD_DIR}"
 
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
 
+TITLES=()
 for bot in ${BOTS[@]}; do
     for map in ${MAPS[@]}; do
         rungame -p2 ${bot} -m ${map}
+        TITLES+=("Versus: ${bot}; Map: ${map}")
     done
 done
 
@@ -107,13 +109,19 @@ mv log_* replays/
 cp -r replays "${DIR}/"
 
 cd "${DIR}/replays"
-echo "<ul>" > links.html
+echo "<!DOCTYPE html>\n<head><meta charset=\"UTF-8\">\n
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n
+<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n
+<body>\n
+<ul>\n" > links.html
+TITLE=0
 for i in *.bc18; do
     NAME="${i/replay_/${BUILD_NUMBER}_}"
-    scp "$i" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${NAME}"
-    echo "<li><a href=\"https://pantherman594.com/tinyview/?fname=$(urlencode /replays/${NAME})\">Replay ${NAME}</a></li>" >> links.html
+    scp "${i}" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${NAME}"
+    echo "<li><a href=\"https://pantherman594.com/tinyview/?fname=$(urlencode /replays/${NAME})\">Replay ${NAME} ${TITLES[TITLE]}</a></li>" >> links.html
+    TITLE=$(( TITLE + 1 ))
 done
-echo "</ul>" >> links.html
+echo "</ul>\n</body>" >> links.html
 
 ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git pull"
 
