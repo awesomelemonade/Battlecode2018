@@ -1,5 +1,7 @@
 package citricsky.battlecode2018.library;
 
+import java.util.function.Predicate;
+
 public class Unit {
 	protected bc.Unit bcUnit;
 	
@@ -119,10 +121,6 @@ public class Unit {
 		return (int)bcUnit.rocketTravelTimeDecrease();
 	}
 	
-	public int[] getStructureGarrison() {
-		return LibraryUtil.toArray(bcUnit.structureGarrison());
-	}
-	
 	public boolean isStructureBuilt() {
 		return bcUnit.structureIsBuilt()>0;
 	}
@@ -193,6 +191,10 @@ public class Unit {
 
 	public Unit[] senseNearbyUnits(long radius) {
 		return LibraryUtil.toArray(gcInstance.getBcGameController().senseNearbyUnits(bcUnit.location().mapLocation(), radius));
+	}
+
+	public Unit[] senseNearbyUnitsByFilter(long radius, Predicate<? super Unit> predicate) {
+		return LibraryUtil.toFilteredArray(gcInstance.getBcGameController().senseNearbyUnits(bcUnit.location().mapLocation(), radius), predicate);
 	}
 	
 	public boolean canBlueprint(UnitType unitType, Direction direction) {
@@ -298,6 +300,10 @@ public class Unit {
 	public boolean isOverchargeReady() {
 		return gcInstance.getBcGameController().isOverchargeReady(id);
 	}
+
+	public int[] getGarrisonUnitIds() {
+		return LibraryUtil.toArray(bcUnit.structureGarrison());
+	}
 	
 	public void javelin(Unit target) {
 		gcInstance.getBcGameController().javelin(id, target.getId());
@@ -345,6 +351,10 @@ public class Unit {
 	
 	public UnitType getType() {
 		return type;
+	}
+
+	public boolean isStructure() {
+		return getType() == UnitType.FACTORY || getType() == UnitType.ROCKET;
 	}
 	
 	public Team getTeam() {
