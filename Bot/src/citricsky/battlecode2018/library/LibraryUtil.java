@@ -24,7 +24,7 @@ public class LibraryUtil {
 			Unit unit = new Unit(vecUnit.get(i));
 			if (!predicate.test(unit)) {
 				++offset;
-				break;
+				continue;
 			}
 			units[i - offset] = unit;
 		}

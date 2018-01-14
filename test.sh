@@ -46,10 +46,12 @@ rungame -p2 examplefuncsplayer-python -m bananas
 mv log_* replays/
 cp -r replays $dir/
 
+cd ~ubuntu/bc18-tinyview
+git clone
+cp -r . $dir/replays
+
 cd $dir/replays
 touch "$NUMWINS of $NUMGAMES games won"
-
-ln -s ~ubuntu/bc18-tinyview
 
 if [[ ! $NUMWINS > $(( NUMGAMES / 2 )) ]]; then
     exit 1
