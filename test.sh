@@ -3,7 +3,7 @@
 NUMWINS=0
 NUMGAMES=0
 
-function rungame() {
+rungame() {
     CMD="./battlecode.sh -p1 Bot $@"
     LOGFILE="log_${NUMGAMES}"
 
@@ -21,6 +21,23 @@ function rungame() {
         mv replays/replay_${NUMGAMES}.bc18 replays/replay_${NUMGAMES}_L.bc18
     fi
     NUMGAMES=$(( NUMGAMES + 1 ))
+}
+
+urlencode() {
+    # urlencode <string>
+    old_lc_collate=$LC_COLLATE
+    LC_COLLATE=C
+
+    local length="${#1}"
+    for (( i = 0; i < length; i++ )); do
+        local c="${1:i:1}"
+        case $c in
+            [a-zA-Z0-9.~_-]) printf "$c" ;;
+            *) printf '%%%02X' "'$c" ;;
+        esac
+    done
+
+    LC_COLLATE=$old_lc_collate
 }
 
 dir=$PWD
@@ -53,9 +70,11 @@ echo "<ul>" > links.html
 for i in *.bc18; do
     NAME="${i/replay_/${1}_}"
     scp "$i" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${NAME}"
-    echo "<li><a href=\"${NAME}\">Replay ${NAME}</a></li>" >> links.html
+    echo "<li><a href=\"https://pantherman594.com/tinyview/?fname=$(urlencode $NAME)\">Replay ${NAME}</a></li>" >> links.html
 done
 echo "</ul>" >> links.html
+
+ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git pull"
 
 touch "$NUMWINS of $NUMGAMES games won"
 
