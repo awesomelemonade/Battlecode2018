@@ -8,7 +8,7 @@ function rungame() {
     LOGFILE="log_${NUMGAMES}"
 
     echo $CMD
-    ulimit -v 256000
+    #ulimit -v 256000
     cpulimit -l 40 -z -i $CMD | tee $LOGFILE
     WINNER=$(tail -1 $LOGFILE | cut -f4 -d' ' )
     sed -i "1 i\$CMD"

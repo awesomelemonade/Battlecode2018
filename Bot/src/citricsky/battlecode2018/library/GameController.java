@@ -1,17 +1,25 @@
 package citricsky.battlecode2018.library;
 
+import bc.Veci32;
+
+import java.util.function.Predicate;
+
 public enum GameController {
 	INSTANCE;
 
 	private bc.GameController bcGameController;
 	private Planet planet;
 	private Team team;
+	private Team enemyTeam;
 
 	public void init() {
 		this.bcGameController = new bc.GameController();
 		Planet.init();
 		this.planet = Planet.valueOf(bcGameController.planet());
 		this.team = Team.valueOf(bcGameController.team());
+
+		if (this.team == Team.RED) enemyTeam = Team.BLUE;
+		else enemyTeam = Team.RED;
 	}
 
 	public boolean canSenseLocation(MapLocation location) {
@@ -76,8 +84,16 @@ public enum GameController {
 		return LibraryUtil.toArray(bcGameController.myUnits());
 	}
 
+	public Unit[] getMyUnitsByFilter(Predicate<? super Unit> predicate){
+		return LibraryUtil.toFilteredArray(bcGameController.myUnits(), predicate);
+	}
+
 	public Unit[] getAllUnits() {
 		return LibraryUtil.toArray(bcGameController.units());
+	}
+
+	public Unit[] getAllUnitsByFilter(Predicate<? super Unit> predicate) {
+		return LibraryUtil.toFilteredArray(bcGameController.units(), predicate);
 	}
 
 	public Unit[] getUnitsInSpace() {
@@ -90,6 +106,10 @@ public enum GameController {
 
 	public Team getTeam() {
 		return team;
+	}
+
+	public Team getEnemyTeam() {
+		return enemyTeam;
 	}
 
 	public long getRoundNumber() {
