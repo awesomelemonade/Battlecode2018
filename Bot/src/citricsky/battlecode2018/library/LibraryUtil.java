@@ -68,14 +68,4 @@ public class LibraryUtil {
 		
 		return array;
 	}
-	
-	public static int[] toArray(bc.VecUnitID vec) {
-		int[] array = new int[(int) vec.size()];
-
-		for (int i = 0, len = array.length; i < len; ++i) {
-			array[i] = vec.get(i);
-		}
-
-		return array;
-	}
 }

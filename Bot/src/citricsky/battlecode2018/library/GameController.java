@@ -1,7 +1,5 @@
 package citricsky.battlecode2018.library;
 
-import bc.Veci32;
-
 import java.util.function.Predicate;
 
 public enum GameController {
@@ -17,9 +15,7 @@ public enum GameController {
 		Planet.init();
 		this.planet = Planet.valueOf(bcGameController.planet());
 		this.team = Team.valueOf(bcGameController.team());
-
-		if (this.team == Team.RED) enemyTeam = Team.BLUE;
-		else enemyTeam = Team.RED;
+		this.enemyTeam = this.team.getOpposite();
 	}
 
 	public boolean canSenseLocation(MapLocation location) {

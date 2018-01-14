@@ -121,10 +121,6 @@ public class Unit {
 		return (int)bcUnit.rocketTravelTimeDecrease();
 	}
 	
-	public int[] getStructureGarrison() {
-		return LibraryUtil.toArray(bcUnit.structureGarrison());
-	}
-	
 	public boolean isStructureBuilt() {
 		return bcUnit.structureIsBuilt()>0;
 	}
@@ -305,10 +301,6 @@ public class Unit {
 		return gcInstance.getBcGameController().isOverchargeReady(id);
 	}
 
-	public boolean isProducing() {
-		return bcUnit.isFactoryProducing() == 1;
-	}
-
 	public int[] getGarrisonUnitIds() {
 		return LibraryUtil.toArray(bcUnit.structureGarrison());
 	}
@@ -367,9 +359,5 @@ public class Unit {
 	
 	public Team getTeam() {
 		return team;
-	}
-
-	public int getVisionRange() {
-		return (int) bcUnit.visionRange();
 	}
 }

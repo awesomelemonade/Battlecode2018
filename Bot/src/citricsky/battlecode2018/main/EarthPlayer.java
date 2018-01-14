@@ -23,7 +23,7 @@ public class EarthPlayer {
 		}
 		while (true) {
 			System.out.println("R: " + gc.getRoundNumber() + "; K: " + gc.getCurrentKarbonite());
-			Unit[] enemyRobots = gc.getAllUnitsByFilter((unit -> unit.getTeam() != gc.getTeam() && !unit.isStructure()));
+			//Unit[] enemyRobots = gc.getAllUnitsByFilter((unit -> unit.getTeam() != gc.getTeam() && !unit.isStructure()));
 
 			boolean enemyInRange = true;
 			for (Unit unit : gc.getMyUnitsByFilter(unit -> !unit.isStructure() && unit.getLocation().isOnMap())) {
