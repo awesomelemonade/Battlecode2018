@@ -1,7 +1,7 @@
 #!/bin/bash
 
 BUILD_NUMBER="$1"
-GIT_BRANCH="$2"
+GIT_BRANCH=$(echo $2 | cut -f2 -d'/')
 GIT_PREVIOUS_SUCCESSFUL_COMMIT="$3"
 
 NUMWINS=0
@@ -17,7 +17,7 @@ rungame() {
     echo ${CMD}
     #ulimit -v 256000
     cpulimit -l 40 -z -i ${CMD} | tee ${LOGFILE}
-    WINNER=$(tail -1 ${LOGFILE} | cut -f4 -d' ' )
+    WINNER=$(tail -1 ${LOGFILE} | cut -f4 -d' ')
     sed -i "1 i\$CMD"
     if [[ ${WINNER} == "2" ]]; then
         NUMWINS=$(( NUMWINS + 1 ))
@@ -63,24 +63,24 @@ cd "${DIR}"
 
 git reset --hard
 git clean -fdx
+git checkout dev-main
+git pull --all
 
-# Previous successful bot
+echo Copying previous successful bot
 mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
 
 git checkout ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}
-git pull
 cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_prev/"
 echo ${RUN_SCRIPT} > "${SCAFFOLD_DIR}/Bot_prev/run.sh"
 BOTS+=("Bot_prev")
 
 git checkout ${GIT_BRANCH}
 
-# Master branch bot, if not on master branch
 if [[ ${GIT_BRANCH} != "master" ]]; then
+    echo Not on master branch: copying master bot
     mkdir -p "${SCAFFOLD_DIR}/Bot_master"
 
-    git checkout origin/master
-    git pull
+    git checkout master
     cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_master/"
     echo ${RUN_SCRIPT} > "${SCAFFOLD_DIR}/Bot_master/run.sh"
     BOTS+=("Bot_master")
@@ -88,7 +88,7 @@ if [[ ${GIT_BRANCH} != "master" ]]; then
     git checkout ${GIT_BRANCH}
 fi
 
-# Copy the current bot
+echo Copying current bot
 mkdir -p "${SCAFFOLD_DIR}/Bot"
 cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot/"
 echo ${RUN_SCRIPT} > "${SCAFFOLD_DIR}/Bot/run.sh"
