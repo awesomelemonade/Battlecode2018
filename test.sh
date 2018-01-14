@@ -14,7 +14,7 @@ rungame() {
     CMD="./battlecode.sh -p1 Bot $@"
     LOGFILE="log_${NUMGAMES}"
 
-    echo ${CMD}
+    echo ">>>> Run CMD: ${CMD}"
     #ulimit -v 256000
     cpulimit -l 40 -z -i ${CMD} | tee ${LOGFILE}
     WINNER=$(tail -1 ${LOGFILE} | cut -f4 -d' ')
@@ -56,7 +56,7 @@ git reset --hard
 git clean -fdx
 git pull
 
-RUN_SCRIPT="$(cat examplefuncsplayer-java/run.sh)"
+RUN_SCRIPT=$(cat examplefuncsplayer-java/run.sh)
 mkdir -p replays
 
 cd "${DIR}"
@@ -66,39 +66,39 @@ git clean -fdx
 git checkout dev-main
 git pull --all
 
-echo Copying previous successful bot
+echo ">>>> Copying previous successful bot"
 mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
 
 git checkout ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}
 cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_prev/"
-echo ${RUN_SCRIPT} > "${SCAFFOLD_DIR}/Bot_prev/run.sh"
+echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot_prev/run.sh"
 BOTS+=("Bot_prev")
 
 git checkout ${GIT_BRANCH}
 
 if [[ ${GIT_BRANCH} != "master" ]]; then
-    echo Not on master branch: copying master bot
+    echo ">>>> Not on master branch: copying master bot"
     mkdir -p "${SCAFFOLD_DIR}/Bot_master"
 
     git checkout master
     cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_master/"
-    echo ${RUN_SCRIPT} > "${SCAFFOLD_DIR}/Bot_master/run.sh"
+    echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot_master/run.sh"
     BOTS+=("Bot_master")
 
     git checkout ${GIT_BRANCH}
 fi
 
-echo Copying current bot
+echo ">>>> Copying current bot"
 mkdir -p "${SCAFFOLD_DIR}/Bot"
 cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot/"
-echo ${RUN_SCRIPT} > "${SCAFFOLD_DIR}/Bot/run.sh"
+echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot/run.sh"
 
 cd "${SCAFFOLD_DIR}"
 
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
 
-for bot in ${BOTS}; do
-    for map in ${MAPS}; do
+for bot in ${BOTS[@]}; do
+    for map in ${MAPS[@]}; do
         rungame -p2 ${bot} -m ${map}
     done
 done
