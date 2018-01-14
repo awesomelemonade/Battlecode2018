@@ -7,15 +7,16 @@ import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
 
-public class WorkerBlueprintTask implements PathfinderTask {
+public class WorkerBlueprintFactoryTask implements PathfinderTask {
 	private static final Predicate<MapLocation> PASSABLE_PREDICATE = location -> {
 		if(location.isPassableTerrain()) {
 			return true;
 		}
 		if(location.hasUnitAtLocation()) {
-			if(location.getUnit().getTeam()==GameController.INSTANCE.getTeam()) {
+			if(location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
 				if(location.getUnit().isStructure()) {
 					return false;
 				}
@@ -24,6 +25,9 @@ public class WorkerBlueprintTask implements PathfinderTask {
 		return true;
 	};
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
+		if(GameController.INSTANCE.getCurrentKarbonite() >= Constants.FACTORY_COST) {
+			return false;
+		}
 		return Util.canBuild(Util.getNeighbors(location, PASSABLE_PREDICATE));
 	};
 	@Override

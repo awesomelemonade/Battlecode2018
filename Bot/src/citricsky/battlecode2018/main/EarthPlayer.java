@@ -18,7 +18,8 @@ import citricsky.battlecode2018.unithandler.BFSHandler;
 import citricsky.battlecode2018.unithandler.FactoryHandler;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 import citricsky.battlecode2018.unithandler.UnitHandler;
-import citricsky.battlecode2018.unithandler.WorkerBlueprintTask;
+import citricsky.battlecode2018.unithandler.WorkerBlueprintFactoryTask;
+import citricsky.battlecode2018.unithandler.WorkerBuildTask;
 import citricsky.battlecode2018.unithandler.WorkerHarvestTask;
 import citricsky.battlecode2018.util.Util;
 
@@ -40,8 +41,9 @@ public class EarthPlayer {
 			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
 			pathfinderTasks.put(unitType, new HashSet<PathfinderTask>());
 		}
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintFactoryTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
 		handlers.get(UnitType.FACTORY).add(unit -> new FactoryHandler(unit));
 		for(UnitType unitType: pathfinderTasks.keySet()) {
 			if(!pathfinderTasks.get(unitType).isEmpty()) {

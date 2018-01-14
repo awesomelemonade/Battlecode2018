@@ -11,7 +11,7 @@ public class WorkerBuildTask implements PathfinderTask {
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
 		if(GameController.INSTANCE.canSenseLocation(location)) {
 			if(location.hasUnitAtLocation()) {
-				return (location.getUnit().isStructure() && 
+				return (location.getUnit().isStructure() && (!location.getUnit().isStructureBuilt()) &&
 						location.getUnit().getTeam() == GameController.INSTANCE.getTeam());
 			}
 		}
