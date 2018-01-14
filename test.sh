@@ -49,6 +49,8 @@ cp -r replays $dir/
 cd $dir/replays
 touch "$NUMWINS of $NUMGAMES games won"
 
+ln -s ~ubuntu/bc18-tinyview
+
 if [[ ! $NUMWINS > $(( NUMGAMES / 2 )) ]]; then
     exit 1
 fi

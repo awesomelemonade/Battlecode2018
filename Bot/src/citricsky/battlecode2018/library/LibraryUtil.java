@@ -1,5 +1,6 @@
 package citricsky.battlecode2018.library;
 
+import java.util.Arrays;
 import java.util.function.Predicate;
 
 public class LibraryUtil {
@@ -28,7 +29,7 @@ public class LibraryUtil {
 			units[i - offset] = unit;
 		}
 
-		return units;
+		return Arrays.copyOfRange(units, 0, (int) vecUnit.size() - offset);
 	}
 
 	public static int[] toArray(bc.Veci32 vec) {
