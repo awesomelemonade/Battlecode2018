@@ -15,15 +15,18 @@ public enum Planet {
 		this.mapLocations = new MapLocation[startingMap.getWidth()+BUFFER*2][startingMap.getHeight()+BUFFER*2];
 	}
 	
-	private void initMapLocations() {
+	public void clearMapLocations() {
 		for(int i=0;i<mapLocations.length;++i) {
 			for(int j=0;j<mapLocations[0].length;++j) {
-				mapLocations[i][j] = new MapLocation(new bc.MapLocation(bcPlanet, i-BUFFER, j-BUFFER));
+				mapLocations[i][j] = null;
 			}
 		}
 	}
 	
 	public MapLocation getMapLocation(int x, int y) {
+		if(mapLocations[x+BUFFER][y+BUFFER]==null) {
+			mapLocations[x+BUFFER][y+BUFFER] = new MapLocation(new bc.MapLocation(bcPlanet, x, y));
+		}
 		return mapLocations[x+BUFFER][y+BUFFER];
 	}
 	
@@ -45,12 +48,6 @@ public enum Planet {
 
 	protected bc.Planet getBcPlanet(){
 		return bcPlanet;
-	}
-
-	public static void init() {
-		for(Planet planet: Planet.values()) {
-			planet.initMapLocations();
-		}
 	}
 	
 	protected static Planet valueOf(bc.Planet bcPlanet) {

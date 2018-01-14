@@ -3,14 +3,14 @@ package citricsky.battlecode2018.library;
 import static bc.Direction.*;
 
 public enum Direction {
-	NORTH     ( 0, -1, North),
-	NORTHEAST ( 1, -1, Northeast),
+	NORTH     ( 0,  1, North),
+	NORTHEAST ( 1,  1, Northeast),
 	EAST      ( 1,  0, East),
-	SOUTHEAST ( 1,  1, Southeast),
-	SOUTH     ( 0,  1, South),
-	SOUTHWEST (-1,  1, Southwest),
+	SOUTHEAST ( 1, -1, Southeast),
+	SOUTH     ( 0, -1, South),
+	SOUTHWEST (-1, -1, Southwest),
 	WEST      (-1,  0, West),
-	NORTHWEST (-1, -1, Northwest);
+	NORTHWEST (-1,  1, Northwest);
 
 	private static final int LENGTH = 8;
 	

@@ -49,8 +49,10 @@ public class EarthPlayer {
 					}
 				}
 				if(unit.getType()==UnitType.KNIGHT) {
-					BFSDestination bfs = new BFSDestination(planMap, unit.getLocation().getMapLocation().getPosition());
-					bfs.process(vector -> Planet.EARTH.getMapLocation(vector).hasUnitAtLocation() &&
+					BFSDestination bfs = new BFSDestination(planMap.getWidth(), planMap.getHeight(),
+							unit.getLocation().getMapLocation().getPosition());
+					bfs.process(vector -> planMap.isPassable(vector),
+							vector -> Planet.EARTH.getMapLocation(vector).hasUnitAtLocation() &&
 							Planet.EARTH.getMapLocation(vector).getUnit().getTeam() != gc.getTeam());
 					if(bfs.getQueue().isEmpty()) {
 						Direction direction = Direction.randomDirection();

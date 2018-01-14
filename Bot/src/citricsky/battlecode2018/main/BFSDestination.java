@@ -8,12 +8,10 @@ import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.Vector;
 
 public class BFSDestination {
-	private PlanMap planMap;
 	private Direction[][] data;
 	private Deque<Vector> queue;
-	public BFSDestination(PlanMap planMap, Vector destination) {
-		this.planMap = planMap;
-		this.data = new Direction[planMap.getWidth()][planMap.getHeight()];
+	public BFSDestination(int width, int height, Vector destination) {
+		this.data = new Direction[width][height];
 		this.queue = new ArrayDeque<Vector>();
 		queue.add(destination);
 	}
@@ -28,19 +26,19 @@ public class BFSDestination {
 	public Direction getDirection(Vector position) {
 		return data[position.getX()][position.getY()];
 	}
-	public void process() {
-		process(x->false);
+	public void process(Predicate<Vector> passable) {
+		process(passable, x->false);
 	}
-	public void process(Predicate<Vector> predicate) {
+	public void process(Predicate<Vector> passable, Predicate<Vector> stopCondition) {
 		while(!queue.isEmpty()) {
 			Vector polled = queue.poll();
 			for(Direction direction: Direction.values()) {
 				Vector step = polled.add(direction.getOffsetVector());
-				if(planMap.isPassable(step)&&data[step.getX()][step.getY()]==null) {
+				if(passable.test(step)&&data[step.getX()][step.getY()]==null) {
 					data[step.getX()][step.getY()] = direction.getOpposite();
 					queue.add(step);
-					if(predicate.test(step)) {
-						break;
+					if(stopCondition.test(step)) {
+						return;
 					}
 				}
 			}
