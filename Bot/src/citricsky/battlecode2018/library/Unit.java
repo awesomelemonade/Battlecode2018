@@ -21,6 +21,138 @@ public class Unit {
 		this.location = new Location(bcUnit.location());
 	}
 	
+	public int getAbilityCooldown() {
+		return (int)bcUnit.abilityCooldown();
+	}
+	
+	public int getAbilityHeat() {
+		return (int)bcUnit.abilityHeat();
+	}
+	
+	public int getAbilityRange() {
+		return (int)bcUnit.abilityRange();
+	}
+	
+	public int getAttackCooldown() {
+		return (int)bcUnit.attackCooldown();
+	}
+	
+	public int getAttackHeat() {
+		return (int)bcUnit.attackHeat();
+	}
+	
+	public int getAttackRange() {
+		return (int)bcUnit.attackRange();
+	}
+	
+	public int getDamage() {
+		return (int)bcUnit.damage();
+	}
+	
+	public int getFactoryMaxRoundsLeft() {
+		return (int)bcUnit.factoryMaxRoundsLeft();
+	}
+	
+	public int getFactoryRoundsLeft() {
+		return (int)bcUnit.factoryRoundsLeft();
+	}
+	
+	public UnitType getFactoryUnitType() {
+		return UnitType.valueOf(bcUnit.factoryUnitType());
+	}
+	
+	public int getHealerSelfHealAmount() {
+		return (int)bcUnit.healerSelfHealAmount();
+	}
+	
+	public boolean isAbilityUnlocked() {
+		return bcUnit.isAbilityUnlocked()>0;
+	}
+	
+	public boolean isFactoryProducing() {
+		return bcUnit.isFactoryProducing()>0;
+	}
+	
+	public int getKnightDefense() {
+		return (int)bcUnit.knightDefense();
+	}
+	
+	public int getMovementCooldown() {
+		return (int)bcUnit.movementCooldown();
+	}
+	
+	public int getMovementHeat() {
+		return (int)bcUnit.movementHeat();
+	}
+	
+	public int getRangerCannotAttackRange() {
+		return (int)bcUnit.rangerCannotAttackRange();
+	}
+	
+	public int getRangerCountdown() {
+		return (int)bcUnit.rangerCountdown();
+	}
+	
+	public boolean isRangerSniping() {
+		return bcUnit.rangerIsSniping()>0;
+	}
+	
+	public int getRangerMaxCooldown() {
+		return (int)bcUnit.rangerMaxCountdown();
+	}
+	
+	public MapLocation getRangerTargetLocation() {
+		return Planet.getMapLocation(bcUnit.rangerTargetLocation());
+	}
+	
+	public int getResearchLvel() {
+		return (int)bcUnit.researchLevel();
+	}
+	
+	public int getRocketBlastDamage() {
+		return bcUnit.rocketBlastDamage();
+	}
+	
+	public boolean isRocketUsed() {
+		return bcUnit.rocketIsUsed()>0;
+	}
+	
+	public int getRocketTravelTimeDecrease() {
+		return (int)bcUnit.rocketTravelTimeDecrease();
+	}
+	
+	public int[] getStructureGarrison() {
+		return LibraryUtil.toArray(bcUnit.structureGarrison());
+	}
+	
+	public boolean isStructureBuilt() {
+		return bcUnit.structureIsBuilt()>0;
+	}
+	
+	public int getStructureMaxCapacity() {
+		return (int)bcUnit.structureMaxCapacity();
+	}
+	
+	public int getVisionRange() {
+		return (int)bcUnit.visionRange();
+	}
+	
+	public int getWorkerBuildHealth() {
+		return (int)bcUnit.workerBuildHealth();
+	}
+	
+	public int getWorkerHarvestAmount() {
+		return (int)bcUnit.workerHarvestAmount();
+	}
+	
+	public boolean hasWorkerActed() {
+		return bcUnit.workerHasActed()>0;
+	}
+	
+	public int getWorkerRepairHealth() {
+		return (int)bcUnit.workerRepairHealth();
+	}
+	
 	public void attack(Unit target) {
 		gcInstance.getBcGameController().attack(id, target.getId());
 	}
