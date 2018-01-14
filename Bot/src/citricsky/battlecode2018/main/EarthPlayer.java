@@ -86,7 +86,7 @@ public class EarthPlayer {
 							unit.move(direction);
 						}
 						Unit enemyUnit = Planet.EARTH.getMapLocation(enemyPosition).getUnit();
-						if (unit.isAttackReady() && unit.canJavelin(enemyUnit)) {
+						if (unit.isAttackReady() && unit.canJavelin(enemyUnit) && unit.getAbilityHeat() < unit.getAbilityCooldown()) {
 							unit.javelin(enemyUnit);
 						}
 						if (unit.isAttackReady() && unit.canAttack(enemyUnit)) {

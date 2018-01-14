@@ -49,12 +49,13 @@ mv log_* replays/
 cp -r replays $dir/
 
 cd $dir/replays
-mkdir toCopy
-for i in *bc18; do
-    NAME="${i/replay_/${1}_/}"
-    scp "$i" "ubuntu@ssh.pantherman594.com:/var/www/replays/${NAME}"
-    echo "<a href=\"${NAME}\">Replay ${NAME}</a>" >> links.html
+echo "<ul>" > links.html
+for i in *.bc18; do
+    NAME="${i/replay_/${1}_}"
+    scp "$i" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${NAME}"
+    echo "<li><a href=\"${NAME}\">Replay ${NAME}</a></li>" >> links.html
 done
+echo "</ul>" >> links.html
 
 touch "$NUMWINS of $NUMGAMES games won"
 
