@@ -52,37 +52,40 @@ git reset --hard
 git clean -fdx
 git pull
 
+RUN_SCRIPT="$(cat examplefuncsplayer-java/run.sh)"
 mkdir -p replays
 
 cd ${DIR}
 
-mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
-cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_prev/"
-cp examplefuncsplayer-java/run.sh "${SCAFFOLD_DIR}/Bot_prev/"
-BOTS+=("Bot_prev")
-
 git reset --hard
 git clean -fdx
 
+# Previous successful bot
+mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
+
+git checkout ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}
+cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_prev/"
+echo RUN_SCRIPT > "${SCAFFOLD_DIR}/Bot_prev/run.sh"
+BOTS+=("Bot_prev")
+
+git checkout ${BRANCH_NAME}
+
+# Master branch bot, if not on master branch
 if [[ ${BRANCH_NAME} != "master" ]]; then
     mkdir -p "${SCAFFOLD_DIR}/Bot_master"
 
     git checkout master
     cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_master/"
-    cp examplefuncsplayer-java/run.sh "${SCAFFOLD_DIR}/Bot_master/"
+    echo RUN_SCRIPT > "${SCAFFOLD_DIR}/Bot_master/run.sh"
     BOTS+=("Bot_master")
 
     git checkout ${BRANCH_NAME}
 fi
 
+# Copy the current bot
 mkdir -p "${SCAFFOLD_DIR}/Bot"
-cp -r ${DIR}/Bot/src/* "${SCAFFOLD_DIR}/Bot/"
-cp examplefuncsplayer-java/run.sh "${SCAFFOLD_DIR}/Bot/"
-
-cd "${SCAFFOLD_DIR}"
-
-cp -r ${DIR}/Bot/src/* ./Bot/
-cp examplefuncsplayer-java/run.sh ./Bot/
+cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot/"
+echo RUN_SCRIPT > "${SCAFFOLD_DIR}/Bot/run.sh"
 
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
 
