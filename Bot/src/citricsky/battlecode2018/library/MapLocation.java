@@ -12,7 +12,11 @@ public class MapLocation {
 	}
 
 	public MapLocation getOffsetLocation(Direction direction) {
-		return planet.getMapLocation(position.add(direction.getOffsetVector()));
+		return this.getOffsetLocation(direction.getOffsetVector());
+	}
+	
+	public MapLocation getOffsetLocation(Vector offset) {
+		return planet.getMapLocation(position.add(offset));
 	}
 	
 	public boolean isPassableTerrain() {

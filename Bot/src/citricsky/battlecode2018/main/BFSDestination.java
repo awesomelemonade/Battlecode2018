@@ -5,14 +5,15 @@ import java.util.Deque;
 import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
+import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Vector;
 
 public class BFSDestination {
 	private Direction[][] data;
-	private Deque<Vector> queue;
-	public BFSDestination(int width, int height, Vector destination) {
-		this.data = new Direction[width][height];
-		this.queue = new ArrayDeque<Vector>();
+	private Deque<MapLocation> queue;
+	public BFSDestination(MapLocation destination) {
+		this.data = new Direction[destination.getPlanet().getWidth()][destination.getPlanet().getHeight()];
+		this.queue = new ArrayDeque<MapLocation>();
 		queue.add(destination);
 	}
 	public Direction trace(Vector source, Vector destination) {
@@ -26,25 +27,29 @@ public class BFSDestination {
 	public Direction getDirection(Vector position) {
 		return data[position.getX()][position.getY()];
 	}
-	public void process(Predicate<Vector> passable) {
+	public void process(Predicate<MapLocation> passable) {
 		process(passable, x->false);
 	}
-	public void process(Predicate<Vector> passable, Predicate<Vector> stopCondition) {
+	@SafeVarargs
+	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
 		while(!queue.isEmpty()) {
-			Vector polled = queue.poll();
+			MapLocation polled = queue.poll();
 			for(Direction direction: Direction.values()) {
-				Vector step = polled.add(direction.getOffsetVector());
-				if(passable.test(step)&&data[step.getX()][step.getY()]==null) {
-					data[step.getX()][step.getY()] = direction.getOpposite();
+				MapLocation step = polled.getOffsetLocation(direction);
+				if(passable.test(step)&&data[step.getPosition().getX()][step.getPosition().getY()]==null) {
+					data[step.getPosition().getX()][step.getPosition().getY()] = direction.getOpposite();
 					queue.add(step);
-					if(stopCondition.test(step)) {
-						return;
+					for(T stopCondition: stopConditions) {
+						if(stopCondition.test(step)) {
+							return stopCondition;
+						}
 					}
 				}
 			}
 		}
+		return null;
 	}
-	public Deque<Vector> getQueue(){
+	public Deque<MapLocation> getQueue(){
 		return queue;
 	}
 }

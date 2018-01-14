@@ -14,9 +14,7 @@ import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
-import citricsky.battlecode2018.library.Vector;
-import citricsky.battlecode2018.unithandler.FactoryProduceHandler;
-import citricsky.battlecode2018.unithandler.FactoryUnloadHandler;
+import citricsky.battlecode2018.unithandler.FactoryHandler;
 import citricsky.battlecode2018.unithandler.UnitHandler;
 import citricsky.battlecode2018.unithandler.WorkerHarvestHandler;
 import citricsky.battlecode2018.util.Util;
@@ -38,8 +36,7 @@ public class EarthPlayer {
 			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
 		}
 		handlers.get(UnitType.WORKER).add(unit -> new WorkerHarvestHandler(unit));
-		handlers.get(UnitType.FACTORY).add(unit -> new FactoryProduceHandler(unit));
-		handlers.get(UnitType.FACTORY).add(unit -> new FactoryUnloadHandler(unit));
+		handlers.get(UnitType.FACTORY).add(unit -> new FactoryHandler(unit));
 		while (true) {
 			Unit[] myUnits = gc.getMyUnits();
 			Map<UnitHandler, Integer> priorities = new HashMap<UnitHandler, Integer>();
@@ -93,10 +90,8 @@ public class EarthPlayer {
 					if (unit.getType() == UnitType.WORKER) {
 						if (!tryBlueprint(unit, UnitType.FACTORY)) {
 							if (!tryBuild(unit)) {
-								BFSDestination bfs = new BFSDestination(planMap.getWidth(), planMap.getHeight(),
-										unit.getLocation().getMapLocation().getPosition());
-								bfs.process(vector -> planMap.isPassable(vector), vector -> {
-									MapLocation location = Planet.EARTH.getMapLocation(vector);
+								BFSDestination bfs = new BFSDestination(unit.getLocation().getMapLocation());
+								bfs.process(location -> planMap.isPassable(location.getPosition()), location -> {
 									if(gc.canSenseLocation(location)){
 										if(location.getKarboniteCount()>0) {
 											return true;
@@ -107,7 +102,7 @@ public class EarthPlayer {
 											}
 										}
 									}else {
-										if(planMap.getKarbonite(vector)>0) {
+										if(planMap.getKarbonite(location.getPosition())>0) {
 											return true;
 										}
 									}
@@ -119,8 +114,9 @@ public class EarthPlayer {
 										unit.move(direction);
 									}
 								}else {
-									Vector workLocation = bfs.getQueue().peekLast();
-									Direction direction = bfs.trace(workLocation, unit.getLocation().getMapLocation().getPosition());
+									MapLocation workLocation = bfs.getQueue().peekLast();
+									Direction direction = bfs.trace(workLocation.getPosition(),
+											unit.getLocation().getMapLocation().getPosition());
 									if(unit.isMoveReady() && unit.canMove(direction)) {
 										unit.move(direction);
 									}
@@ -131,12 +127,11 @@ public class EarthPlayer {
 						continue;
 					}
 					if (unit.getType() == UnitType.KNIGHT) {
-						BFSDestination bfs = new BFSDestination(planMap.getWidth(), planMap.getHeight(),
-								unit.getLocation().getMapLocation().getPosition());
-						bfs.process(vector -> planMap.isPassable(vector),
-								vector -> {
+						BFSDestination bfs = new BFSDestination(unit.getLocation().getMapLocation());
+						bfs.process(location -> planMap.isPassable(location.getPosition()),
+								location -> {
 									for(Direction direction: Direction.CARDINAL_DIRECTIONS) {
-										MapLocation location = Planet.EARTH.getMapLocation(vector.add(direction.getOffsetVector()));
+										location.getOffsetLocation(direction);
 										if(gc.canSenseLocation(location)) {
 											if(location.hasUnitAtLocation()) {
 												if(location.getUnit().getTeam() == gc.getEnemyTeam()) {
@@ -153,13 +148,13 @@ public class EarthPlayer {
 								unit.move(direction);
 							}
 						} else {
-							Vector movePosition = bfs.getQueue().peekLast();
-							Direction direction = bfs.trace(movePosition, unit.getLocation().getMapLocation().getPosition()).getOpposite();
+							MapLocation moveLocation = bfs.getQueue().peekLast();
+							Direction direction = bfs.trace(moveLocation.getPosition(), unit.getLocation().getMapLocation().getPosition()).getOpposite();
 							if (unit.isMoveReady() && unit.canMove(direction)) {
 								unit.move(direction);
 							}
 							for(Direction attackDirection: Direction.CARDINAL_DIRECTIONS) {
-								MapLocation candidate = Planet.EARTH.getMapLocation(movePosition.add(attackDirection.getOffsetVector()));
+								MapLocation candidate = moveLocation.getOffsetLocation(attackDirection);
 								if(candidate.hasUnitAtLocation()) {
 									Unit enemyUnit = candidate.getUnit();
 									if(enemyUnit.getTeam() == gc.getEnemyTeam()) {

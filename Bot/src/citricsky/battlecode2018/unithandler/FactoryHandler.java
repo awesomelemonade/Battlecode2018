@@ -4,16 +4,16 @@ import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 
-public class FactoryProduceHandler implements UnitHandler {
+public class FactoryHandler implements UnitHandler {
 	private Unit unit;
 	
-	public FactoryProduceHandler(Unit unit) {
+	public FactoryHandler(Unit unit) {
 		this.unit = unit;
 	}
 	
 	@Override
 	public int getPriority(int priority) {
-		return Integer.MAX_VALUE;
+		return -Integer.MAX_VALUE+1;
 	}
 	
 	@Override

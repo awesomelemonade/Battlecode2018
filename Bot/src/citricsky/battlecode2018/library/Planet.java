@@ -45,6 +45,14 @@ public enum Planet {
 	public PlanetMap getStartingMap() {
 		return startingMap;
 	}
+	
+	public int getWidth() {
+		return startingMap.getWidth();
+	}
+	
+	public int getHeight() {
+		return startingMap.getHeight();
+	}
 
 	protected bc.Planet getBcPlanet(){
 		return bcPlanet;
