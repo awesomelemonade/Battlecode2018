@@ -30,7 +30,7 @@ public class LibraryUtil {
 
 		return array;
 	}
-	
+
 	public static MapLocation[] toArray(bc.VecMapLocation vecMapLocation) {
 		MapLocation[] array = new MapLocation[(int) vecMapLocation.size()];
 		
@@ -38,6 +38,16 @@ public class LibraryUtil {
 			array[i] = Planet.getMapLocation(vecMapLocation.get(i));
 		}
 		
+		return array;
+	}
+	
+	public static int[] toArray(bc.VecUnitID vec) {
+		int[] array = new int[(int) vec.size()];
+
+		for (int i = 0, len = array.length; i < len; ++i) {
+			array[i] = vec.get(i);
+		}
+
 		return array;
 	}
 }
