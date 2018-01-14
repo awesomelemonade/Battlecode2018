@@ -90,7 +90,7 @@ public class EarthPlayer {
 					if (unit.getType() == UnitType.WORKER) {
 						if (!tryBlueprint(unit, UnitType.FACTORY)) {
 							if (!tryBuild(unit)) {
-								BFSDestination bfs = new BFSDestination(unit.getLocation().getMapLocation());
+								BFS bfs = new BFS(unit.getLocation().getMapLocation());
 								bfs.process(location -> planMap.isPassable(location.getPosition()), location -> {
 									if(gc.canSenseLocation(location)){
 										if(location.getKarboniteCount()>0) {
@@ -127,7 +127,7 @@ public class EarthPlayer {
 						continue;
 					}
 					if (unit.getType() == UnitType.KNIGHT) {
-						BFSDestination bfs = new BFSDestination(unit.getLocation().getMapLocation());
+						BFS bfs = new BFS(unit.getLocation().getMapLocation());
 						bfs.process(location -> planMap.isPassable(location.getPosition()),
 								location -> {
 									for(Direction direction: Direction.CARDINAL_DIRECTIONS) {

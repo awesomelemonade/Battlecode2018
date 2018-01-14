@@ -8,10 +8,12 @@ import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Vector;
 
-public class BFSDestination {
+public class BFS {
 	private Direction[][] data;
 	private Deque<MapLocation> queue;
-	public BFSDestination(MapLocation destination) {
+	private MapLocation stopLocation;
+	private Direction stopDirection;
+	public BFS(MapLocation destination) {
 		this.data = new Direction[destination.getPlanet().getWidth()][destination.getPlanet().getHeight()];
 		this.queue = new ArrayDeque<MapLocation>();
 		queue.add(destination);
@@ -39,10 +41,12 @@ public class BFSDestination {
 				if(passable.test(step)&&data[step.getPosition().getX()][step.getPosition().getY()]==null) {
 					data[step.getPosition().getX()][step.getPosition().getY()] = direction.getOpposite();
 					queue.add(step);
-					for(T stopCondition: stopConditions) {
-						if(stopCondition.test(step)) {
-							return stopCondition;
-						}
+				}
+				for(T stopCondition: stopConditions) {
+					if(stopCondition.test(step)) {
+						stopLocation = polled;
+						stopDirection = direction;
+						return stopCondition;
 					}
 				}
 			}
@@ -51,5 +55,11 @@ public class BFSDestination {
 	}
 	public Deque<MapLocation> getQueue(){
 		return queue;
+	}
+	public MapLocation getStopLocation() {
+		return stopLocation;
+	}
+	public Direction getStopDirection() {
+		return stopDirection;
 	}
 }

@@ -70,4 +70,13 @@ public class MapLocation {
 	protected bc.MapLocation getBcMapLocation(){
 		return bcMapLocation;
 	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof MapLocation) {
+			MapLocation mapLocation = (MapLocation)o;
+			return (planet == mapLocation.getPlanet() && position.equals(mapLocation.getPosition()));
+		}
+		return false;
+	}
 }

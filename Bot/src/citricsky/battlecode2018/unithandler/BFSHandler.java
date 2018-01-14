@@ -1,12 +1,13 @@
 package citricsky.battlecode2018.unithandler;
 
+import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
-import citricsky.battlecode2018.main.BFSDestination;
+import citricsky.battlecode2018.main.BFS;
 
 public class BFSHandler implements UnitHandler {
 	private Unit unit;
-	private BFSDestination bfs;
+	private BFS bfs;
 	private PathfinderTask[] pathfinderTasks;
 	private PathfinderTask task;
 	public BFSHandler(Unit unit, PathfinderTask... pathfinderTasks) {
@@ -19,14 +20,20 @@ public class BFSHandler implements UnitHandler {
 			return -Integer.MAX_VALUE;
 		}
 		MapLocation mapLocation = unit.getLocation().getMapLocation();
-		this.bfs = new BFSDestination(mapLocation);
+		this.bfs = new BFS(mapLocation);
 		task = bfs.process(location -> {
-			return location.getPlanet().getStartingMap().isPassableTerrainAt(location);
+			return location.isPassableTerrain();
 		}, pathfinderTasks);
 		return bfs.getQueue().peekLast().getPosition().getDistanceSquared(mapLocation.getPosition());
 	}
 	@Override
 	public void execute() {
-		task.execute();
+		if(!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
+			Direction direction = bfs.trace(bfs.getStopLocation().getPosition(), unit.getLocation().getMapLocation().getPosition());
+			if(unit.isMoveReady() && unit.canMove(direction)) {
+				unit.move(direction);
+			}
+		}
+		task.execute(unit, bfs.getStopLocation(), bfs.getStopDirection());
 	}
 }
