@@ -38,15 +38,17 @@ public class BFS {
 			MapLocation polled = queue.poll();
 			for(Direction direction: Direction.values()) {
 				MapLocation step = polled.getOffsetLocation(direction);
-				if(passable.test(step)&&data[step.getPosition().getX()][step.getPosition().getY()]==null) {
-					data[step.getPosition().getX()][step.getPosition().getY()] = direction.getOpposite();
-					queue.add(step);
-				}
-				for(T stopCondition: stopConditions) {
-					if(stopCondition.test(step)) {
-						stopLocation = polled;
-						stopDirection = direction;
-						return stopCondition;
+				if(step.isOnMap()) {
+					if(passable.test(step)&&data[step.getPosition().getX()][step.getPosition().getY()]==null) {
+						data[step.getPosition().getX()][step.getPosition().getY()] = direction.getOpposite();
+						queue.add(step);
+					}
+					for(T stopCondition: stopConditions) {
+						if(stopCondition.test(step)) {
+							stopLocation = polled;
+							stopDirection = direction;
+							return stopCondition;
+						}
 					}
 				}
 			}

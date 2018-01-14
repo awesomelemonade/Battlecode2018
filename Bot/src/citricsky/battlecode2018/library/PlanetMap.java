@@ -28,6 +28,10 @@ public class PlanetMap {
 	}
 	
 	public boolean isPassableTerrainAt(MapLocation location) {
+		if(location.getPosition().getX() < 0 || location.getPosition().getX() >= this.getWidth() ||
+				location.getPosition().getY() < 0 || location.getPosition().getY() >= this.getHeight()) {
+			return false;
+		}
 		return bcPlanetMap.isPassableTerrainAt(location.getBcMapLocation())>0;
 	}
 	

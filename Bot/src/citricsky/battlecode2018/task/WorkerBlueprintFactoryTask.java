@@ -26,7 +26,7 @@ public class WorkerBlueprintFactoryTask implements PathfinderTask {
 		return true;
 	};
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
-		if(GameController.INSTANCE.getCurrentKarbonite() >= Constants.FACTORY_COST) {
+		if(GameController.INSTANCE.getCurrentKarbonite() < Constants.FACTORY_COST) {
 			return false;
 		}
 		return Util.canBuild(Util.getNeighbors(location, PASSABLE_PREDICATE));
