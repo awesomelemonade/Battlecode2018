@@ -97,8 +97,8 @@ cd "${SCAFFOLD_DIR}"
 
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
 
-for bot in ${BOTS}; do
-    for map in ${MAPS}; do
+for bot in ${BOTS[@]}; do
+    for map in ${MAPS[@]}; do
         rungame -p2 ${bot} -m ${map}
     done
 done
