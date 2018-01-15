@@ -9,13 +9,6 @@ killexisting() {
     pkill -fx -9 "java -classpath .:../battlecode/java Player"
 }
 
-killmonitor() {
-    while [ true ]; do
-        bash "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/monitor.sh"
-        killexisting
-    done
-}
-
 killexisting
 
 BUILD_NUMBER="${1}"
@@ -34,6 +27,13 @@ P_MAPS=()
 
 DIR=$PWD
 SCAFFOLD_DIR=~ubuntu/bc18-scaffold
+
+killmonitor() {
+    while [ true ]; do
+        bash "${DIR}/monitor.sh"
+        killexisting
+    done
+}
 
 rungame() {
     GAME_ID=${NUMGAMES}
