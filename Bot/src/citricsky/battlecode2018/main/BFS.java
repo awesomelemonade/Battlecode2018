@@ -38,6 +38,12 @@ public class BFS {
 	}
 	@SafeVarargs
 	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
+		for(T stopCondition: stopConditions) {
+			if(stopCondition.test(source)) {
+				this.stopLocation = source;
+				return stopCondition;
+			}
+		}
 		while(!queue.isEmpty()) {
 			MapLocation polled = queue.poll();
 			for(Direction direction: Direction.COMPASS) {
