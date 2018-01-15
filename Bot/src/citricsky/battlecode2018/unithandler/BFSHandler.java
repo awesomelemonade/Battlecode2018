@@ -31,9 +31,14 @@ public class BFSHandler implements UnitHandler {
 				return Integer.MIN_VALUE;
 			}
 		}
+		long time = System.currentTimeMillis();
 		task = bfs.process(location -> location.isPassableTerrain(), pathfinderTasks);
+		time = System.currentTimeMillis()-time;
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
+		}
+		if(time>10) {
+			System.out.println("BFS Time: "+time+"ms"+" - "+task.getClass().getSimpleName());
 		}
 		return -bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
 	}

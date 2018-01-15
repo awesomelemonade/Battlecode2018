@@ -13,11 +13,13 @@ public class BFS {
 	private Deque<MapLocation> queue;
 	private MapLocation source;
 	private MapLocation stopLocation;
+	private boolean checkedSource;
 	public BFS(MapLocation source) {
 		this.source = source;
 		this.data = new Direction[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
 		this.queue = new ArrayDeque<MapLocation>();
 		queue.add(source);
+		this.checkedSource = false;
 	}
 	public Direction getDirectionFromSource(Vector vector) {
 		Vector step = vector.add(data[vector.getX()][vector.getY()].getOffsetVector());
@@ -39,11 +41,14 @@ public class BFS {
 	@SafeVarargs
 	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
 		this.stopLocation = null;
-		for(T stopCondition: stopConditions) {
-			if(stopCondition.test(source)) {
-				this.stopLocation = source;
-				return stopCondition;
+		if(!checkedSource) {
+			for(T stopCondition: stopConditions) {
+				if(stopCondition.test(source)) {
+					this.stopLocation = source;
+					return stopCondition;
+				}
 			}
+			checkedSource = true;
 		}
 		while(!queue.isEmpty()) {
 			MapLocation polled = queue.poll();
