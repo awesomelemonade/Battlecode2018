@@ -31,7 +31,7 @@ public class BFSHandler implements UnitHandler {
 	}
 	@Override
 	public void execute() {
-		if (!unit.getLocation().getMapLocation().equals(bfs.getSource())) {
+		if (!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
 			Direction direction = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
 			if (unit.isMoveReady() && unit.canMove(direction)) {
 				unit.move(direction);
