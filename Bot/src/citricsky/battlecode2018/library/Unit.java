@@ -12,7 +12,7 @@ public class Unit {
 	
 	private GameController gcInstance = GameController.INSTANCE;
 	
-	public Unit(bc.Unit bcUnit) {
+	protected Unit(bc.Unit bcUnit) {
 		this.bcUnit = bcUnit;
 		//Initialize
 		this.id = bcUnit.id();
