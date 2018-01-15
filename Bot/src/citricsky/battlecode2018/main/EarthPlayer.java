@@ -29,31 +29,30 @@ public class EarthPlayer {
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
 		}
-		Map<UnitType, Set<PathfinderTask>> pathfinderTasks = new HashMap<UnitType, Set<PathfinderTask>>();
 		Map<UnitType, Set<Function<Unit, UnitHandler>>> handlers = new HashMap<UnitType, Set<Function<Unit, UnitHandler>>>();
 		for (UnitType unitType : UnitType.values()) {
 			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
-			pathfinderTasks.put(unitType, new HashSet<PathfinderTask>());
 		}
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintFactoryTask());
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
-		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
-		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
+		handlers.get(UnitType.WORKER).add(unit -> new BFSHandler(unit, new PathfinderTask[]{
+				new WorkerBlueprintFactoryTask(),
+				new WorkerHarvestTask(),
+				new WorkerBuildTask()
+		}));
+		handlers.get(UnitType.KNIGHT).add(unit -> new BFSHandler(unit, new PathfinderTask[]{
+				new KnightAttackTask()
+		}));
+		handlers.get(UnitType.RANGER).add(unit -> new BFSHandler(unit, new PathfinderTask[]{
+				new RangerAttackTask()
+		}));
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
 		handlers.get(UnitType.RANGER).add(ExploreHandler::new);
-		for(UnitType unitType: pathfinderTasks.keySet()) {
-			if(!pathfinderTasks.get(unitType).isEmpty()) {
-				handlers.get(unitType).add(unit -> new BFSHandler(unit,
-						pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
-			}
-		}
+
 		while (true) {
 			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms");
 			Unit[] myUnits = gc.getMyUnits();
 			Map<Unit, Set<UnitHandler>> map = new HashMap<Unit, Set<UnitHandler>>();
-			for(Unit unit : myUnits) {
+			for (Unit unit : myUnits) {
 				map.put(unit, new HashSet<UnitHandler>());
 				for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
 					map.get(unit).add(function.apply(unit));
@@ -73,13 +72,13 @@ public class EarthPlayer {
 						}
 					}
 				}
-				if(bestHandler==null) {
+				if (bestHandler == null) {
 					break;
 				}
 				bestHandler.execute();
-				if(bestHandler.isRequired()) {
+				if (bestHandler.isRequired()) {
 					map.get(bestUnit).remove(bestHandler);
-				}else {
+				} else {
 					map.get(bestUnit).removeIf(handler -> !handler.isRequired());
 				}
 			}
