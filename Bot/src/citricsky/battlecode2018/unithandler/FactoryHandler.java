@@ -23,7 +23,7 @@ public class FactoryHandler implements UnitHandler {
 		}
 		int garrisonSize = unit.getGarrisonUnitIds().length;
 		if (garrisonSize > 0) {
-			for (Direction direction : Direction.values()) {
+			for (Direction direction : Direction.COMPASS) {
 				if (unit.canUnload(direction)) {
 					unit.unload(direction);
 					if (--garrisonSize == 0) {
