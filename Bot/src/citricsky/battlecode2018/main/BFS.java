@@ -38,6 +38,7 @@ public class BFS {
 	}
 	@SafeVarargs
 	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
+		this.stopLocation = null;
 		for(T stopCondition: stopConditions) {
 			if(stopCondition.test(source)) {
 				this.stopLocation = source;
