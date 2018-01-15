@@ -30,10 +30,10 @@ public class KnightAttackTask implements PathfinderTask{
 	@Override
 	public void execute(Unit unit, MapLocation location) {
 		if(unit.getLocation().getMapLocation().equals(location)) {
-			Direction direction = getEnemyDirection(location);
-			if(unit.canAttack(location.getOffsetLocation(direction).getUnit())) {
+			Unit enemyUnit = location.getOffsetLocation(getEnemyDirection(location)).getUnit();
+			if(unit.canAttack(enemyUnit)) {
 				if(unit.isAttackReady()) {
-					unit.attack(location.getOffsetLocation(direction).getUnit());
+					unit.attack(enemyUnit);
 				}
 			}
 		}
