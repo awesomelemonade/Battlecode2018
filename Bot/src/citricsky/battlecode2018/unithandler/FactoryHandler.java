@@ -8,8 +8,8 @@ public class FactoryHandler implements UnitHandler {
 	private static final UnitType[] PRODUCE = new UnitType[] {UnitType.KNIGHT, UnitType.RANGER};
 	private Unit unit;
 	
-	public FactoryHandler(Object unit) {
-		this.unit = (Unit) unit;
+	public FactoryHandler(Unit unit) {
+		this.unit = unit;
 	}
 	
 	@Override
