@@ -55,6 +55,7 @@ public class EarthPlayer {
 			}
 		}
 		while (true) {
+			System.out.println("Round: "+GameController.INSTANCE.getRoundNumber()+" Time: "+GameController.INSTANCE.getTimeLeft() + "ms");
 			Unit[] myUnits = gc.getMyUnits();
 			Map<UnitHandler, Integer> priorities = new HashMap<UnitHandler, Integer>();
 			PriorityQueue<UnitHandler> queue = new PriorityQueue<UnitHandler>(myUnits.length, new Comparator<UnitHandler>() {

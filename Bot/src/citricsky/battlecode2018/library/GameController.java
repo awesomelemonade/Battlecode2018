@@ -110,6 +110,10 @@ public enum GameController {
 	public long getRoundNumber() {
 		return bcGameController.round();
 	}
+	
+	public int getTimeLeft() {
+		return bcGameController.getTimeLeftMs();
+	}
 
 	public void yield() {
 		for(Planet planet: Planet.values()) {
