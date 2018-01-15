@@ -13,8 +13,8 @@ import citricsky.battlecode2018.util.Util;
 
 public class WorkerBlueprintFactoryTask implements PathfinderTask {
 	private static final Predicate<MapLocation> PASSABLE_PREDICATE = location -> {
-		if(location.isPassableTerrain()) {
-			return true;
+		if(!location.isOnMap()) {
+			return false;
 		}
 		if(location.hasUnitAtLocation()) {
 			if(location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
@@ -23,7 +23,7 @@ public class WorkerBlueprintFactoryTask implements PathfinderTask {
 				}
 			}
 		}
-		return true;
+		return location.isPassableTerrain();
 	};
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
 		if(GameController.INSTANCE.getCurrentKarbonite() < Constants.FACTORY_COST) {
@@ -33,6 +33,10 @@ public class WorkerBlueprintFactoryTask implements PathfinderTask {
 	};
 	private static Direction getBlueprintDirection(MapLocation location) {
 		for(Direction direction: Direction.COMPASS) {
+			MapLocation offset = location.getOffsetLocation(direction);
+			if(!PASSABLE_PREDICATE.test(offset)) {
+				continue;
+			}
 			if(Util.canBuild(Util.getNeighbors(location.getOffsetLocation(direction), PASSABLE_PREDICATE))) {
 				return direction;
 			}

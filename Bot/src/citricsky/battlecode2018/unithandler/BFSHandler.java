@@ -27,7 +27,7 @@ public class BFSHandler implements UnitHandler {
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
 		}
-		return bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
+		return -bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
 	}
 	@Override
 	public void execute() {

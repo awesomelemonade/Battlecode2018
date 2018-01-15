@@ -14,7 +14,10 @@ public class FactoryHandler implements UnitHandler {
 	
 	@Override
 	public int getPriority(int priority) {
-		return -Integer.MAX_VALUE+1;
+		if (!unit.isStructureBuilt()) {
+			return Integer.MIN_VALUE;
+		}
+		return Integer.MIN_VALUE+1;
 	}
 	
 	@Override
