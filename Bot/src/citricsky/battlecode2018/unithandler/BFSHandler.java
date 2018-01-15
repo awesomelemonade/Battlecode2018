@@ -24,7 +24,10 @@ public class BFSHandler implements UnitHandler {
 		task = bfs.process(location -> {
 			return location.isPassableTerrain();
 		}, pathfinderTasks);
-		return bfs.getQueue().peekLast().getPosition().getDistanceSquared(mapLocation.getPosition());
+		if(bfs.getStopLocation()==null) {
+			return -Integer.MAX_VALUE;
+		}
+		return bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
 	}
 	@Override
 	public void execute() {
