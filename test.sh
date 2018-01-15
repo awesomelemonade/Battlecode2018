@@ -131,12 +131,7 @@ echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot/run.sh"
 
 cd "${SCAFFOLD_DIR}"
 
-sed -i '2 i\python3() {
-    ~ubuntu/.pyenv/versions/general/bin/python $@
-}
-pip3() {
-    echo $@
-}' battlecode.sh
+sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    echo $@\n}' battlecode.sh
 mkdir -p "${DIR}/logs"
 
 #killmonitor &
