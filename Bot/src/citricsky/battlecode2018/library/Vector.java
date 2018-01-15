@@ -1,5 +1,7 @@
 package citricsky.battlecode2018.library;
 
+import java.util.Objects;
+
 public class Vector {
 	private int x, y;
 
@@ -51,5 +53,10 @@ public class Vector {
 	@Override
 	public String toString() {
 		return String.format("Vector[%d, %d]", x, y);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(x, y);
 	}
 }

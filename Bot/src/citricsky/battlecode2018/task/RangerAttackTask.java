@@ -4,11 +4,9 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
-import bc.VecUnit;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
-import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class RangerAttackTask implements PathfinderTask {
