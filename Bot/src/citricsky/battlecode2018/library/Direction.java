@@ -10,10 +10,15 @@ public enum Direction {
 	SOUTH     ( 0, -1, South),
 	SOUTHWEST (-1, -1, Southwest),
 	WEST      (-1,  0, West),
-	NORTHWEST (-1,  1, Northwest);
-
+	NORTHWEST (-1,  1, Northwest),
+	CENTER    ( 0,  0, Center);
+	
 	public static final Direction[] CARDINAL_DIRECTIONS = new Direction[]
 			{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
+	public static final Direction[] COMPASS = new Direction[] {
+			Direction.NORTH, Direction.NORTHEAST, Direction.EAST, Direction.SOUTHEAST,
+			Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.SOUTHWEST
+	};
 	private static final int LENGTH = 8;
 	
 	private Vector offset;
@@ -62,6 +67,8 @@ public enum Direction {
 				return Direction.WEST;
 			case Northwest:
 				return Direction.NORTHWEST;
+			case Center:
+				return Direction.CENTER;
 			default:
 				return null;
 		}
