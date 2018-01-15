@@ -14,6 +14,9 @@ public class BFSHandler implements UnitHandler {
 	public BFSHandler(Unit unit, PathfinderTask... pathfinderTasks) {
 		this.unit = unit;
 		this.pathfinderTasks = pathfinderTasks;
+		if(unit.getLocation().isOnMap()) {
+			this.bfs = new BFS(unit.getLocation().getMapLocation());
+		}
 	}
 	
 	@Override
@@ -28,7 +31,6 @@ public class BFSHandler implements UnitHandler {
 				return Integer.MIN_VALUE;
 			}
 		}
-		this.bfs = new BFS(mapLocation);
 		task = bfs.process(location -> location.isPassableTerrain(), pathfinderTasks);
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
