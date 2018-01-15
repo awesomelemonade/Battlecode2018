@@ -37,7 +37,6 @@ public class KnightAttackTask implements PathfinderTask{
 		}
 		return null;
 	}
-	
 	@Override
 	public void execute(Unit unit, MapLocation location) {
 		if(unit.getLocation().getMapLocation().equals(location)) {
@@ -45,6 +44,11 @@ public class KnightAttackTask implements PathfinderTask{
 			if(unit.canAttack(enemyUnit)) {
 				if(unit.isAttackReady()) {
 					unit.attack(enemyUnit);
+				}
+			}
+			if(unit.canJavelin(enemyUnit)) {
+				if(unit.isJavelinReady()) {
+					unit.javelin(enemyUnit);
 				}
 			}
 		}
