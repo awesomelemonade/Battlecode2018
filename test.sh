@@ -31,7 +31,7 @@ NUMWINS=0
 NUMGAMES=0
 
 MAPS=("socket" "bananas" "julia")
-BOTS=("examplefuncsplayer-python")
+BOTS=("examplefuncsplayer-python")f
 
 P_ENEMIES=()
 P_RESULTS=()
@@ -48,7 +48,7 @@ rungame() {
 
     echo ">>>> Run CMD: ${CMD}"
     #ulimit -v 256000
-    timeout 30s cpulimit -l 40 -z -i ${CMD} | tee ${LOGFILE}
+    timeout 45s ${CMD} | tee ${LOGFILE}
     WINNER=$(tail -1 ${LOGFILE} | cut -f4 -d' ')
     sed -i "1 i\ ${CMD}" ${LOGFILE}
     if [[ ${WINNER} == "2" ]]; then
@@ -123,7 +123,7 @@ echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot/run.sh"
 
 cd "${SCAFFOLD_DIR}"
 
-sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
+sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    echo $@\n}' battlecode.sh
 mkdir -p "${DIR}/logs"
 
 for bot in ${BOTS[@]}; do
