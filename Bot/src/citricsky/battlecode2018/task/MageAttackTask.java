@@ -9,18 +9,35 @@ import java.util.function.Predicate;
 public class MageAttackTask implements PathfinderTask {
 	private static final int MAGE_ATTACK_RANGE = 30;
 	private static Map<MapLocation, Integer> scoreCache;
+	private Set<MapLocation> valid;
+	private Set<MapLocation> invalid;
 	private Unit[] enemyUnits;
 
-	private Predicate<MapLocation> stopCondition = location -> getAttackTarget(location) != null;
+	private Predicate<MapLocation> stopCondition = location -> {
+		if (valid.contains(location)) return true;
+		if (invalid.contains(location)) return false;
+
+		if (getAttackTarget(location) != null) {
+			valid.add(location);
+			return true;
+		} else {
+			invalid.add(location);
+			return false;
+		}
+	};
 
 	public MageAttackTask() {
 		scoreCache = new HashMap<>();
+		valid = new HashSet<>();
+		invalid = new HashSet<>();
 		enemyUnits = updateEnemies();
 	}
 
 	@Override
 	public void update() {
 		scoreCache.clear();
+		valid.clear();
+		invalid.clear();
 		enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
 				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
 	}
@@ -47,7 +64,7 @@ public class MageAttackTask implements PathfinderTask {
 	}
 
 	private Unit getAttackTarget(MapLocation location) {
-		for (Unit enemyUnit : enemyUnits) {
+ 		for (Unit enemyUnit : enemyUnits) {
 			if (getScore(enemyUnit) <= 0) return null;
 			if (enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) < MAGE_ATTACK_RANGE)
 				return enemyUnit;
