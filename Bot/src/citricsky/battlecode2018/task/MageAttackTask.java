@@ -9,43 +9,41 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class MageAttackTask implements PathfinderTask {
-	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
-		return getAttackLocation(location) != null;
-	};
+	public static MageAttackTask INSTANCE;
+	static {
+		INSTANCE = new MageAttackTask();
+	}
 
-	private static MapLocation getAttackLocation(MapLocation location) {
-		int[][] enemyChunks = new int[location.getPlanet().getWidth()][location.getPlanet().getHeight()]; // 9x9 chunks: center x, center y, score
+	private static final Predicate<MapLocation> STOP_CONDITION = location -> getAttackLocation(location) != null;
+
+	private static Unit getAttackLocation(MapLocation location) {
 		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
 				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
 
 		Set<MapLocation> seen = new HashSet<>();
 
-		MapLocation bestLoc = null;
+		Unit bestEnemy = null;
 		int bestScore = -1;
 		for (Unit enemyUnit : enemyUnits) {
 			if (enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) > 30)
 				continue;
 			MapLocation enemyLoc = enemyUnit.getLocation().getMapLocation();
+			if (seen.contains(enemyLoc)) continue;
+			seen.add(enemyLoc);
 
-			for (Direction dir : Direction.DIAGONAL_CENTER) {
-				MapLocation loc = enemyLoc.getOffsetLocation(dir);
-				if (seen.contains(loc)) continue;
-				seen.add(loc);
+			Unit[] nearby = enemyLoc.senseNearbyUnitsByFilter(1, unit -> unit.getLocation().isOnMap());
+			int numEnemies = (int) Arrays.stream(nearby).filter(unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam()).count();
+			int numFriendlies = nearby.length - numEnemies;
 
-				Unit[] nearby = loc.senseNearbyUnitsByFilter(1, unit -> unit.getLocation().isOnMap());
-				int numEnemies = (int) Arrays.stream(nearby).filter(unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam()).count();
-				int numFriendlies = nearby.length - numEnemies;
-
-				int score = numEnemies - (3 * numFriendlies);
-				if (score > bestScore) {
-					bestScore = score;
-					bestLoc = loc;
-				}
+			int score = numEnemies - (3 * numFriendlies);
+			if (score > bestScore) {
+				bestScore = score;
+				bestEnemy = enemyUnit;
 			}
 
 		}
 
-		return bestLoc;
+		return bestEnemy;
 	}
 
 	@Override

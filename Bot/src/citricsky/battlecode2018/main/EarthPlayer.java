@@ -30,19 +30,19 @@ public class EarthPlayer {
 		}
 
 		handlers.get(UnitType.WORKER).add(unit -> new BFSHandler(unit,
-				new WorkerBlueprintFactoryTask(),
-				new WorkerHarvestTask(),
-				new WorkerBuildTask()
+				WorkerBlueprintFactoryTask.INSTANCE,
+				WorkerHarvestTask.INSTANCE,
+				WorkerBuildTask.INSTANCE
 		));
 
 		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
-		handlers.get(UnitType.KNIGHT).add(unit -> new BFSHandler(unit, new KnightAttackTask()));
+		handlers.get(UnitType.KNIGHT).add(unit -> new BFSHandler(unit, KnightAttackTask.INSTANCE));
 
 		handlers.get(UnitType.RANGER).add(ExploreHandler::new);
-		handlers.get(UnitType.RANGER).add(unit -> new BFSHandler(unit, new RangerAttackTask()));
+		handlers.get(UnitType.RANGER).add(unit -> new BFSHandler(unit, RangerAttackTask.INSTANCE));
 
 		handlers.get(UnitType.MAGE).add(ExploreHandler::new);
-		handlers.get(UnitType.MAGE).add(unit -> new BFSHandler(unit, new MageAttackTask()));
+		handlers.get(UnitType.MAGE).add(unit -> new BFSHandler(unit, MageAttackTask.INSTANCE));
 
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 

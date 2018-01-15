@@ -12,13 +12,21 @@ import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
 
 public class WorkerBlueprintFactoryTask implements PathfinderTask {
+	public static WorkerBlueprintFactoryTask INSTANCE;
+	static {
+		new WorkerBlueprintFactoryTask();
+	}
+
+	public WorkerBlueprintFactoryTask() {
+		INSTANCE = this;
+	}
 	private static final Predicate<MapLocation> PASSABLE_PREDICATE = location -> {
-		if(!location.isOnMap()) {
+		if (!location.isOnMap()) {
 			return false;
 		}
-		if(location.hasUnitAtLocation()) {
-			if(location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
-				if(location.getUnit().isStructure()) {
+		if (location.hasUnitAtLocation()) {
+			if (location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
+				if (location.getUnit().isStructure()) {
 					return false;
 				}
 			}
@@ -26,32 +34,32 @@ public class WorkerBlueprintFactoryTask implements PathfinderTask {
 		return location.isPassableTerrain();
 	};
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
-		if(GameController.INSTANCE.getCurrentKarbonite() < Constants.FACTORY_COST) {
-			return false;
-		}
-		return WorkerBlueprintFactoryTask.getBlueprintDirection(location) != null;
+		return GameController.INSTANCE.getCurrentKarbonite() >= Constants.FACTORY_COST && WorkerBlueprintFactoryTask.getBlueprintDirection(location) != null;
 	};
+
 	private static Direction getBlueprintDirection(MapLocation location) {
-		for(Direction direction: Direction.COMPASS) {
+		for (Direction direction : Direction.COMPASS) {
 			MapLocation offset = location.getOffsetLocation(direction);
-			if(!PASSABLE_PREDICATE.test(offset)) {
+			if (!PASSABLE_PREDICATE.test(offset)) {
 				continue;
 			}
-			if(Util.canBuild(Util.getNeighbors(location.getOffsetLocation(direction), PASSABLE_PREDICATE))) {
+			if (Util.canBuild(Util.getNeighbors(location.getOffsetLocation(direction), PASSABLE_PREDICATE))) {
 				return direction;
 			}
 		}
 		return null;
 	}
+
 	@Override
 	public void execute(Unit unit, MapLocation location) {
-		if(unit.getLocation().getMapLocation().equals(location)) {
+		if (unit.getLocation().getMapLocation().equals(location)) {
 			Direction direction = WorkerBlueprintFactoryTask.getBlueprintDirection(location);
-			if(!unit.hasWorkerActed() && unit.canBlueprint(UnitType.FACTORY, direction)) {
+			if (!unit.hasWorkerActed() && unit.canBlueprint(UnitType.FACTORY, direction)) {
 				unit.blueprint(UnitType.FACTORY, direction);
 			}
 		}
 	}
+
 	@Override
 	public Predicate<MapLocation> getStopCondition() {
 		return STOP_CONDITION;

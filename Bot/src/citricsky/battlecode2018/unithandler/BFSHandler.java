@@ -31,7 +31,7 @@ public class BFSHandler implements UnitHandler {
 				return Integer.MIN_VALUE;
 			}
 		}
-		task = bfs.process(location -> location.isPassableTerrain(), pathfinderTasks);
+		task = bfs.process(MapLocation::isPassableTerrain, pathfinderTasks);
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
 		}
