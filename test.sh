@@ -31,7 +31,7 @@ NUMWINS=0
 NUMGAMES=0
 
 MAPS=("socket" "bananas" "julia")
-BOTS=("examplefuncsplayer-python")f
+BOTS=("examplefuncsplayer-python")
 
 P_ENEMIES=()
 P_RESULTS=()
