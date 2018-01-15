@@ -46,6 +46,13 @@ public class BFS {
 		}
 		while(!queue.isEmpty()) {
 			MapLocation polled = queue.poll();
+			for(T stopCondition: stopConditions) {
+				if(stopCondition.test(polled)) {
+					queue.addFirst(polled);
+					this.stopLocation = polled;
+					return stopCondition;
+				}
+			}
 			for(Direction direction: Direction.COMPASS) {
 				MapLocation step = polled.getOffsetLocation(direction);
 				if(step.equals(source)) {
@@ -55,12 +62,6 @@ public class BFS {
 					if(passable.test(step) && data[step.getPosition().getX()][step.getPosition().getY()] == null) {
 						data[step.getPosition().getX()][step.getPosition().getY()] = direction.getOpposite();
 						queue.add(step);
-						for(T stopCondition: stopConditions) {
-							if(stopCondition.test(step)) {
-								this.stopLocation = step;
-								return stopCondition;
-							}
-						}
 					}
 				}
 			}

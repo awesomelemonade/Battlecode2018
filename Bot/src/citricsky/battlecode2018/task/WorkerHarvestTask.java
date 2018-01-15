@@ -15,12 +15,15 @@ public class WorkerHarvestTask implements PathfinderTask {
 	private static Direction getHarvestDirection(MapLocation location) {
 		for(Direction direction: Direction.values()) {
 			MapLocation offset = location.getOffsetLocation(direction);
+			if(!offset.isOnMap()) {
+				continue;
+			}
 			if(GameController.INSTANCE.canSenseLocation(offset)) {
-				if(location.getKarboniteCount() > 0) {
+				if(offset.getKarboniteCount() > 0) {
 					return direction;
 				}
 			}else {
-				if(location.getPlanet().getStartingMap().getInitialKarboniteAt(location) > 0) {
+				if(offset.getPlanet().getStartingMap().getInitialKarboniteAt(offset) > 0) {
 					return direction;
 				}
 			}

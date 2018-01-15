@@ -51,17 +51,20 @@ public class EarthPlayer {
 		}
 		while (true) {
 			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms");
-			Set<Unit> unhandled = new HashSet<Unit>();
-			for (Unit unit : gc.getMyUnits()) {
-				unhandled.add(unit);
+			Unit[] myUnits = gc.getMyUnits();
+			Map<Unit, Set<UnitHandler>> map = new HashMap<Unit, Set<UnitHandler>>();
+			for(Unit unit : myUnits) {
+				map.put(unit, new HashSet<UnitHandler>());
+				for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
+					map.get(unit).add(function.apply(unit));
+				}
 			}
-			while (unhandled.size() > 0 && gc.getTimeLeft() > 1000) {
+			while (gc.getTimeLeft() > 1000) {
 				Unit bestUnit = null;
 				UnitHandler bestHandler = null;
 				int bestPriority = Integer.MIN_VALUE;
-				for (Unit unit : unhandled) {
-					for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
-						UnitHandler handler = function.apply(unit);
+				for (Unit unit : myUnits) {
+					for (UnitHandler handler : map.get(unit)) {
 						int priority = handler.getPriority(bestPriority);
 						if (priority > bestPriority) {
 							bestPriority = priority;
@@ -74,8 +77,10 @@ public class EarthPlayer {
 					break;
 				}
 				bestHandler.execute();
-				if(!bestHandler.isRequired()) {
-					unhandled.remove(bestUnit);
+				if(bestHandler.isRequired()) {
+					map.get(bestUnit).remove(bestHandler);
+				}else {
+					map.get(bestUnit).removeIf(handler -> !handler.isRequired());
 				}
 			}
 			gc.yield();

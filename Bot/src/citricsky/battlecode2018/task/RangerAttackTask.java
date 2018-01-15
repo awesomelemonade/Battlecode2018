@@ -10,7 +10,7 @@ import citricsky.battlecode2018.unithandler.PathfinderTask;
 public class RangerAttackTask implements PathfinderTask {
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
 		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
-				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam());
+				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
 		for(Unit enemyUnit: enemyUnits) {
 			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
 			if(distanceSquared<40) {
@@ -29,7 +29,7 @@ public class RangerAttackTask implements PathfinderTask {
 	@Override
 	public void execute(Unit unit, MapLocation location) {
 		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
-				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam());
+				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
 		int bestDistanceSquared = Integer.MAX_VALUE;
 		Unit bestTarget = null;
 		for(Unit enemyUnit: enemyUnits) {
