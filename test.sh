@@ -12,15 +12,9 @@ killexisting() {
 killmonitor() {
     bash "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/monitor.sh"
     killexisting
-    killmonitorid
+    killmonitor
 }
 
-killmonitorid() {
-    killmonitor &
-    KILLPID=$BASHPID
-}
-
-#killmonitorid
 killexisting
 
 BUILD_NUMBER="${1}"
@@ -130,12 +124,13 @@ cd "${SCAFFOLD_DIR}"
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    echo $@\n}' battlecode.sh
 mkdir -p "${DIR}/logs"
 
+killmonitor &
 for bot in ${BOTS[@]}; do
     for map in ${MAPS[@]}; do
         rungame ${bot} ${map}
     done
 done
-#kill ${KILLPID}
+kill $(jobs -p)
 
 cp -r replays "${DIR}/"
 
