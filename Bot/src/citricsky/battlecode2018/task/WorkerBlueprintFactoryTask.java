@@ -12,14 +12,6 @@ import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
 
 public class WorkerBlueprintFactoryTask implements PathfinderTask {
-	public static WorkerBlueprintFactoryTask INSTANCE;
-	static {
-		new WorkerBlueprintFactoryTask();
-	}
-
-	public WorkerBlueprintFactoryTask() {
-		INSTANCE = this;
-	}
 	private static final Predicate<MapLocation> PASSABLE_PREDICATE = location -> {
 		if (!location.isOnMap()) {
 			return false;

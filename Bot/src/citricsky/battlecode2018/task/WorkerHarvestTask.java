@@ -9,10 +9,6 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class WorkerHarvestTask implements PathfinderTask {
-	public static WorkerHarvestTask INSTANCE;
-	static {
-		INSTANCE = new WorkerHarvestTask();
-	}
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> WorkerHarvestTask.getHarvestDirection(location) != null;
 	private static Direction getHarvestDirection(MapLocation location) {
 		for(Direction direction: Direction.values()) {

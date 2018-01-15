@@ -6,11 +6,6 @@ import citricsky.battlecode2018.unithandler.PathfinderTask;
 import java.util.function.Predicate;
 
 public class KnightAttackTask implements PathfinderTask{
-	public static KnightAttackTask INSTANCE;
-	static {
-		INSTANCE = new KnightAttackTask();
-	}
-
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
 		return getEnemyDirection(location) != null;
 	};

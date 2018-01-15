@@ -12,10 +12,6 @@ import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class RangerAttackTask implements PathfinderTask {
-	public static RangerAttackTask INSTANCE;
-	static {
-		INSTANCE = new RangerAttackTask();
-	}
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
 		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
 				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());

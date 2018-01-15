@@ -9,10 +9,6 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class WorkerBuildTask implements PathfinderTask {
-	public static WorkerBuildTask INSTANCE;
-	static {
-		INSTANCE = new WorkerBuildTask();
-	}
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> WorkerBuildTask.getBuildDirection(location) != null;
 
 	private static Direction getBuildDirection(MapLocation location) {

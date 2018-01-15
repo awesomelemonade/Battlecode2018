@@ -29,20 +29,26 @@ public class EarthPlayer {
 			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
 		}
 
+		final WorkerBlueprintFactoryTask workerBlueprintFactoryTask = new WorkerBlueprintFactoryTask();
+		final WorkerHarvestTask workerHarvestTask = new WorkerHarvestTask();
+		final WorkerBuildTask workerBuildTask = new WorkerBuildTask();
 		handlers.get(UnitType.WORKER).add(unit -> new BFSHandler(unit,
-				WorkerBlueprintFactoryTask.INSTANCE,
-				WorkerHarvestTask.INSTANCE,
-				WorkerBuildTask.INSTANCE
+				workerBlueprintFactoryTask,
+				workerHarvestTask,
+				workerBuildTask
 		));
 
+		final KnightAttackTask knightAttackTask = new KnightAttackTask();
 		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
-		handlers.get(UnitType.KNIGHT).add(unit -> new BFSHandler(unit, KnightAttackTask.INSTANCE));
+		handlers.get(UnitType.KNIGHT).add(unit -> new BFSHandler(unit, knightAttackTask));
 
+		final RangerAttackTask rangerAttackTask = new RangerAttackTask();
 		handlers.get(UnitType.RANGER).add(ExploreHandler::new);
-		handlers.get(UnitType.RANGER).add(unit -> new BFSHandler(unit, RangerAttackTask.INSTANCE));
+		handlers.get(UnitType.RANGER).add(unit -> new BFSHandler(unit, rangerAttackTask));
 
+		final MageAttackTask mageAttackTask = new MageAttackTask();
 		handlers.get(UnitType.MAGE).add(ExploreHandler::new);
-		handlers.get(UnitType.MAGE).add(unit -> new BFSHandler(unit, MageAttackTask.INSTANCE));
+		handlers.get(UnitType.MAGE).add(unit -> new BFSHandler(unit, mageAttackTask));
 
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 

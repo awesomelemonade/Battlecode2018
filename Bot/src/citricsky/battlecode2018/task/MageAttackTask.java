@@ -9,11 +9,6 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class MageAttackTask implements PathfinderTask {
-	public static MageAttackTask INSTANCE;
-	static {
-		INSTANCE = new MageAttackTask();
-	}
-
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> getAttackTarget(location) != null;
 
 	private static Unit getAttackTarget(MapLocation location) {
