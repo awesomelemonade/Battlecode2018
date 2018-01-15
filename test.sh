@@ -30,7 +30,7 @@ GIT_PREVIOUS_SUCCESSFUL_COMMIT="${3}"
 NUMWINS=0
 NUMGAMES=0
 
-MAPS=("socket" "bananas" "julia")
+MAPS=("socket" "bananas")
 BOTS=("examplefuncsplayer-python")
 
 P_ENEMIES=()
