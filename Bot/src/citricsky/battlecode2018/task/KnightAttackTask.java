@@ -47,6 +47,7 @@ public class KnightAttackTask implements PathfinderTask {
 	
 	@Override
 	public void update() {
+		valid.clear();
 		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
 				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
 		for(Unit unit: enemyUnits) {
