@@ -40,7 +40,7 @@ rungame() {
     GAME_ID=${NUMGAMES}
     NUMGAMES=$(( NUMGAMES + 1 ))
     CMD="./battlecode.sh -p1 Bot -p2 $1 -m $2"
-    LOGFILE="${DIR}/logs/log_${GAME_ID}"
+    LOGFILE="${DIR}/logs/log_${GAME_ID}.txt"
 
     echo ">>>> Run CMD: ${CMD}"
     #ulimit -v 256000
@@ -144,6 +144,7 @@ echo "<!DOCTYPE html>
 <meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
 <body>
 <h3>Build ${BUILD_NUMBER}: Won ${NUMWINS} of ${NUMGAMES} games</h3>
+<a href=\"https://ci.pantherman594.com/job/CitricSky-Battlecode2018/${BUILD_NUMBER}/consoleFull\">Console Log</a>
 <ul>" > ../links.html
 for i in $(seq 0 $(( NUMGAMES - 1 ))); do
     scp "replay_${i}.bc18" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${BUILD_NUMBER}_${i}"
