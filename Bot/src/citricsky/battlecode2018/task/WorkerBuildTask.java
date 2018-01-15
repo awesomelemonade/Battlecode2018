@@ -10,18 +10,27 @@ import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class WorkerBuildTask implements PathfinderTask {
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
-		if(GameController.INSTANCE.canSenseLocation(location)) {
-			if(location.hasUnitAtLocation()) {
-				return (location.getUnit().isStructure() && (!location.getUnit().isStructureBuilt()) &&
-						location.getUnit().getTeam() == GameController.INSTANCE.getTeam());
+		return WorkerBuildTask.getBuildDirection(location) != null;
+	};
+	private static Direction getBuildDirection(MapLocation location) {
+		for(Direction direction: Direction.COMPASS) {
+			MapLocation offset = location.getOffsetLocation(direction);
+			if(GameController.INSTANCE.canSenseLocation(offset)) {
+				if(offset.hasUnitAtLocation()) {
+					if((offset.getUnit().isStructure() && (!offset.getUnit().isStructureBuilt()) &&
+							offset.getUnit().getTeam() == GameController.INSTANCE.getTeam())) {
+						return direction;
+					}
+				}
 			}
 		}
-		return false;
-	};
+		return null;
+	}
 	@Override
-	public void execute(Unit unit, MapLocation location, Direction direction) {
+	public void execute(Unit unit, MapLocation location) {
 		if(unit.getLocation().getMapLocation().equals(location)) {
 			if(!unit.hasWorkerActed()) {
+				Direction direction = WorkerBuildTask.getBuildDirection(location);
 				Unit buildTarget = location.getOffsetLocation(direction).getUnit();
 				if(unit.canBuild(buildTarget)) {
 					unit.build(buildTarget);

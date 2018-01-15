@@ -15,14 +15,14 @@ public class Util {
 	}
 	public static boolean calcBuildArray(int neighbors) {
 		//flood fill
-		for(Direction direction: Direction.values()) {
+		for(Direction direction: Direction.COMPASS) {
 			if(((neighbors >>> direction.ordinal()) & 1) == 0) {
 				neighbors = floodFill(neighbors, direction.ordinal());
 				break;
 			}
 		}
 		//loop over
-		for(Direction direction: Direction.values()) {
+		for(Direction direction: Direction.COMPASS) {
 			if(((neighbors >>> direction.ordinal()) & 1) == 0) {
 				return false;
 			}
@@ -72,7 +72,7 @@ public class Util {
 	}
 	public static int getNeighbors(MapLocation location, Predicate<MapLocation> predicate) {
 		int neighbors = 0;
-		for(Direction direction: Direction.values()) {
+		for(Direction direction: Direction.COMPASS) {
 			if(predicate.test(location.getOffsetLocation(direction))) {
 				neighbors = neighbors | (1 << direction.ordinal());
 			}

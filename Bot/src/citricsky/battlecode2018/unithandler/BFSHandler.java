@@ -29,11 +29,11 @@ public class BFSHandler implements UnitHandler {
 	@Override
 	public void execute() {
 		if(!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
-			Direction direction = bfs.trace(bfs.getStopLocation().getPosition(), unit.getLocation().getMapLocation().getPosition());
+			Direction direction = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
 			if(unit.isMoveReady() && unit.canMove(direction)) {
 				unit.move(direction);
 			}
 		}
-		task.execute(unit, bfs.getStopLocation(), bfs.getStopDirection());
+		task.execute(unit, bfs.getStopLocation());
 	}
 }

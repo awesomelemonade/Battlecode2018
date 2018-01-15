@@ -29,11 +29,20 @@ public class WorkerBlueprintFactoryTask implements PathfinderTask {
 		if(GameController.INSTANCE.getCurrentKarbonite() < Constants.FACTORY_COST) {
 			return false;
 		}
-		return Util.canBuild(Util.getNeighbors(location, PASSABLE_PREDICATE));
+		return WorkerBlueprintFactoryTask.getBlueprintDirection(location) != null;
 	};
+	private static Direction getBlueprintDirection(MapLocation location) {
+		for(Direction direction: Direction.COMPASS) {
+			if(Util.canBuild(Util.getNeighbors(location.getOffsetLocation(direction), PASSABLE_PREDICATE))) {
+				return direction;
+			}
+		}
+		return null;
+	}
 	@Override
-	public void execute(Unit unit, MapLocation location, Direction direction) {
+	public void execute(Unit unit, MapLocation location) {
 		if(unit.getLocation().getMapLocation().equals(location)) {
+			Direction direction = WorkerBlueprintFactoryTask.getBlueprintDirection(location);
 			if(!unit.hasWorkerActed() && unit.canBlueprint(UnitType.FACTORY, direction)) {
 				unit.blueprint(UnitType.FACTORY, direction);
 			}

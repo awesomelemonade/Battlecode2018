@@ -11,43 +11,48 @@ import citricsky.battlecode2018.library.Vector;
 public class BFS {
 	private Direction[][] data;
 	private Deque<MapLocation> queue;
+	private MapLocation source;
 	private MapLocation stopLocation;
-	private Direction stopDirection;
-	public BFS(MapLocation destination) {
-		this.data = new Direction[destination.getPlanet().getWidth()][destination.getPlanet().getHeight()];
+	public BFS(MapLocation source) {
+		this.data = new Direction[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
 		this.queue = new ArrayDeque<MapLocation>();
-		queue.add(destination);
+		queue.add(source);
 	}
-	public Direction trace(Vector source, Vector destination) {
-		Vector step = source.add(data[source.getX()][source.getY()].getOffsetVector());
-		if(destination.equals(step)) {
-			return data[source.getX()][source.getY()];
+	public Direction getDirectionFromSource(Vector vector) {
+		Vector step = vector.add(data[vector.getX()][vector.getY()].getOffsetVector());
+		if(source.getPosition().equals(step)) {
+			return data[vector.getX()][vector.getY()].getOpposite();
 		}else {
-			return trace(step, destination);
+			return getDirectionFromSource(step);
 		}
+	}
+	public Direction getDirectionToSource(Vector vector) {
+		return data[vector.getX()][vector.getY()];
 	}
 	public Direction getDirection(Vector position) {
 		return data[position.getX()][position.getY()];
 	}
 	public void process(Predicate<MapLocation> passable) {
-		process(passable, x->false);
+		process(passable, x -> false);
 	}
 	@SafeVarargs
 	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
 		while(!queue.isEmpty()) {
 			MapLocation polled = queue.poll();
-			for(Direction direction: Direction.values()) {
+			for(Direction direction: Direction.COMPASS) {
 				MapLocation step = polled.getOffsetLocation(direction);
+				if(step.equals(source)) {
+					continue;
+				}
 				if(step.isOnMap()) {
-					if(passable.test(step)&&data[step.getPosition().getX()][step.getPosition().getY()]==null) {
+					if(passable.test(step) && data[step.getPosition().getX()][step.getPosition().getY()] == null) {
 						data[step.getPosition().getX()][step.getPosition().getY()] = direction.getOpposite();
 						queue.add(step);
-					}
-					for(T stopCondition: stopConditions) {
-						if(stopCondition.test(step)) {
-							stopLocation = polled;
-							stopDirection = direction;
-							return stopCondition;
+						for(T stopCondition: stopConditions) {
+							if(stopCondition.test(step)) {
+								this.stopLocation = step;
+								return stopCondition;
+							}
 						}
 					}
 				}
@@ -60,8 +65,5 @@ public class BFS {
 	}
 	public MapLocation getStopLocation() {
 		return stopLocation;
-	}
-	public Direction getStopDirection() {
-		return stopDirection;
 	}
 }
