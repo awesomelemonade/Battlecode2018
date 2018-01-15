@@ -4,15 +4,16 @@ KILLPID=0
 
 killexisting() {
     # Kill previous instances
-    pkill -x "/home/ubuntu/.pyenv/versions/general/bin/python"
-    pkill -fx "python3 run.py"
-    pkill -fx "java -classpath .:../battlecode/java Player"
+    pkill -x -9 "/home/ubuntu/.pyenv/versions/general/bin/python"
+    pkill -fx -9 "python3 run.py"
+    pkill -fx -9 "java -classpath .:../battlecode/java Player"
 }
 
 killmonitor() {
-    bash "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/monitor.sh"
-    killexisting
-    killmonitor
+    while [ true ]; do
+        bash "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/monitor.sh"
+        killexisting
+    done
 }
 
 killexisting
