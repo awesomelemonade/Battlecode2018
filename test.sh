@@ -49,13 +49,17 @@ rungame() {
     echo ">>>> Run CMD: ${CMD}"
     #ulimit -v 256000
     ${CMD} | tee ${LOGFILE}
+
     WINNER=$(tail -1 ${LOGFILE} | cut -f4 -d' ')
     sed -i "1 i\ ${CMD}" ${LOGFILE}
     if [[ ${WINNER} == "2" ]]; then
         NUMWINS=$(( NUMWINS + 1 ))
         P_RESULTS[GAME_ID]="Win"
-    else
+    elif [[ ${WINNER} == "1" ]]; then
         P_RESULTS[GAME_ID]="Loss"
+    else
+        P_RESULTS[GAME_ID]="Inconclusive"
+        touch replays/replay_${GAME_ID}.bc18
     fi
     P_ENEMIES[GAME_ID]=$1
     P_MAPS[GAME_ID]=$2
@@ -146,7 +150,12 @@ echo "<!DOCTYPE html>
 <ul>" > ../links.html
 for i in $(seq 0 $(( NUMGAMES - 1 ))); do
     scp "replay_${i}.bc18" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${BUILD_NUMBER}_${i}"
-    echo "<li>Bot vs. ${P_ENEMIES[i]} on map ${P_MAPS[i]} (${P_RESULTS[i]}): <a href=\"https://pantherman594.com/tinyview/?fname=$(urlencode /replays/${BUILD_NUMBER}_${i})\">replay</a> <a href=\"https://ci.pantherman594.com/job/CitricSky-Battlecode2018/${BUILD_NUMBER}/artifact/logs/log_${i}.txt\">log</a></li>" >> ../links.html
+    LINK=""
+    if [[ ${P_RESULTS[i]} != "Inconclusive" ]]; then
+        LINK="https://pantherman594.com/tinyview/?fname=$(urlencode /replays/${BUILD_NUMBER}_${i})"
+    fi
+
+    echo "<li>Bot vs. ${P_ENEMIES[i]} on map ${P_MAPS[i]} (${P_RESULTS[i]}): <a href=\"${LINK}\">replay</a> <a href=\"https://ci.pantherman594.com/job/CitricSky-Battlecode2018/${BUILD_NUMBER}/artifact/logs/log_${i}.txt\">log</a></li>" >> ../links.html
 done
 echo "</ul>
 </body>" >> ../links.html
