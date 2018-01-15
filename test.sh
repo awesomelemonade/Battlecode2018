@@ -1,9 +1,26 @@
 #!/bin/bash
 
-# Kill previous instances
-pkill -x "/home/ubuntu/.pyenv/versions/general/bin/python"
-pkill -fx "python3 run.py"
-pkill -fx "java -classpath .:../battlecode/java Player"
+KILLPID=0
+
+killexisting() {
+    # Kill previous instances
+    pkill -x "/home/ubuntu/.pyenv/versions/general/bin/python"
+    pkill -fx "python3 run.py"
+    pkill -fx "java -classpath .:../battlecode/java Player"
+}
+
+killmonitor() {
+    bash "$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )/monitor.sh"
+    killexisting
+    killmonitorid
+}
+
+killmonitorid() {
+    killmonitor &
+    KILLPID=$BASHPID
+}
+
+killmonitorid
 
 BUILD_NUMBER="${1}"
 GIT_BRANCH=$(echo ${2} | cut -f2 -d'/')
@@ -23,7 +40,7 @@ DIR=$PWD
 SCAFFOLD_DIR=~ubuntu/bc18-scaffold
 
 rungame() {
-    GAME_ID=NUMGAMES
+    GAME_ID=${NUMGAMES}
     NUMGAMES=$(( NUMGAMES + 1 ))
     CMD="./battlecode.sh -p1 Bot -p2 $1 -m $2"
     LOGFILE="${DIR}/logs/log_${GAME_ID}"
@@ -113,6 +130,7 @@ for bot in ${BOTS[@]}; do
         rungame ${bot} ${map}
     done
 done
+kill ${KILLPID}
 
 cp -r replays "${DIR}/"
 
@@ -129,7 +147,8 @@ for i in $(seq 0 $(( NUMGAMES - 1 ))); do
     scp "replay_${i}.bc18" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${BUILD_NUMBER}_${i}"
     echo "<li>Bot vs. ${P_ENEMIES[i]} on map ${P_MAPS[i]} (${P_RESULTS[i]}): <a href=\"https://pantherman594.com/tinyview/?fname=$(urlencode /replays/${BUILD_NUMBER}_${i})\">replay</a> <a href=\"https://ci.pantherman594.com/job/CitricSky-Battlecode2018/${BUILD_NUMBER}/artifact/logs/log_${i}.txt\">log</a></li>" >> ../links.html
 done
-echo "</ul>\n</body>" >> ../links.html
+echo "</ul>
+</body>" >> ../links.html
 
 ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git pull"
 
