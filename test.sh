@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Kill previous instances
+pkill -x "/home/ubuntu/.pyenv/versions/general/bin/python"
+pkill -fx "python3 run.py"
+pkill -fx "java -classpath .:../battlecode/java Player"
+
 BUILD_NUMBER="${1}"
 GIT_BRANCH=$(echo ${2} | cut -f2 -d'/')
 GIT_PREVIOUS_SUCCESSFUL_COMMIT="${3}"
@@ -10,24 +15,32 @@ NUMGAMES=0
 MAPS=("socket" "bananas")
 BOTS=("examplefuncsplayer-python")
 
+P_ENEMIES=()
+P_RESULTS=()
+P_MAPS=()
+
+DIR=$PWD
+SCAFFOLD_DIR=~ubuntu/bc18-scaffold
+
 rungame() {
-    CMD="./battlecode.sh -p1 Bot ${@}"
-    LOGFILE="log_${NUMGAMES}"
+    GAME_ID=NUMGAMES
+    NUMGAMES=$(( NUMGAMES + 1 ))
+    CMD="./battlecode.sh -p1 Bot -p2 $1 -m $2"
+    LOGFILE="${DIR}/logs/log_${GAME_ID}"
 
     echo ">>>> Run CMD: ${CMD}"
     #ulimit -v 256000
     cpulimit -l 40 -z -i ${CMD} | tee ${LOGFILE}
     WINNER=$(tail -1 ${LOGFILE} | cut -f4 -d' ')
-    sed -i "1 i\$CMD" ${LOGFILE}
+    sed -i "1 i\ ${CMD}" ${LOGFILE}
     if [[ ${WINNER} == "2" ]]; then
         NUMWINS=$(( NUMWINS + 1 ))
-        mv ${LOGFILE} log_${NUMGAMES}_W.txt
-        mv replays/replay_${NUMGAMES}.bc18 replays/replay_${NUMGAMES}_W.bc18
+        P_RESULTS[GAME_ID]="Win"
     else
-        mv ${LOGFILE} log_${NUMGAMES}_L.txt
-        mv replays/replay_${NUMGAMES}.bc18 replays/replay_${NUMGAMES}_L.bc18
+        P_RESULTS[GAME_ID]="Loss"
     fi
-    NUMGAMES=$(( NUMGAMES + 1 ))
+    P_ENEMIES[GAME_ID]=$1
+    P_MAPS[GAME_ID]=$2
 }
 
 urlencode() {
@@ -46,9 +59,6 @@ urlencode() {
 
     LC_COLLATE=${old_lc_collate}
 }
-
-DIR=$PWD
-SCAFFOLD_DIR=~ubuntu/bc18-scaffold
 
 cd "${SCAFFOLD_DIR}"
 
@@ -96,36 +106,34 @@ echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot/run.sh"
 cd "${SCAFFOLD_DIR}"
 
 sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    ~ubuntu/.pyenv/versions/general/bin/pip $@\n}' battlecode.sh
+mkdir -p "${DIR}/logs"
 
-TITLES=()
 for bot in ${BOTS[@]}; do
     for map in ${MAPS[@]}; do
-        rungame -p2 ${bot} -m ${map}
-        TITLES+=("Versus: ${bot}; Map: ${map}")
+        rungame ${bot} ${map}
     done
 done
 
-mv log_* replays/
 cp -r replays "${DIR}/"
 
 cd "${DIR}/replays"
-echo "<!DOCTYPE html>\n<head><meta charset=\"UTF-8\">\n
-<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n
-<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">\n
-<body>\n
-<ul>\n" > links.html
-TITLE=0
-for i in *.bc18; do
-    NAME="${i/replay_/${BUILD_NUMBER}_}"
-    scp "${i}" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${NAME}"
-    echo "<li><a href=\"https://pantherman594.com/tinyview/?fname=$(urlencode /replays/${NAME})\">Replay ${NAME} ${TITLES[TITLE]}</a></li>" >> links.html
-    TITLE=$(( TITLE + 1 ))
+echo "<!DOCTYPE html>
+<head>
+<meta charset=\"UTF-8\">
+<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">
+<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\">
+<body>
+<h3>Build ${BUILD_NUMBER}: Won ${NUMWINS} of ${NUMGAMES} games</h3>
+<ul>" > ../links.html
+for i in $(seq 0 $(( NUMGAMES - 1 ))); do
+    scp "replay_${i}.bc18" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/replays/${BUILD_NUMBER}_${i}"
+    echo "<li>Bot vs. ${P_ENEMIES[i]} on map ${P_MAPS[i]} (${P_RESULTS[i]}): <a href=\"https://pantherman594.com/tinyview/?fname=$(urlencode /replays/${BUILD_NUMBER}_${i})\">replay</a> <a href=\"https://ci.pantherman594.com/job/CitricSky-Battlecode2018/${BUILD_NUMBER}/artifact/logs/log_${i}.txt\">log</a></li>" >> ../links.html
 done
-echo "</ul>\n</body>" >> links.html
+echo "</ul>\n</body>" >> ../links.html
 
 ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git pull"
 
-touch "$NUMWINS of $NUMGAMES games won"
+touch ../"Won ${NUMWINS} of ${NUMGAMES} games"
 
 if [[ ! ${NUMWINS} > $(( NUMGAMES / 2 )) ]]; then
     exit 1
