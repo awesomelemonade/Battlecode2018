@@ -14,9 +14,9 @@ public class MageAttackTask implements PathfinderTask {
 		INSTANCE = new MageAttackTask();
 	}
 
-	private static final Predicate<MapLocation> STOP_CONDITION = location -> getAttackLocation(location) != null;
+	private static final Predicate<MapLocation> STOP_CONDITION = location -> getAttackTarget(location) != null;
 
-	private static Unit getAttackLocation(MapLocation location) {
+	private static Unit getAttackTarget(MapLocation location) {
 		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
 				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
 
@@ -48,22 +48,10 @@ public class MageAttackTask implements PathfinderTask {
 
 	@Override
 	public void execute(Unit unit, MapLocation location) {
-		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
-				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
-		int bestDistanceSquared = Integer.MAX_VALUE;
-		Unit bestTarget = null;
-		for (Unit enemyUnit : enemyUnits) {
-			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if (distanceSquared > unit.getRangerCannotAttackRange()) {
-				if (distanceSquared < bestDistanceSquared) {
-					bestDistanceSquared = distanceSquared;
-					bestTarget = enemyUnit;
-				}
-			}
-		}
-		if (bestTarget != null) {
-			if (unit.isAttackReady() && unit.canAttack(bestTarget)) {
-				unit.attack(bestTarget);
+		if (unit.getLocation().getMapLocation().equals(location)) {
+			Unit target = getAttackTarget(location);
+			if (!unit.isAttackReady() && unit.canAttack(target)) {
+				unit.attack(target);
 			}
 		}
 	}
