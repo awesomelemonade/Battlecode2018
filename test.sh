@@ -20,7 +20,8 @@ killmonitorid() {
     KILLPID=$BASHPID
 }
 
-killmonitorid
+#killmonitorid
+killexisting
 
 BUILD_NUMBER="${1}"
 GIT_BRANCH=$(echo ${2} | cut -f2 -d'/')
@@ -130,7 +131,7 @@ for bot in ${BOTS[@]}; do
         rungame ${bot} ${map}
     done
 done
-kill ${KILLPID}
+#kill ${KILLPID}
 
 cp -r replays "${DIR}/"
 
