@@ -37,6 +37,7 @@ public class EarthPlayer {
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
 		handlers.get(UnitType.RANGER).add(ExploreHandler::new);
+		handlers.get(UnitType.MAGE).add(ExploreHandler::new);
 
 		for (UnitType unitType : UnitType.values()) {
 			handlers.get(unitType).add(unit -> new BFSHandler(unit,
