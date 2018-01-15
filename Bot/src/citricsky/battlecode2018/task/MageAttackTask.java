@@ -3,42 +3,56 @@ package citricsky.battlecode2018.task;
 import citricsky.battlecode2018.library.*;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Predicate;
 
 public class MageAttackTask implements PathfinderTask {
-	private static final Predicate<MapLocation> STOP_CONDITION = location -> getAttackTarget(location) != null;
+	private static final int MAGE_ATTACK_RANGE = 30;
+	private static Map<MapLocation, Integer> scoreCache;
+	private Unit[] enemyUnits;
 
-	private static Unit getAttackTarget(MapLocation location) {
+	private Predicate<MapLocation> stopCondition = location -> getAttackTarget(location) != null;
+
+	public MageAttackTask() {
+		scoreCache = new HashMap<>();
+		enemyUnits = updateEnemies();
+	}
+
+	@Override
+	public void update() {
+		scoreCache.clear();
+		enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
+				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
+	}
+
+	private Unit[] updateEnemies() {
 		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
 				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
 
-		Set<MapLocation> seen = new HashSet<>();
+		Arrays.sort(enemyUnits, (unit1, unit2) -> Integer.compare(getScore(unit2), getScore(unit1))); // Purposefully flipped, to sort largest -> smallest
+		return enemyUnits;
+	}
 
-		Unit bestEnemy = null;
-		int bestScore = -1;
+	private static int getScore(Unit enemyUnit) {
+		MapLocation enemyLoc = enemyUnit.getLocation().getMapLocation();
+		if (scoreCache.containsKey(enemyLoc)) return scoreCache.get(enemyLoc);
+
+		Unit[] nearby = enemyLoc.senseNearbyUnitsByFilter(1, unit -> unit.getLocation().isOnMap());
+		int numEnemies = (int) Arrays.stream(nearby).filter(unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam()).count();
+		int numFriendlies = nearby.length - numEnemies;
+
+		int score = numEnemies - (3 * numFriendlies);
+		scoreCache.put(enemyLoc, score);
+		return score;
+	}
+
+	private Unit getAttackTarget(MapLocation location) {
 		for (Unit enemyUnit : enemyUnits) {
-			if (enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) > 30)
-				continue;
-			MapLocation enemyLoc = enemyUnit.getLocation().getMapLocation();
-			if (seen.contains(enemyLoc)) continue;
-			seen.add(enemyLoc);
-
-			Unit[] nearby = enemyLoc.senseNearbyUnitsByFilter(1, unit -> unit.getLocation().isOnMap());
-			int numEnemies = (int) Arrays.stream(nearby).filter(unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam()).count();
-			int numFriendlies = nearby.length - numEnemies;
-
-			int score = numEnemies - (3 * numFriendlies);
-			if (score > bestScore) {
-				bestScore = score;
-				bestEnemy = enemyUnit;
-			}
-
+			if (getScore(enemyUnit) <= 0) return null;
+			if (enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) < MAGE_ATTACK_RANGE)
+				return enemyUnit;
 		}
-
-		return bestEnemy;
+		return null;
 	}
 
 	@Override
@@ -53,6 +67,6 @@ public class MageAttackTask implements PathfinderTask {
 
 	@Override
 	public Predicate<MapLocation> getStopCondition() {
-		return STOP_CONDITION;
+		return stopCondition;
 	}
 }
