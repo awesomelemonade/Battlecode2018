@@ -19,6 +19,8 @@ GIT_PREVIOUS_SUCCESSFUL_COMMIT="${3}"
 NUMWINS=0
 NUMGAMES=0
 
+PRE="00000000"
+
 MAPS=("socket" "bananas")
 BOTS=("examplefuncsplayer-python")
 
@@ -39,8 +41,11 @@ killmonitor() {
 rungame() {
     GAME_ID=${NUMGAMES}
     NUMGAMES=$(( NUMGAMES + 1 ))
-    CMD="./battlecode.sh -p1 Bot -p2 $1 -m $2"
+    CMD="./battlecode.sh -p1 ${PRE}Bot -p2 ${PRE}${1} -m ${2}"
     LOGFILE="${DIR}/logs/log_${GAME_ID}.txt"
+
+    mv Bot ${PRE}Bot
+    mv "${1}" "${PRE}${1}"
 
     echo ">>>> Run CMD: ${CMD}"
     #ulimit -v 256000
@@ -59,6 +64,9 @@ rungame() {
     fi
     P_ENEMIES[GAME_ID]=$1
     P_MAPS[GAME_ID]=$2
+
+    mv ${PRE}Bot Bot
+    mv "${PRE}${1}" "${1}"
 }
 
 urlencode() {
@@ -91,7 +99,7 @@ cd "${DIR}"
 
 git reset --hard
 git clean -fdx
-git checkout dev-main
+git checkout ${GIT_BRANCH}
 git pull --all
 
 echo ">>>> Copying previous successful bot"
@@ -123,10 +131,15 @@ echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot/run.sh"
 
 cd "${SCAFFOLD_DIR}"
 
-sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    echo $@\n}' battlecode.sh
+sed -i '2 i\python3() {
+    ~ubuntu/.pyenv/versions/general/bin/python $@
+}
+pip3() {
+    echo $@
+}' battlecode.sh
 mkdir -p "${DIR}/logs"
 
-killmonitor &
+#killmonitor &
 for bot in ${BOTS[@]}; do
     for map in ${MAPS[@]}; do
         rungame ${bot} ${map}
