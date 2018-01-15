@@ -1,10 +1,8 @@
 package citricsky.battlecode2018.main;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.PriorityQueue;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -53,33 +51,32 @@ public class EarthPlayer {
 		}
 		while (true) {
 			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms");
-			Unit[] myUnits = gc.getMyUnits();
-			Map<UnitHandler, Integer> priorities = new HashMap<UnitHandler, Integer>();
-			PriorityQueue<UnitHandler> queue = new PriorityQueue<UnitHandler>(myUnits.length, Comparator.comparingInt(priorities::get));
-			for (Unit unit : myUnits) {
+			Set<Unit> unhandled = new HashSet<Unit>();
+			for (Unit unit : gc.getMyUnits()) {
+				unhandled.add(unit);
+			}
+			while (unhandled.size() > 0 && gc.getTimeLeft() > 1000) {
+				Unit bestUnit = null;
 				UnitHandler bestHandler = null;
 				int bestPriority = Integer.MIN_VALUE;
-				for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
-					UnitHandler handler = function.apply(unit);
-					int priority = handler.getPriority(bestPriority);
-					if (handler.isRequired()) {
-						priorities.put(handler, priority);
-						queue.add(handler);
-					} else {
+				for (Unit unit : unhandled) {
+					for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
+						UnitHandler handler = function.apply(unit);
+						int priority = handler.getPriority(bestPriority);
 						if (priority > bestPriority) {
 							bestPriority = priority;
 							bestHandler = handler;
+							bestUnit = unit;
 						}
 					}
 				}
-				if (bestHandler != null) {
-					priorities.put(bestHandler, bestPriority);
-					queue.add(bestHandler);
+				if(bestHandler==null) {
+					break;
 				}
-			}
-			while (!queue.isEmpty()) {
-				UnitHandler handler = queue.poll();
-				handler.execute();
+				bestHandler.execute();
+				if(!bestHandler.isRequired()) {
+					unhandled.remove(bestUnit);
+				}
 			}
 			gc.yield();
 		}
