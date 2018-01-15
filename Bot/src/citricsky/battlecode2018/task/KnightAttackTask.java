@@ -3,12 +3,11 @@ package citricsky.battlecode2018.task;
 import citricsky.battlecode2018.library.*;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
-public class KnightAttackTask implements PathfinderTask{
-	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
-		return getEnemyDirection(location) != null;
-	};
+public class KnightAttackTask implements PathfinderTask {
 	private static Direction getEnemyDirection(MapLocation location) {
 		Direction factoryDirection = null;
 		for(Direction direction: Direction.CARDINAL_DIRECTIONS) {
@@ -32,6 +31,34 @@ public class KnightAttackTask implements PathfinderTask{
 		}
 		return null;
 	}
+	
+	private Set<MapLocation> valid;
+	
+	public KnightAttackTask() {
+		valid = new HashSet<MapLocation>();
+	}
+	
+	private Predicate<MapLocation> stopCondition = location -> {
+		if(valid.contains(location)) {
+			return false;
+		}
+		return valid.contains(location);
+	};
+	
+	@Override
+	public void update() {
+		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
+				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
+		for(Unit unit: enemyUnits) {
+			for(Direction direction: Direction.CARDINAL_DIRECTIONS) {
+				MapLocation offset = unit.getLocation().getMapLocation().getOffsetLocation(direction);
+				if(offset.isOnMap()) {
+					valid.add(offset);
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void execute(Unit unit, MapLocation location) {
 		if(unit.getLocation().getMapLocation().equals(location)) {
@@ -50,6 +77,6 @@ public class KnightAttackTask implements PathfinderTask{
 	}
 	@Override
 	public Predicate<MapLocation> getStopCondition() {
-		return STOP_CONDITION;
+		return stopCondition;
 	}
 }
