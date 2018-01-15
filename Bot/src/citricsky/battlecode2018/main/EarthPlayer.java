@@ -9,15 +9,10 @@ import java.util.function.Function;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
-import citricsky.battlecode2018.task.KnightAttackTask;
-import citricsky.battlecode2018.task.RangerAttackTask;
-import citricsky.battlecode2018.task.WorkerBlueprintFactoryTask;
-import citricsky.battlecode2018.task.WorkerBuildTask;
-import citricsky.battlecode2018.task.WorkerHarvestTask;
+import citricsky.battlecode2018.task.*;
 import citricsky.battlecode2018.unithandler.BFSHandler;
 import citricsky.battlecode2018.unithandler.ExploreHandler;
 import citricsky.battlecode2018.unithandler.FactoryHandler;
-import citricsky.battlecode2018.unithandler.PathfinderTask;
 import citricsky.battlecode2018.unithandler.UnitHandler;
 
 public class EarthPlayer {
@@ -33,20 +28,23 @@ public class EarthPlayer {
 		for (UnitType unitType : UnitType.values()) {
 			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
 		}
-		handlers.get(UnitType.WORKER).add(unit -> new BFSHandler(unit, new PathfinderTask[]{
+
+		handlers.get(UnitType.WORKER).add(unit -> new BFSHandler(unit,
 				new WorkerBlueprintFactoryTask(),
 				new WorkerHarvestTask(),
 				new WorkerBuildTask()
-		}));
-		handlers.get(UnitType.KNIGHT).add(unit -> new BFSHandler(unit, new PathfinderTask[]{
-				new KnightAttackTask()
-		}));
-		handlers.get(UnitType.RANGER).add(unit -> new BFSHandler(unit, new PathfinderTask[]{
-				new RangerAttackTask()
-		}));
-		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
+		));
+
 		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
+		handlers.get(UnitType.KNIGHT).add(unit -> new BFSHandler(unit, new KnightAttackTask()));
+
 		handlers.get(UnitType.RANGER).add(ExploreHandler::new);
+		handlers.get(UnitType.RANGER).add(unit -> new BFSHandler(unit, new RangerAttackTask()));
+
+		handlers.get(UnitType.MAGE).add(ExploreHandler::new);
+		handlers.get(UnitType.MAGE).add(unit -> new BFSHandler(unit, new MageAttackTask()));
+
+		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 
 		while (true) {
 			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms");

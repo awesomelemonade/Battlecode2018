@@ -122,7 +122,7 @@ public enum GameController {
 		bcGameController.nextTurn();
 	}
 
-	protected bc.GameController getBcGameController(){
+	public bc.GameController getBcGameController(){
 		return bcGameController;
 	}
 }

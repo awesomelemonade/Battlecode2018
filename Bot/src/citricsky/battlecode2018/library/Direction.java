@@ -10,16 +10,20 @@ public enum Direction {
 	SOUTH     ( 0, -1, South),
 	SOUTHWEST (-1, -1, Southwest),
 	WEST      (-1,  0, West),
-	NORTHWEST (-1,  1, Northwest);
-	
+	NORTHWEST (-1,  1, Northwest),
+	CENTER    ( 0,  0, Center);
+
+
 	public static final Direction[] CARDINAL_DIRECTIONS = new Direction[]
 			{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
+	public static final Direction[] DIAGONAL_CENTER = new Direction[]
+			{Direction.NORTHEAST, Direction.SOUTHEAST, Direction.SOUTHWEST, Direction.NORTHWEST, Direction.CENTER};
 	public static final Direction[] COMPASS = new Direction[] {
 			Direction.NORTH, Direction.NORTHEAST, Direction.EAST, Direction.SOUTHEAST,
 			Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.SOUTHWEST
 	};
-	private static final int LENGTH = 8;
-	
+	private static final int LENGTH = 8; // While there are 9 values, this is still 8 to not include CENTER in opposite/rotations/random
+
 	private Vector offset;
 	private bc.Direction bcDirection;
 
@@ -29,14 +33,17 @@ public enum Direction {
 	}
 
 	public Direction getOpposite() {
-		return Direction.values()[(this.ordinal() + 4) % LENGTH];
+		if (this == CENTER) return this;
+		return Direction.values()[(this.ordinal() + 4) % LENGTH - 1];
 	}
 
 	public Direction rotateClockwise() {
+		if (this == CENTER) return this;
 		return Direction.values()[(this.ordinal() + 1) % LENGTH];
 	}
 
 	public Direction rotateCounterClockwise() {
+		if (this == CENTER) return this;
 		return Direction.values()[(this.ordinal() + 7) % LENGTH];
 	}
 
@@ -66,6 +73,8 @@ public enum Direction {
 				return Direction.WEST;
 			case Northwest:
 				return Direction.NORTHWEST;
+			case Center:
+				return Direction.CENTER;
 			default:
 				return null;
 		}

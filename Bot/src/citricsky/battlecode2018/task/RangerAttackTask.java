@@ -1,48 +1,50 @@
 package citricsky.battlecode2018.task;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Predicate;
 
+import bc.VecUnit;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class RangerAttackTask implements PathfinderTask {
 	private static final Predicate<MapLocation> STOP_CONDITION = location -> {
 		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
 				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
-		for(Unit enemyUnit: enemyUnits) {
-			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if(distanceSquared<40) {
-				return false;
-			}
-		}
-		for(Unit enemyUnit: enemyUnits) {
-			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if(distanceSquared<=50) {
-				return true;
-			}
-		}
-		return false;
+		Vector position = location.getPosition();
+
+		Arrays.sort(enemyUnits, Comparator.comparingInt(unit -> unit.getLocation().getMapLocation().getPosition().getDistanceSquared(position)));
+		int distanceSquared = enemyUnits[0].getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
+		return distanceSquared <= 50 && !(distanceSquared < 40);
 	};
-	
+
 	@Override
 	public void execute(Unit unit, MapLocation location) {
-		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
-				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
 		int bestDistanceSquared = Integer.MAX_VALUE;
 		Unit bestTarget = null;
-		for(Unit enemyUnit: enemyUnits) {
-			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if(distanceSquared>unit.getRangerCannotAttackRange()) {
-				if(distanceSquared < bestDistanceSquared) {
-					bestDistanceSquared = distanceSquared;
-					bestTarget = enemyUnit;
+
+		VecUnit vecUnit = GameController.INSTANCE.getBcGameController().units();
+		if (vecUnit != null) {
+			for (int i = 0, len = (int) vecUnit.size(); i < len; ++i) {
+				Unit enemyUnit = new Unit(vecUnit.get(i));
+				if (enemyUnit.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemyUnit.getLocation().isOnMap()) {
+					int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
+					if (distanceSquared > unit.getRangerCannotAttackRange()) {
+						if (distanceSquared < bestDistanceSquared) {
+							bestDistanceSquared = distanceSquared;
+							bestTarget = enemyUnit;
+						}
+					}
 				}
 			}
 		}
-		if(bestTarget != null) {
-			if(unit.isAttackReady() && unit.canAttack(bestTarget)) {
+
+		if (bestTarget != null) {
+			if (unit.isAttackReady() && unit.canAttack(bestTarget)) {
 				unit.attack(bestTarget);
 			}
 		}
