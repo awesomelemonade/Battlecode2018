@@ -14,6 +14,7 @@ public class BFS {
 	private MapLocation source;
 	private MapLocation stopLocation;
 	public BFS(MapLocation source) {
+		this.source = source;
 		this.data = new Direction[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
 		this.queue = new ArrayDeque<MapLocation>();
 		queue.add(source);
@@ -62,6 +63,9 @@ public class BFS {
 	}
 	public Deque<MapLocation> getQueue(){
 		return queue;
+	}
+	public MapLocation getSource() {
+		return source;
 	}
 	public MapLocation getStopLocation() {
 		return stopLocation;
