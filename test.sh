@@ -48,7 +48,7 @@ rungame() {
 
     echo ">>>> Run CMD: ${CMD}"
     #ulimit -v 256000
-    timeout 45s ${CMD} | tee ${LOGFILE}
+    ${CMD} | tee ${LOGFILE}
     WINNER=$(tail -1 ${LOGFILE} | cut -f4 -d' ')
     sed -i "1 i\ ${CMD}" ${LOGFILE}
     if [[ ${WINNER} == "2" ]]; then
