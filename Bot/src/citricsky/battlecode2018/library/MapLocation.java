@@ -1,5 +1,7 @@
 package citricsky.battlecode2018.library;
 
+import java.util.function.Predicate;
+
 public class MapLocation {
 	private bc.MapLocation bcMapLocation;
 	private Planet planet;
@@ -9,6 +11,12 @@ public class MapLocation {
 		this.bcMapLocation = bcMapLocation;
 		this.planet = Planet.valueOf(bcMapLocation.getPlanet());
 		this.position = new Vector(bcMapLocation.getX(), bcMapLocation.getY());
+	}
+
+	public MapLocation(Planet planet, int x, int y) {
+		this.bcMapLocation = new bc.MapLocation(planet.getBcPlanet(), x, y);
+		this.planet = planet;
+		this.position = new Vector(x, y);
 	}
 
 	public MapLocation getOffsetLocation(Direction direction) {
@@ -41,6 +49,10 @@ public class MapLocation {
 	
 	public Unit[] senseNearbyUnits(int radiusSquared) {
 		return LibraryUtil.toArray(GameController.INSTANCE.getBcGameController().senseNearbyUnits(bcMapLocation, radiusSquared));
+	}
+
+	public Unit[] senseNearbyUnitsByFilter(long radiusSquared, Predicate<? super Unit> predicate) {
+		return LibraryUtil.toFilteredArray(GameController.INSTANCE.getBcGameController().senseNearbyUnits(bcMapLocation, radiusSquared), predicate);
 	}
 	
 	public Unit[] senseNearbyUnitsByTeam(int radiusSquared, Team team) {

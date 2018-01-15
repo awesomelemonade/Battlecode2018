@@ -5,7 +5,7 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 
 public class FactoryHandler implements UnitHandler {
-	private static final UnitType[] PRODUCE = new UnitType[] {UnitType.KNIGHT, UnitType.RANGER};
+	private static final UnitType[] PRODUCE = new UnitType[] {UnitType.KNIGHT, UnitType.RANGER, UnitType.MAGE};
 	private Unit unit;
 	
 	public FactoryHandler(Unit unit) {

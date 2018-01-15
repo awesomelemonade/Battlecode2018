@@ -10,29 +10,29 @@ public class BFSHandler implements UnitHandler {
 	private BFS bfs;
 	private PathfinderTask[] pathfinderTasks;
 	private PathfinderTask task;
-	
+
 	public BFSHandler(Unit unit, PathfinderTask... pathfinderTasks) {
 		this.unit = unit;
 		this.pathfinderTasks = pathfinderTasks;
-		if(unit.getLocation().isOnMap()) {
+		if (unit.getLocation().isOnMap()) {
 			this.bfs = new BFS(unit.getLocation().getMapLocation());
 		}
 	}
-	
+
 	@Override
 	public int getPriority(int priority) {
 		if (!unit.getLocation().isOnMap()) {
 			return Integer.MIN_VALUE;
 		}
 		MapLocation mapLocation = unit.getLocation().getMapLocation();
-		if(bfs.getStopLocation() != null) {
+		if (bfs.getStopLocation() != null) {
 			int bestPriority = -bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
-			if(bestPriority<=priority) {
+			if (bestPriority <= priority) {
 				return Integer.MIN_VALUE;
 			}
 		}
 		long time = System.currentTimeMillis();
-		task = bfs.process(location -> location.isPassableTerrain(), pathfinderTasks);
+		task = bfs.process(MapLocation::isPassableTerrain, pathfinderTasks);
 		time = System.currentTimeMillis()-time;
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
@@ -42,6 +42,7 @@ public class BFSHandler implements UnitHandler {
 		}
 		return -bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
 	}
+
 	@Override
 	public void execute() {
 		if (!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
