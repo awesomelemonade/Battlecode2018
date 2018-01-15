@@ -7,6 +7,7 @@ killexisting() {
     pkill -x -9 "/home/ubuntu/.pyenv/versions/general/bin/python"
     pkill -fx -9 "python3 run.py"
     pkill -fx -9 "java -classpath .:../battlecode/java Player"
+    pkill -x -9 "javac"
 }
 
 killexisting
