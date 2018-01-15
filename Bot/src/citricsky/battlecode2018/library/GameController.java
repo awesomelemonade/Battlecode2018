@@ -28,6 +28,7 @@ public enum GameController {
 	/**
 	 * The current duration of flight if a rocket were to be launched this round.
 	 * Does not take into account any research done on rockets.
+	 *
 	 * @return
 	 */
 	public int getCurrentFlightDuration() {
@@ -75,11 +76,11 @@ public enum GameController {
 		return bcGameController.isOver();
 	}
 
-	public Unit[] getMyUnits(){
+	public Unit[] getMyUnits() {
 		return LibraryUtil.toArray(bcGameController.myUnits());
 	}
 
-	public Unit[] getMyUnitsByFilter(Predicate<? super Unit> predicate){
+	public Unit[] getMyUnitsByFilter(Predicate<? super Unit> predicate) {
 		return LibraryUtil.toFilteredArray(bcGameController.myUnits(), predicate);
 	}
 
@@ -110,19 +111,19 @@ public enum GameController {
 	public long getRoundNumber() {
 		return bcGameController.round();
 	}
-	
+
 	public int getTimeLeft() {
 		return bcGameController.getTimeLeftMs();
 	}
 
 	public void yield() {
-		for(Planet planet: Planet.values()) {
+		for (Planet planet : Planet.values()) {
 			planet.clearMapLocations();
 		}
 		bcGameController.nextTurn();
 	}
 
-	public bc.GameController getBcGameController(){
+	protected bc.GameController getBcGameController() {
 		return bcGameController;
 	}
 }

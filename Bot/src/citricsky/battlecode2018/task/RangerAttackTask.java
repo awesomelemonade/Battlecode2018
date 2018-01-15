@@ -55,25 +55,19 @@ public class RangerAttackTask implements PathfinderTask {
 
 	@Override
 	public void execute(Unit unit, MapLocation location) {
+		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
+				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
 		int bestDistanceSquared = Integer.MAX_VALUE;
 		Unit bestTarget = null;
-
-		VecUnit vecUnit = GameController.INSTANCE.getBcGameController().units();
-		if (vecUnit != null) {
-			for (int i = 0, len = (int) vecUnit.size(); i < len; ++i) {
-				Unit enemyUnit = new Unit(vecUnit.get(i));
-				if (enemyUnit.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemyUnit.getLocation().isOnMap()) {
-					int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-					if (distanceSquared > unit.getRangerCannotAttackRange()) {
-						if (distanceSquared < bestDistanceSquared) {
-							bestDistanceSquared = distanceSquared;
-							bestTarget = enemyUnit;
-						}
-					}
+		for (Unit enemyUnit : enemyUnits) {
+			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
+			if (distanceSquared > unit.getRangerCannotAttackRange()) {
+				if (distanceSquared < bestDistanceSquared) {
+					bestDistanceSquared = distanceSquared;
+					bestTarget = enemyUnit;
 				}
 			}
 		}
-
 		if (bestTarget != null) {
 			if (unit.isAttackReady() && unit.canAttack(bestTarget)) {
 				unit.attack(bestTarget);
