@@ -13,54 +13,65 @@ public class BFS {
 	private Deque<MapLocation> queue;
 	private MapLocation source;
 	private MapLocation stopLocation;
+	private boolean checkedSource;
+
 	public BFS(MapLocation source) {
 		this.source = source;
 		this.data = new Direction[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
 		this.queue = new ArrayDeque<MapLocation>();
 		queue.add(source);
+		this.checkedSource = false;
 	}
+
 	public Direction getDirectionFromSource(Vector vector) {
 		Vector step = vector.add(data[vector.getX()][vector.getY()].getOffsetVector());
-		if(source.getPosition().equals(step)) {
+		if (source.getPosition().equals(step)) {
 			return data[vector.getX()][vector.getY()].getOpposite();
-		}else {
+		} else {
 			return getDirectionFromSource(step);
 		}
 	}
+
 	public Direction getDirectionToSource(Vector vector) {
 		return data[vector.getX()][vector.getY()];
 	}
+
 	public Direction getDirection(Vector position) {
 		return data[position.getX()][position.getY()];
 	}
+
 	public void process(Predicate<MapLocation> passable) {
 		process(passable, x -> false);
 	}
+
 	@SafeVarargs
 	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
 		this.stopLocation = null;
-		for(T stopCondition: stopConditions) {
-			if(stopCondition.test(source)) {
-				this.stopLocation = source;
-				return stopCondition;
+		if (!checkedSource) {
+			for (T stopCondition : stopConditions) {
+				if (stopCondition.test(source)) {
+					this.stopLocation = source;
+					return stopCondition;
+				}
 			}
+			checkedSource = true;
 		}
-		while(!queue.isEmpty()) {
+		while (!queue.isEmpty()) {
 			MapLocation polled = queue.poll();
-			for(T stopCondition: stopConditions) {
-				if(stopCondition.test(polled)) {
+			for (T stopCondition : stopConditions) {
+				if (stopCondition.test(polled)) {
 					queue.addFirst(polled);
 					this.stopLocation = polled;
 					return stopCondition;
 				}
 			}
-			for(Direction direction: Direction.COMPASS) {
+			for (Direction direction : Direction.COMPASS) {
 				MapLocation step = polled.getOffsetLocation(direction);
-				if(step.equals(source)) {
+				if (step.equals(source)) {
 					continue;
 				}
-				if(step.isOnMap()) {
-					if(passable.test(step) && data[step.getPosition().getX()][step.getPosition().getY()] == null) {
+				if (step.isOnMap()) {
+					if (passable.test(step) && data[step.getPosition().getX()][step.getPosition().getY()] == null) {
 						data[step.getPosition().getX()][step.getPosition().getY()] = direction.getOpposite();
 						queue.add(step);
 					}
@@ -69,12 +80,15 @@ public class BFS {
 		}
 		return null;
 	}
-	public Deque<MapLocation> getQueue(){
+
+	public Deque<MapLocation> getQueue() {
 		return queue;
 	}
+
 	public MapLocation getSource() {
 		return source;
 	}
+
 	public MapLocation getStopLocation() {
 		return stopLocation;
 	}
