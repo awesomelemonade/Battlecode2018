@@ -13,7 +13,13 @@ public class RangerAttackTask implements PathfinderTask {
 				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam());
 		for(Unit enemyUnit: enemyUnits) {
 			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if(distanceSquared>=40&&distanceSquared<=50) {
+			if(distanceSquared<40) {
+				return false;
+			}
+		}
+		for(Unit enemyUnit: enemyUnits) {
+			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
+			if(distanceSquared<=50) {
 				return true;
 			}
 		}

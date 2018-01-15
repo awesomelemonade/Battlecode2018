@@ -14,6 +14,8 @@ import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.task.KnightAttackTask;
+import citricsky.battlecode2018.task.RangerAttackTask;
 import citricsky.battlecode2018.task.WorkerBlueprintFactoryTask;
 import citricsky.battlecode2018.task.WorkerBuildTask;
 import citricsky.battlecode2018.task.WorkerHarvestTask;
@@ -43,6 +45,8 @@ public class EarthPlayer {
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintFactoryTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
+		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
+		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
 		handlers.get(UnitType.FACTORY).add(unit -> new FactoryHandler(unit));
 		for(UnitType unitType: pathfinderTasks.keySet()) {
 			if(!pathfinderTasks.get(unitType).isEmpty()) {

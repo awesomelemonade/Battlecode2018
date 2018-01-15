@@ -10,8 +10,7 @@ public enum Direction {
 	SOUTH     ( 0, -1, South),
 	SOUTHWEST (-1, -1, Southwest),
 	WEST      (-1,  0, West),
-	NORTHWEST (-1,  1, Northwest),
-	CENTER    ( 0,  0, Center);
+	NORTHWEST (-1,  1, Northwest);
 	
 	public static final Direction[] CARDINAL_DIRECTIONS = new Direction[]
 			{Direction.NORTH, Direction.SOUTH, Direction.EAST, Direction.WEST};
@@ -67,8 +66,6 @@ public enum Direction {
 				return Direction.WEST;
 			case Northwest:
 				return Direction.NORTHWEST;
-			case Center:
-				return Direction.CENTER;
 			default:
 				return null;
 		}

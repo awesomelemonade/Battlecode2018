@@ -5,6 +5,7 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 
 public class FactoryHandler implements UnitHandler {
+	private static final UnitType[] PRODUCE = new UnitType[] {UnitType.KNIGHT, UnitType.RANGER};
 	private Unit unit;
 	
 	public FactoryHandler(Unit unit) {
@@ -18,8 +19,9 @@ public class FactoryHandler implements UnitHandler {
 	
 	@Override
 	public void execute() {
-		if(unit.canProduceRobot(UnitType.KNIGHT)) {
-			unit.produceRobot(UnitType.KNIGHT);
+		UnitType randomUnitType = PRODUCE[(int)(Math.random()*PRODUCE.length)];
+		if(unit.canProduceRobot(randomUnitType)) {
+			unit.produceRobot(randomUnitType);
 		}
 		int garrisonSize = unit.getGarrisonUnitIds().length;
 		if (garrisonSize > 0) {
