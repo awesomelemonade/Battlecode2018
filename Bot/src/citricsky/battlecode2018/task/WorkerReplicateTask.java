@@ -8,12 +8,18 @@ import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
+import citricsky.battlecode2018.util.Constants;
 
 public class WorkerReplicateTask implements PathfinderTask {
 	private static final int MAX_WORKERS = 6;
 	private Predicate<MapLocation> stopCondition = location -> {
+		if (GameController.INSTANCE.getCurrentKarbonite() < Constants.WORKER_REPLICATE_COST) {
+			return false;
+		}
 		if (location.senseNearbyUnitsByFilter(2, unit -> unit.getTeam() == GameController.INSTANCE.getTeam() &&
-				unit.getType() == UnitType.WORKER).length > MAX_WORKERS) return false;
+				unit.getType() == UnitType.WORKER).length > MAX_WORKERS) {
+			return false;
+		}
 		return WorkerReplicateTask.getReplicateDirection(location) != null;
 	};
 	private static Direction getReplicateDirection(MapLocation location) {
