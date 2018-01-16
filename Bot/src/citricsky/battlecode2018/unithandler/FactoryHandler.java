@@ -5,25 +5,24 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 
 public class FactoryHandler implements UnitHandler {
-	private static final UnitType[] PRODUCE = new UnitType[] {UnitType.KNIGHT, UnitType.RANGER, UnitType.MAGE};
 	private Unit unit;
-	
+
 	public FactoryHandler(Unit unit) {
 		this.unit = unit;
 	}
-	
+
 	@Override
 	public int getPriority(int priority) {
 		if (!unit.isStructureBuilt()) {
 			return Integer.MIN_VALUE;
 		}
-		return Integer.MIN_VALUE+1;
+		return Integer.MIN_VALUE + 1;
 	}
-	
+
 	@Override
 	public void execute() {
-		UnitType randomUnitType = PRODUCE[(int)(Math.random()*PRODUCE.length)];
-		if(unit.canProduceRobot(randomUnitType)) {
+		UnitType randomUnitType = Production.getFromProb((int) (Math.random() * 100));
+		if (unit.canProduceRobot(randomUnitType)) {
 			unit.produceRobot(randomUnitType);
 		}
 		int garrisonSize = unit.getGarrisonUnitIds().length;
@@ -38,9 +37,41 @@ public class FactoryHandler implements UnitHandler {
 			}
 		}
 	}
-	
+
 	@Override
 	public boolean isRequired() {
 		return true;
+	}
+
+	enum Production {
+		KNIGHT(UnitType.KNIGHT, 0, 30),
+		RANGER(UnitType.RANGER, 30, 60),
+		MAGE(UnitType.MAGE, 60, 90),
+		WORKER(UnitType.WORKER, 90, 100);
+
+		private UnitType type;
+		private byte probMin; // 0 to 100 (inclusive)
+		private byte probMax;
+
+		private static int total = -1;
+
+		Production(UnitType type, int probMin, int probMax) {
+			this.type = type;
+			this.probMin = (byte) probMin;
+			this.probMax = (byte) probMax;
+		}
+
+		public UnitType getType() {
+			return type;
+		}
+
+		public static UnitType getFromProb(int prob) {
+			for (Production prod : Production.values()) {
+				if (prod.probMin < prob) continue;
+				if (prod.probMax > prob) continue;
+				return prod.getType();
+			}
+			return null;
+		}
 	}
 }
