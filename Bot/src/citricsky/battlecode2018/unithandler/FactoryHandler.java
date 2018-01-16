@@ -68,8 +68,8 @@ public class FactoryHandler implements UnitHandler {
 
 		public static UnitType getFromProb(int prob) {
 			for (Production prod : Production.values()) {
-				if (prod.probMin < prob) continue;
-				if (prod.probMax > prob) continue;
+				if (prod.probMin > prob) continue;
+				if (prod.probMax < prob) continue;
 				return prod.getType();
 			}
 			return null;
