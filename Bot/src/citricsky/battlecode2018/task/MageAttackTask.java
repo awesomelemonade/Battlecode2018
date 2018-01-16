@@ -38,8 +38,7 @@ public class MageAttackTask implements PathfinderTask {
 		scoreCache.clear();
 		valid.clear();
 		invalid.clear();
-		enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
-				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
+		updateEnemies();
 	}
 
 	private Unit[] updateEnemies() {
