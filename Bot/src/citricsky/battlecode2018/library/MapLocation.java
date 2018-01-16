@@ -14,7 +14,7 @@ public class MapLocation {
 		this.position = new Vector(bcMapLocation.getX(), bcMapLocation.getY());
 	}
 
-	public MapLocation(Planet planet, int x, int y) {
+	protected MapLocation(Planet planet, int x, int y) {
 		this.bcMapLocation = new bc.MapLocation(planet.getBcPlanet(), x, y);
 		this.planet = planet;
 		this.position = new Vector(x, y);

@@ -20,22 +20,28 @@ public class RocketHandler implements UnitHandler {
 	@Override
 	public void execute() {
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
-			if (unit.getGarrisonUnitIds().length < 4) {
+			if (unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity() ||
+					GameController.INSTANCE.getRoundNumber() == 749 || 
+					((double)unit.getHealth()) / ((double)unit.getMaxHealth()) < 0.5) {
+				int offsetX = (int)(Math.random() * Planet.MARS.getWidth());
+				int offsetY = (int)(Math.random() * Planet.MARS.getHeight());
+				for(int x = 0; x < Planet.MARS.getWidth(); x++) {
+					for(int y = 0; y < Planet.MARS.getHeight(); y++) {
+						MapLocation destination = Planet.MARS.getMapLocation(
+								(x + offsetX) % Planet.MARS.getWidth(), (y + offsetY) % Planet.MARS.getHeight());
+						if(destination.isPassableTerrain()) {
+							if (unit.canLaunchRocket(destination)) {
+								unit.launchRocket(destination);
+								return;
+							}
+						}
+					}
+				}
+			} else {
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
 					if (target.isStructure()) continue;
 					if (unit.canLoad(target)) {
 						unit.load(target);
-					}
-				}
-			} else {
-				for (int x = (int) (Math.random() * Planet.MARS.getWidth()); x < Planet.MARS.getWidth(); x = (x + 1) % Planet.MARS.getWidth()) {
-					for (int y = (int) (Math.random() * Planet.MARS.getHeight()); y < Planet.MARS.getHeight(); y = (y + 1) % Planet.MARS.getHeight()) {
-						MapLocation destination = new MapLocation(Planet.MARS, x, y);
-						if (destination.isPassableTerrain()) {
-							if (unit.canLaunchRocket(destination)) {
-								unit.launchRocket(destination);
-							}
-						}
 					}
 				}
 			}
