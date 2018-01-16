@@ -32,6 +32,7 @@ public class EarthPlayer {
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintRocketTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerReplicateTask());
 		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
 		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
 		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
