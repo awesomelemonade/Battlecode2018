@@ -1,5 +1,7 @@
 package citricsky.battlecode2018.unithandler;
 
+import java.util.Set;
+
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
@@ -8,11 +10,13 @@ import citricsky.battlecode2018.main.BFS;
 public class BFSHandler implements UnitHandler {
 	private Unit unit;
 	private BFS bfs;
+	private Set<MapLocation> occupied;
 	private PathfinderTask[] pathfinderTasks;
 	private PathfinderTask task;
 
-	public BFSHandler(Unit unit, PathfinderTask... pathfinderTasks) {
+	public BFSHandler(Unit unit, Set<MapLocation> occupied, PathfinderTask... pathfinderTasks) {
 		this.unit = unit;
+		this.occupied = occupied;
 		this.pathfinderTasks = pathfinderTasks;
 		if (unit.getLocation().isOnMap()) {
 			this.bfs = new BFS(unit.getLocation().getMapLocation());
@@ -32,7 +36,7 @@ public class BFSHandler implements UnitHandler {
 			}
 		}
 		long time = System.currentTimeMillis();
-		task = bfs.process(MapLocation::isPassableTerrain, pathfinderTasks);
+		task = bfs.process(location -> location.isPassableTerrain() && (!occupied.contains(location)), pathfinderTasks);
 		time = System.currentTimeMillis()-time;
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
@@ -42,7 +46,6 @@ public class BFSHandler implements UnitHandler {
 		}
 		return -bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
 	}
-
 	@Override
 	public void execute() {
 		if (!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
@@ -51,6 +54,7 @@ public class BFSHandler implements UnitHandler {
 				unit.move(direction);
 			}
 		}
+		occupied.add(bfs.getStopLocation());
 		task.execute(unit, bfs.getStopLocation());
 	}
 }

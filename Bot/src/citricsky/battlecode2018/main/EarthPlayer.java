@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.function.Function;
 
 import citricsky.battlecode2018.library.GameController;
+import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.task.*;
@@ -44,13 +45,15 @@ public class EarthPlayer {
 		handlers.get(UnitType.HEALER).add(ExploreHandler::new);
 		handlers.get(UnitType.WORKER).add(ExploreHandler::new);
 
+		Set<MapLocation> occupied = new HashSet<MapLocation>();
 		for (UnitType unitType : UnitType.values()) {
 			if (!pathfinderTasks.get(unitType).isEmpty())
-			handlers.get(unitType).add(unit -> new BFSHandler(unit,
+			handlers.get(unitType).add(unit -> new BFSHandler(unit, occupied,
 					pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 		}
 		while (true) {
 			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
+			occupied.clear();
 			for(UnitType unitType : UnitType.values()) {
 				pathfinderTasks.get(unitType).forEach(PathfinderTask::update);
 			}
