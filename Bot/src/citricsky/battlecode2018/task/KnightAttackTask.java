@@ -8,30 +8,28 @@ import java.util.Set;
 import java.util.function.Predicate;
 
 public class KnightAttackTask implements PathfinderTask {
-	private static Direction getEnemyDirection(MapLocation location) {
-		Direction factoryDirection = null;
+	private static Unit getEnemyUnit(MapLocation location) {
+		Unit factoryUnit = null;
 		for (Direction direction : Direction.CARDINAL_DIRECTIONS) {
 			MapLocation offset = location.getOffsetLocation(direction);
 			if (GameController.INSTANCE.canSenseLocation(offset)) {
 				if (offset.hasUnitAtLocation()) {
 					Unit locationUnit = offset.getUnit();
 					if (locationUnit.getTeam().equals(GameController.INSTANCE.getEnemyTeam())) {
-						if (locationUnit.getType().equals(UnitType.FACTORY) && factoryDirection == null) {
-							factoryDirection = direction;
+						if (locationUnit.getType().equals(UnitType.FACTORY) && factoryUnit == null) {
+							factoryUnit = locationUnit;
 						} else {
-							return direction;
+							return locationUnit;
 						}
 					}
 				}
 			}
 		}
-		if (factoryDirection != null) {
-			return factoryDirection;
-		}
-		return null;
+		return factoryUnit;
 	}
 
 	private Set<MapLocation> valid;
+	private Unit[] enemyUnits;
 
 	public KnightAttackTask() {
 		valid = new HashSet<MapLocation>();
@@ -42,7 +40,7 @@ public class KnightAttackTask implements PathfinderTask {
 	@Override
 	public void update() {
 		valid.clear();
-		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
+		enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
 				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
 		for (Unit unit : enemyUnits) {
 			for (Direction direction : Direction.CARDINAL_DIRECTIONS) {
@@ -57,15 +55,27 @@ public class KnightAttackTask implements PathfinderTask {
 	@Override
 	public void execute(Unit unit, MapLocation location) {
 		if (unit.getLocation().getMapLocation().equals(location)) {
-			Unit enemyUnit = location.getOffsetLocation(getEnemyDirection(location)).getUnit();
-			if (unit.canAttack(enemyUnit)) {
-				if (unit.isAttackReady()) {
+			Unit enemyUnit = KnightAttackTask.getEnemyUnit(location);
+			if(enemyUnit != null) {
+				if (unit.isAttackReady() && unit.canAttack(enemyUnit)) {
 					unit.attack(enemyUnit);
 				}
 			}
-			if (unit.canJavelin(enemyUnit)) {
-				if (unit.isJavelinReady()) {
-					unit.javelin(enemyUnit);
+		}
+		if(unit.isAbilityUnlocked()) {
+			Unit bestUnit = null;
+			int bestDistanceSquared = Integer.MAX_VALUE;
+			for(Unit enemyUnit: enemyUnits) {
+				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
+						.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
+				if(distanceSquared < bestDistanceSquared) {
+					bestDistanceSquared = distanceSquared;
+					bestUnit = enemyUnit;
+				}
+			}
+			if(bestUnit != null) {
+				if(unit.canJavelin(bestUnit)) {
+					unit.javelin(bestUnit);
 				}
 			}
 		}
