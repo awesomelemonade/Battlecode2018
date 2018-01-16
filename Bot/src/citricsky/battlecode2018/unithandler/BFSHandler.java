@@ -30,8 +30,8 @@ public class BFSHandler implements UnitHandler {
 			return Integer.MIN_VALUE;
 		}
 		MapLocation mapLocation = unit.getLocation().getMapLocation();
-		if (!bfs.getStopLocations().isEmpty()) {
-			int bestPriority = -bfs.getStopLocations().getPosition().getDistanceSquared(mapLocation.getPosition());
+		if (bfs.getStopLocation() != null) {
+			int bestPriority = -bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
 			if (bestPriority <= priority) {
 				return Integer.MIN_VALUE;
 			}
@@ -50,9 +50,15 @@ public class BFSHandler implements UnitHandler {
 	@Override
 	public void execute() {
 		if (!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
-			Direction direction = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
-			if (unit.isMoveReady() && unit.canMove(direction)) {
-				unit.move(direction);
+			if(unit.isMoveReady()) {
+				int directions = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
+				for(Direction direction: Direction.COMPASS) {
+					if(((directions >>> direction.ordinal()) & 1) == 1) {
+						if(unit.canMove(direction)) {
+							unit.move(direction);
+						}
+					}
+				}
 			}
 		}
 		occupied.add(bfs.getStopLocation());

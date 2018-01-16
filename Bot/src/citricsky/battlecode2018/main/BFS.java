@@ -12,8 +12,9 @@ public class BFS {
 	private int[][] data;
 	//private PriorityQueue<MapLocation> queue;
 	private Set<MapLocation> queue;
+	private Set<MapLocation> toAdd;
 	private MapLocation source;
-	private Set<MapLocation> stopLocations;
+	private MapLocation stopLocation;
 	private boolean checkedSource;
 
 	public BFS(MapLocation source) {
@@ -26,7 +27,8 @@ public class BFS {
 			}
 		});*/
 		this.queue = new HashSet<MapLocation>();
-		this.stopLocations = new HashSet<MapLocation>();
+		toAdd = new HashSet<MapLocation>();
+		this.stopLocation = null;
 		queue.add(source);
 		this.checkedSource = false;
 	}
@@ -59,18 +61,27 @@ public class BFS {
 
 	@SafeVarargs
 	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
-		this.stopLocations.clear();
+		this.stopLocation = null;
 		if (!checkedSource) {
 			for (T stopCondition : stopConditions) {
 				if (stopCondition.test(source)) {
-					this.stopLocations.add(source);
+					this.stopLocation = source;
 					return stopCondition;
 				}
 			}
 			checkedSource = true;
 		}
-		do {
-			Set<MapLocation> toAdd = new HashSet<MapLocation>();
+		while((!queue.isEmpty()) || (!toAdd.isEmpty())) {
+			Set<MapLocation> adding = new HashSet<MapLocation>(toAdd);
+			for(MapLocation location: adding) {
+				toAdd.remove(location);
+				for (T stopCondition : stopConditions) {
+					if (stopCondition.test(location)) {
+						this.stopLocation = location;
+						return stopCondition;
+					}
+				}
+			}
 			for(MapLocation location : queue) {
 				for (Direction direction : Direction.COMPASS) {
 					MapLocation step = location.getOffsetLocation(direction);
@@ -84,18 +95,10 @@ public class BFS {
 				}
 			}
 			queue.clear();
-			for(MapLocation location : toAdd) {
+			for(MapLocation location: toAdd) {
 				data[location.getPosition().getX()][location.getPosition().getY()] = data[location.getPosition().getX()][location.getPosition().getY()] | 1;
-				queue.add(location);
 			}
-			for(MapLocation location : toAdd) {
-				for (T stopCondition : stopConditions) {
-					if (stopCondition.test(location)) {
-						this.stopLocations.add(location);
-					}
-				}
-			}
-		} while (!queue.isEmpty());
+		}
 		return null;
 	}
 
@@ -107,7 +110,7 @@ public class BFS {
 		return source;
 	}
 
-	public Set<MapLocation> getStopLocations() {
-		return stopLocations;
+	public MapLocation getStopLocation() {
+		return stopLocation;
 	}
 }
