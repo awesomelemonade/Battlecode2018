@@ -1,6 +1,7 @@
 package citricsky.battlecode2018.unithandler;
 
 import citricsky.battlecode2018.library.Direction;
+import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 
@@ -21,7 +22,7 @@ public class FactoryHandler implements UnitHandler {
 
 	@Override
 	public void execute() {
-		UnitType unitType = UnitType.RANGER
+		UnitType unitType = UnitType.RANGER;
 		if (unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam()).length > 0) {
 			unitType = UnitType.KNIGHT;
 		}
