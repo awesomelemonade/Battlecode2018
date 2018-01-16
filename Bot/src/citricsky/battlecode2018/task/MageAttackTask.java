@@ -30,7 +30,6 @@ public class MageAttackTask implements PathfinderTask {
 		scoreCache = new HashMap<>();
 		valid = new HashSet<>();
 		invalid = new HashSet<>();
-		enemyUnits = updateEnemies();
 	}
 
 	@Override
@@ -38,7 +37,7 @@ public class MageAttackTask implements PathfinderTask {
 		scoreCache.clear();
 		valid.clear();
 		invalid.clear();
-		updateEnemies();
+		enemyUnits = updateEnemies();
 	}
 
 	private Unit[] updateEnemies() {
