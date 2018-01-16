@@ -1,7 +1,7 @@
 package citricsky.battlecode2018.main;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
@@ -9,35 +9,37 @@ import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Vector;
 
 public class BFS {
-	private Direction[][] data;
-	private Deque<MapLocation> queue;
+	private int[][] data;
+	private Set<MapLocation> queue;
 	private MapLocation source;
-	private MapLocation stopLocation;
+	private Set<MapLocation> stopLocations;
 	private boolean checkedSource;
 
 	public BFS(MapLocation source) {
 		this.source = source;
-		this.data = new Direction[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
-		this.queue = new ArrayDeque<MapLocation>();
+		this.data = new int[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
+		this.queue = new HashSet<MapLocation>();
+		this.stopLocations = new HashSet<MapLocation>();
 		queue.add(source);
 		this.checkedSource = false;
 	}
 
-	public Direction getDirectionFromSource(Vector vector) {
-		Vector step = vector.add(data[vector.getX()][vector.getY()].getOffsetVector());
-		if (source.getPosition().equals(step)) {
-			return data[vector.getX()][vector.getY()].getOpposite();
-		} else {
-			return getDirectionFromSource(step);
+	public int getDirectionFromSource(Vector vector) {
+		int info = data[vector.getX()][vector.getY()];
+		if (source.getPosition().equals(vector)) {
+			return ((info >>> 5) & 0b00001111) | ((info << 3) & 0b11110000);
 		}
+		int returnValue = 0;
+		for(Direction direction: Direction.COMPASS) {
+			if (((info >>> (direction.ordinal() + 1)) & 1) == 1) {
+				returnValue = returnValue | getDirectionFromSource(vector.add(direction.getOffsetVector()));
+			}
+		}
+		return returnValue;
 	}
 
-	public Direction getDirectionToSource(Vector vector) {
-		return data[vector.getX()][vector.getY()];
-	}
-
-	public Direction getDirection(Vector position) {
-		return data[position.getX()][position.getY()];
+	public int getDirectionToSource(Vector vector) {
+		return (data[vector.getX()][vector.getY()] >>> 1) & 0b11111111;
 	}
 
 	public void process(Predicate<MapLocation> passable) {
@@ -46,42 +48,47 @@ public class BFS {
 
 	@SafeVarargs
 	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
-		this.stopLocation = null;
+		stopLocations.clear();
 		if (!checkedSource) {
 			for (T stopCondition : stopConditions) {
 				if (stopCondition.test(source)) {
-					this.stopLocation = source;
+					this.stopLocations.add(source);
 					return stopCondition;
 				}
 			}
 			checkedSource = true;
 		}
-		while (!queue.isEmpty()) {
-			MapLocation polled = queue.poll();
-			for (T stopCondition : stopConditions) {
-				if (stopCondition.test(polled)) {
-					queue.addFirst(polled);
-					this.stopLocation = polled;
-					return stopCondition;
-				}
-			}
-			for (Direction direction : Direction.COMPASS) {
-				MapLocation step = polled.getOffsetLocation(direction);
-				if (step.equals(source)) {
-					continue;
-				}
-				if (step.isOnMap()) {
-					if (passable.test(step) && data[step.getPosition().getX()][step.getPosition().getY()] == null) {
-						data[step.getPosition().getX()][step.getPosition().getY()] = direction.getOpposite();
-						queue.add(step);
+		do {
+			Set<MapLocation> toAdd = new HashSet<MapLocation>();
+			for(MapLocation location : queue) {
+				for (Direction direction : Direction.COMPASS) {
+					MapLocation step = location.getOffsetLocation(direction);
+					if(step.isOnMap()) {
+						if(passable.test(step) && (data[step.getPosition().getX()][step.getPosition().getY()] & 1) == 0) {
+							data[step.getPosition().getX()][step.getPosition().getY()] =
+									data[step.getPosition().getX()][step.getPosition().getY()] | (1 << (direction.getOpposite().ordinal()+1));
+							toAdd.add(step);
+						}
 					}
 				}
 			}
-		}
+			queue.clear();
+			for(MapLocation location : toAdd) {
+				data[location.getPosition().getX()][location.getPosition().getY()] = data[location.getPosition().getX()][location.getPosition().getY()] | 1;
+				queue.add(location);
+			}
+			for(MapLocation location : toAdd) {
+				for (T stopCondition : stopConditions) {
+					if (stopCondition.test(location)) {
+						this.stopLocations.add(location);
+					}
+				}
+			}
+		} while (!queue.isEmpty());
 		return null;
 	}
 
-	public Deque<MapLocation> getQueue() {
+	public Set<MapLocation> getQueueSet() {
 		return queue;
 	}
 
@@ -89,7 +96,7 @@ public class BFS {
 		return source;
 	}
 
-	public MapLocation getStopLocation() {
-		return stopLocation;
+	public Set<MapLocation> getStopLocations() {
+		return stopLocations;
 	}
 }

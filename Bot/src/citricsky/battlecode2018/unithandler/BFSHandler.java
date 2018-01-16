@@ -30,8 +30,8 @@ public class BFSHandler implements UnitHandler {
 			return Integer.MIN_VALUE;
 		}
 		MapLocation mapLocation = unit.getLocation().getMapLocation();
-		if (bfs.getStopLocation() != null) {
-			int bestPriority = -bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
+		if (!bfs.getStopLocations().isEmpty()) {
+			int bestPriority = -bfs.getStopLocations().getPosition().getDistanceSquared(mapLocation.getPosition());
 			if (bestPriority <= priority) {
 				return Integer.MIN_VALUE;
 			}
