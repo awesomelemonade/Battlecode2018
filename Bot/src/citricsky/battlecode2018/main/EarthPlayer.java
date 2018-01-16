@@ -72,22 +72,32 @@ public class EarthPlayer {
 				int bestPriority = Integer.MIN_VALUE;
 				for (Unit unit : myUnits) {
 					for (UnitHandler handler : map.get(unit)) {
-						int priority = handler.getPriority(bestPriority);
-						if (priority > bestPriority) {
-							bestPriority = priority;
-							bestHandler = handler;
-							bestUnit = unit;
+						try {
+							int priority = handler.getPriority(bestPriority);
+							if (priority > bestPriority) {
+								bestPriority = priority;
+								bestHandler = handler;
+								bestUnit = unit;
+							}
+						} catch (Exception ex) {
+							System.out.println(ex.getMessage());
+							ex.printStackTrace();
 						}
 					}
 				}
 				if (bestHandler == null) {
 					break;
 				}
-				bestHandler.execute();
-				if (bestHandler.isRequired()) {
-					map.get(bestUnit).remove(bestHandler);
-				} else {
-					map.get(bestUnit).removeIf(handler -> !handler.isRequired());
+				try {
+					bestHandler.execute();
+					if (bestHandler.isRequired()) {
+						map.get(bestUnit).remove(bestHandler);
+					} else {
+						map.get(bestUnit).removeIf(handler -> !handler.isRequired());
+					}
+				} catch (Exception ex) {
+					System.out.println(ex.getMessage());
+					ex.printStackTrace();
 				}
 			}
 			gc.yield();
