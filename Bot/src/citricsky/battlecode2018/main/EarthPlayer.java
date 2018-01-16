@@ -18,7 +18,8 @@ public class EarthPlayer {
 		GameController gc = GameController.INSTANCE;
 		UnitType[] researchOrder = new UnitType[]
 				{UnitType.RANGER, UnitType.RANGER, UnitType.ROCKET, UnitType.KNIGHT, UnitType.KNIGHT,
-						UnitType.KNIGHT, UnitType.ROCKET, UnitType.HEALER, UnitType.HEALER, UnitType.HEALER};
+						UnitType.KNIGHT, UnitType.ROCKET, UnitType.ROCKET, UnitType.WORKER, UnitType.WORKER,
+						UnitType.WORKER, UnitType.WORKER, UnitType.HEALER, UnitType.HEALER, UnitType.HEALER};
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
 		}

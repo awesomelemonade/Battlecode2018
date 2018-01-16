@@ -3,7 +3,6 @@ package citricsky.battlecode2018.task;
 import citricsky.battlecode2018.library.*;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
