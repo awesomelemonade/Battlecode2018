@@ -1,6 +1,7 @@
 package citricsky.battlecode2018.main;
 
 import citricsky.battlecode2018.library.GameController;
+import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.task.*;
@@ -15,12 +16,6 @@ import java.util.function.Function;
 public class MarsPlayer {
 	public static void execute() {
 		GameController gc = GameController.INSTANCE;
-		UnitType[] researchOrder = new UnitType[]
-				{UnitType.KNIGHT, UnitType.KNIGHT, UnitType.KNIGHT,
-						UnitType.HEALER, UnitType.HEALER, UnitType.HEALER};
-		for (UnitType research : researchOrder) {
-			gc.queueResearch(research);
-		}
 		Map<UnitType, Set<PathfinderTask>> pathfinderTasks = new HashMap<UnitType, Set<PathfinderTask>>();
 		Map<UnitType, Set<Function<Unit, UnitHandler>>> handlers = new HashMap<UnitType, Set<Function<Unit, UnitHandler>>>();
 		for (UnitType unitType : UnitType.values()) {
@@ -38,12 +33,14 @@ public class MarsPlayer {
 		handlers.get(UnitType.MAGE).add(ExploreHandler::new);
 		handlers.get(UnitType.HEALER).add(ExploreHandler::new);
 
+		Set<MapLocation> occupied = new HashSet<MapLocation>();
 		for (UnitType unitType : UnitType.values()) {
-			handlers.get(unitType).add(unit -> new BFSHandler(unit,
+			handlers.get(unitType).add(unit -> new BFSHandler(unit, occupied,
 					pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 		}
 		while (true) {
 			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms");
+			occupied.clear();
 			for (UnitType unitType : UnitType.values()) {
 				pathfinderTasks.get(unitType).forEach(PathfinderTask::update);
 			}
