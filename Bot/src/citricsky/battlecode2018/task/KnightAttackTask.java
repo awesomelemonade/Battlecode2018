@@ -3,6 +3,7 @@ package citricsky.battlecode2018.task;
 import citricsky.battlecode2018.library.*;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -62,15 +63,24 @@ public class KnightAttackTask implements PathfinderTask {
 				}
 			}
 		}
-		if(unit.isAbilityUnlocked()) {
+		if(unit.isAbilityUnlocked() && unit.getAbilityHeat()<10) {
 			Unit bestUnit = null;
+			boolean isFactory = true;
 			int bestDistanceSquared = Integer.MAX_VALUE;
 			for(Unit enemyUnit: enemyUnits) {
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
 						.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
-				if(distanceSquared < bestDistanceSquared) {
+				if(isFactory && enemyUnit.getType()!=UnitType.FACTORY) {
 					bestDistanceSquared = distanceSquared;
 					bestUnit = enemyUnit;
+					isFactory = false;
+				}
+				else if(distanceSquared < bestDistanceSquared) {
+					if((isFactory && enemyUnit.getType().equals(UnitType.FACTORY)) || 
+							(!isFactory && enemyUnit.getType()!=UnitType.FACTORY)) {
+						bestDistanceSquared = distanceSquared;
+						bestUnit = enemyUnit;
+					}
 				}
 			}
 			if(bestUnit != null) {
