@@ -76,7 +76,7 @@ public class MageAttackTask implements PathfinderTask {
 	public void execute(Unit unit, MapLocation location) {
 		if (unit.getLocation().getMapLocation().equals(location)) {
 			Unit target = getAttackTarget(location);
-			if (!unit.isAttackReady() && unit.canAttack(target)) {
+			if (unit.isAttackReady() && unit.canAttack(target)) {
 				unit.attack(target);
 			}
 		}
