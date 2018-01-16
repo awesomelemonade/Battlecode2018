@@ -35,6 +35,10 @@ public class EarthPlayer {
 		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
 		pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
 
+		pathfinderTasks.get(UnitType.KNIGHT).add(new RobotAdvanceTask());
+		pathfinderTasks.get(UnitType.RANGER).add(new RobotAdvanceTask());
+		pathfinderTasks.get(UnitType.MAGE).add(new RobotAdvanceTask());
+
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
 		handlers.get(UnitType.RANGER).add(ExploreHandler::new);

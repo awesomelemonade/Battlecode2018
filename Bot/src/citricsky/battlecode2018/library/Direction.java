@@ -80,6 +80,13 @@ public enum Direction {
 		}
 	}
 
+	public static Direction valueOf(Vector vector) {
+		for (Direction d : Direction.values()) {
+			if (vector.getUnit() == d.getOffsetVector()) return d;
+		}
+		return CENTER;
+	}
+
 	public static Direction randomDirection() {
 		return Direction.values()[(int) (Math.random() * LENGTH)];
 	}

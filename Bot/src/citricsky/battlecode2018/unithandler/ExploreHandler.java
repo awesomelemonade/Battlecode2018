@@ -10,8 +10,9 @@ public class ExploreHandler implements UnitHandler {
 	}
 	@Override
 	public void execute() {
+		if (!unit.isMoveReady()) return;
 		for (Direction direction: Direction.COMPASS) {
-			if (unit.isMoveReady() && unit.canMove(direction)) {
+			if (unit.canMove(direction)) {
 				unit.move(direction);
 			}
 		}
