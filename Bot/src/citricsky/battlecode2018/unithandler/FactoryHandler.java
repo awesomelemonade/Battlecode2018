@@ -21,10 +21,12 @@ public class FactoryHandler implements UnitHandler {
 
 	@Override
 	public void execute() {
-		UnitType randomUnitType = Production.getFromProb((int) (Math.random() * 100));
-		if (randomUnitType == null) return;
-		if (unit.canProduceRobot(randomUnitType)) {
-			unit.produceRobot(randomUnitType);
+		UnitType unitType = UnitType.RANGER
+		if (unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam()).length > 0) {
+			unitType = UnitType.KNIGHT;
+		}
+		if (unit.canProduceRobot(unitType)) {
+			unit.produceRobot(unitType);
 		}
 		int garrisonSize = unit.getGarrisonUnitIds().length;
 		if (garrisonSize > 0) {
@@ -46,10 +48,10 @@ public class FactoryHandler implements UnitHandler {
 
 	enum Production {
 		KNIGHT(UnitType.KNIGHT, 0, 20),
-		RANGER(UnitType.RANGER, 20, 50),
-		MAGE(UnitType.MAGE, 50, 70),
-		HEALER(UnitType.HEALER, 70, 80),
-		WORKER(UnitType.WORKER, 80, 100);
+		RANGER(UnitType.RANGER, 20, 75),
+		MAGE(UnitType.MAGE, 75, 85),
+		HEALER(UnitType.HEALER, 85, 95),
+		WORKER(UnitType.WORKER, 95, 100);
 
 		private UnitType type;
 		private byte probMin; // 0 to 100 (inclusive)
