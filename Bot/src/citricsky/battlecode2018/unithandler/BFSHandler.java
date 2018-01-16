@@ -6,6 +6,7 @@ import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.main.BFS;
+import citricsky.battlecode2018.util.Util;
 
 public class BFSHandler implements UnitHandler {
 	private Unit unit;
@@ -36,7 +37,7 @@ public class BFSHandler implements UnitHandler {
 			}
 		}
 		long time = System.currentTimeMillis();
-		task = bfs.process(location -> location.isPassableTerrain() && (!occupied.contains(location)), pathfinderTasks);
+		task = bfs.process(Util.PASSABLE_PREDICATE, pathfinderTasks);
 		time = System.currentTimeMillis()-time;
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;

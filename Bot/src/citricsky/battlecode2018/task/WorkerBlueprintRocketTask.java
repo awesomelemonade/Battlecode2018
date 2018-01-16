@@ -14,20 +14,6 @@ public class WorkerBlueprintRocketTask implements PathfinderTask {
 	private int numBuiltRockets;
 	private int karbonite;
 	private boolean locked;
-
-	private Predicate<MapLocation> passablePredicate = location -> {
-		if (!location.isOnMap()) {
-			return false;
-		}
-		if (location.hasUnitAtLocation()) {
-			if (location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
-				if (location.getUnit().isStructure()) {
-					return false;
-				}
-			}
-		}
-		return location.isPassableTerrain();
-	};
 	private final Predicate<MapLocation> stopCondition = location -> {
 		if (numRockets >= numFactories) {
 			return false;
@@ -66,10 +52,10 @@ public class WorkerBlueprintRocketTask implements PathfinderTask {
 	private Direction getBlueprintDirection(MapLocation location) {
 		for (Direction direction : Direction.COMPASS) {
 			MapLocation offset = location.getOffsetLocation(direction);
-			if (!passablePredicate.test(offset)) {
+			if (!Util.PASSABLE_PREDICATE.test(offset)) {
 				continue;
 			}
-			if (Util.canBuild(Util.getNeighbors(location.getOffsetLocation(direction), passablePredicate))) {
+			if (Util.canBuild(Util.getNeighbors(location.getOffsetLocation(direction), Util.PASSABLE_PREDICATE))) {
 				return direction;
 			}
 		}

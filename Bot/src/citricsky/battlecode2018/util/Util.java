@@ -3,9 +3,23 @@ package citricsky.battlecode2018.util;
 import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
+import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 
 public class Util {
+	public static final Predicate<MapLocation> PASSABLE_PREDICATE = location -> {
+		if (!location.isOnMap()) {
+			return false;
+		}
+		if (location.hasUnitAtLocation()) {
+			if (location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
+				if (location.getUnit().isStructure()) {
+					return false;
+				}
+			}
+		}
+		return location.isPassableTerrain();
+	};
 	private static boolean[] buildArray;
 	public static void init() {
 		buildArray = new boolean[256];

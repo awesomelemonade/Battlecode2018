@@ -1,7 +1,10 @@
 package citricsky.battlecode2018.unithandler;
 
 import citricsky.battlecode2018.library.Direction;
+import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.main.BFS;
+import citricsky.battlecode2018.util.Util;
 
 public class ExploreHandler implements UnitHandler {
 	private Unit unit;
@@ -10,11 +13,18 @@ public class ExploreHandler implements UnitHandler {
 	}
 	@Override
 	public void execute() {
+		if (!unit.getLocation().isOnMap()) return;
 		if (!unit.isMoveReady()) return;
-		for (Direction direction: Direction.COMPASS) {
+		
+		
+		BFS bfs = new BFS(unit.getLocation().getMapLocation());
+		
+		bfs.process(Util.PASSABLE_PREDICATE, location -> !GameController.INSTANCE.canSenseLocation(location));
+		
+		if (bfs.getStopLocation() != null) {
+			Direction direction = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
 			if (unit.canMove(direction)) {
 				unit.move(direction);
-				break;
 			}
 		}
 	}
