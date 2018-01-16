@@ -33,11 +33,13 @@ public class EarthPlayer {
 		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
 		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
 		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
+		pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
 
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
 		handlers.get(UnitType.RANGER).add(ExploreHandler::new);
 		handlers.get(UnitType.MAGE).add(ExploreHandler::new);
+		handlers.get(UnitType.HEALER).add(ExploreHandler::new);
 
 		for (UnitType unitType : UnitType.values()) {
 			handlers.get(unitType).add(unit -> new BFSHandler(unit,

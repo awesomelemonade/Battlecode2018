@@ -44,9 +44,10 @@ public class FactoryHandler implements UnitHandler {
 	}
 
 	enum Production {
-		KNIGHT(UnitType.KNIGHT, 0, 30),
-		RANGER(UnitType.RANGER, 30, 60),
-		MAGE(UnitType.MAGE, 60, 90),
+		KNIGHT(UnitType.KNIGHT, 0, 20),
+		RANGER(UnitType.RANGER, 20, 50),
+		MAGE(UnitType.MAGE, 50, 60),
+		HEALER(UnitType.HEALER, 60, 90),
 		WORKER(UnitType.WORKER, 90, 100);
 
 		private UnitType type;
