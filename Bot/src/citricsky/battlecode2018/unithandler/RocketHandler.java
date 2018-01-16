@@ -19,9 +19,9 @@ public class RocketHandler implements UnitHandler {
 
 	@Override
 	public void execute() {
+		int garrisonSize = unit.getGarrisonUnitIds().length;
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
-			int size = unit.getGarrisonUnitIds().length;
-			if (size == 0 || (GameController.INSTANCE.getRoundNumber() < 740 && size < 8)) {
+			if (garrisonSize == 0 || (GameController.INSTANCE.getRoundNumber() < 740 && garrisonSize < 8)) {
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
 					if (target.isStructure()) continue;
 					if (unit.canLoad(target)) {
@@ -41,7 +41,6 @@ public class RocketHandler implements UnitHandler {
 				}
 			}
 		} else {
-			int garrisonSize = unit.getGarrisonUnitIds().length;
 			if (garrisonSize > 0) {
 				for (Direction direction : Direction.COMPASS) {
 					if (unit.canUnload(direction)) {
