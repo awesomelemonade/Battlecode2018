@@ -22,6 +22,7 @@ public class FactoryHandler implements UnitHandler {
 	@Override
 	public void execute() {
 		UnitType randomUnitType = Production.getFromProb((int) (Math.random() * 100));
+		if (randomUnitType == null) return;
 		if (unit.canProduceRobot(randomUnitType)) {
 			unit.produceRobot(randomUnitType);
 		}
@@ -46,9 +47,9 @@ public class FactoryHandler implements UnitHandler {
 	enum Production {
 		KNIGHT(UnitType.KNIGHT, 0, 20),
 		RANGER(UnitType.RANGER, 20, 50),
-		MAGE(UnitType.MAGE, 50, 60),
-		HEALER(UnitType.HEALER, 60, 90),
-		WORKER(UnitType.WORKER, 90, 100);
+		MAGE(UnitType.MAGE, 50, 70),
+		HEALER(UnitType.HEALER, 70, 80),
+		WORKER(UnitType.WORKER, 80, 100);
 
 		private UnitType type;
 		private byte probMin; // 0 to 100 (inclusive)

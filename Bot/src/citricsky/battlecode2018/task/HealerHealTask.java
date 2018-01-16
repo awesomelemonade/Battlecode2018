@@ -11,7 +11,6 @@ public class HealerHealTask implements PathfinderTask {
 	private Set<MapLocation> invalid;
 	private Set<MapLocation> valid;
 	private Unit[] friendlyUnits;
-	private Unit[] enemyUnits;
 	private Predicate<MapLocation> stopCondition = location -> {
 		if (invalid.contains(location)) {
 			return false;
@@ -19,14 +18,8 @@ public class HealerHealTask implements PathfinderTask {
 		if (valid.contains(location)) {
 			return true;
 		}
-		for (Unit enemyUnit : enemyUnits) {
-			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if (distanceSquared < 10) {
-				invalid.add(location);
-				return false;
-			}
-		}
 		for (Unit friendlyUnit : friendlyUnits) {
+			if (friendlyUnit.getHealth() == friendlyUnit.getMaxHealth()) continue;
 			int distanceSquared = friendlyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
 			if (distanceSquared <= 30) {
 				valid.add(location);
@@ -47,21 +40,21 @@ public class HealerHealTask implements PathfinderTask {
 		invalid.clear();
 		valid.clear();
 		friendlyUnits = GameController.INSTANCE.getMyUnitsByFilter(
-				unit -> unit.getLocation().isOnMap());
-		enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
-				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
+				unit -> unit.getLocation().isOnMap() && !unit.isStructure());
 	}
 
 	@Override
 	public void execute(Unit unit, MapLocation location) {
 		Unit[] friendlyUnits = GameController.INSTANCE.getMyUnitsByFilter(
 				friendly -> friendly.getLocation().isOnMap());
-		int bestDistanceSquared = Integer.MAX_VALUE;
+		int leastHealth = Integer.MIN_VALUE;
 		Unit bestTarget = null;
 		for (Unit friendlyUnit : friendlyUnits) {
-			int distanceSquared = friendlyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if (distanceSquared < bestDistanceSquared) {
-				bestDistanceSquared = distanceSquared;
+			if (friendlyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) > 30) continue;
+			int health = friendlyUnit.getHealth();
+			if (health == friendlyUnit.getMaxHealth()) continue;
+			if (health > leastHealth) {
+				leastHealth = health;
 				bestTarget = friendlyUnit;
 			}
 		}

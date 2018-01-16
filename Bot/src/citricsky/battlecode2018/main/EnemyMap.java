@@ -11,7 +11,7 @@ public class EnemyMap {
 	private static Map<MapLocation, Integer> scoreCache = new HashMap<>();
 	private static Unit[] enemyUnits;
 
-	public static void update() {
+	private static void update() {
 		scoreCache.clear();
 		enemyUnits = updateEnemies();
 	}

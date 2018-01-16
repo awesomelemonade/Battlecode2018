@@ -16,7 +16,7 @@ public class EarthPlayer {
 	public static void execute() {
 		GameController gc = GameController.INSTANCE;
 		UnitType[] researchOrder = new UnitType[]
-				{UnitType.KNIGHT, UnitType.KNIGHT, UnitType.KNIGHT, UnitType.ROCKET,
+				{UnitType.ROCKET, UnitType.KNIGHT, UnitType.KNIGHT, UnitType.KNIGHT, UnitType.ROCKET,
 						UnitType.HEALER, UnitType.HEALER, UnitType.HEALER};
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
@@ -28,6 +28,7 @@ public class EarthPlayer {
 			pathfinderTasks.put(unitType, new HashSet<PathfinderTask>());
 		}
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintFactoryTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintRocketTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
 		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
@@ -35,22 +36,21 @@ public class EarthPlayer {
 		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
 		pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
 
-		pathfinderTasks.get(UnitType.KNIGHT).add(new RobotAdvanceTask());
-		pathfinderTasks.get(UnitType.RANGER).add(new RobotAdvanceTask());
-		pathfinderTasks.get(UnitType.MAGE).add(new RobotAdvanceTask());
-
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
+		handlers.get(UnitType.ROCKET).add(RocketHandler::new);
 		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
 		handlers.get(UnitType.RANGER).add(ExploreHandler::new);
 		handlers.get(UnitType.MAGE).add(ExploreHandler::new);
 		handlers.get(UnitType.HEALER).add(ExploreHandler::new);
+		handlers.get(UnitType.WORKER).add(ExploreHandler::new);
 
 		for (UnitType unitType : UnitType.values()) {
+			if (!pathfinderTasks.get(unitType).isEmpty())
 			handlers.get(unitType).add(unit -> new BFSHandler(unit,
 					pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 		}
 		while (true) {
-			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms");
+			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
 			for(UnitType unitType : UnitType.values()) {
 				pathfinderTasks.get(unitType).forEach(PathfinderTask::update);
 			}
