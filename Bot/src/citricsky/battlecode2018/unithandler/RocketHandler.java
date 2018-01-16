@@ -20,7 +20,8 @@ public class RocketHandler implements UnitHandler {
 	@Override
 	public void execute() {
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
-			if (unit.getGarrisonUnitIds().length < 4) {
+			int size = unit.getGarrisonUnitIds().length;
+			if (size == 0 || (GameController.INSTANCE.getRoundNumber() < 740 && size < 8)) {
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
 					if (target.isStructure()) continue;
 					if (unit.canLoad(target)) {
