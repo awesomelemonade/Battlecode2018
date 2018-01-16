@@ -7,6 +7,7 @@ import java.util.function.Predicate;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class RangerAttackTask implements PathfinderTask {
@@ -57,12 +58,21 @@ public class RangerAttackTask implements PathfinderTask {
 				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
 		int bestDistanceSquared = Integer.MAX_VALUE;
 		Unit bestTarget = null;
+		boolean isFactory = true;
 		for (Unit enemyUnit : enemyUnits) {
 			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if (distanceSquared > unit.getRangerCannotAttackRange()) {
+			if(isFactory && enemyUnit.getType()!=UnitType.FACTORY) {
+				bestDistanceSquared = distanceSquared;
+				bestTarget = enemyUnit;
+				isFactory = false;
+			}
+			else if (distanceSquared > unit.getRangerCannotAttackRange()) {
 				if (distanceSquared < bestDistanceSquared) {
+					if((isFactory && enemyUnit.getType().equals(UnitType.FACTORY)) || 
+							(!isFactory && enemyUnit.getType()!=UnitType.FACTORY)) {
 					bestDistanceSquared = distanceSquared;
 					bestTarget = enemyUnit;
+					}
 				}
 			}
 		}
