@@ -14,6 +14,7 @@ public class ExploreHandler implements UnitHandler {
 		for (Direction direction: Direction.COMPASS) {
 			if (unit.canMove(direction)) {
 				unit.move(direction);
+				break;
 			}
 		}
 	}
