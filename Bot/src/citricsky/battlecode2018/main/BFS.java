@@ -10,6 +10,7 @@ import citricsky.battlecode2018.library.Vector;
 
 public class BFS {
 	private int[][] data;
+	//private PriorityQueue<MapLocation> queue;
 	private Set<MapLocation> queue;
 	private MapLocation source;
 	private Set<MapLocation> stopLocations;
@@ -18,11 +19,21 @@ public class BFS {
 	public BFS(MapLocation source) {
 		this.source = source;
 		this.data = new int[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
+		/*this.queue = new PriorityQueue<MapLocation>(7, new Comparator<MapLocation>() {
+			@Override
+			public int compare(MapLocation a, MapLocation b) { //movement is not circular, it's taxi geometry with weird diagonals
+				return getMovementDistanceFromSource(a.getPosition())-getMovementDistanceFromSource(b.getPosition());
+			}
+		});*/
 		this.queue = new HashSet<MapLocation>();
 		this.stopLocations = new HashSet<MapLocation>();
 		queue.add(source);
 		this.checkedSource = false;
 	}
+	
+	/*private int getMovementDistanceFromSource(Vector position) {
+		return Math.max(Math.abs(position.getX()-source.getPosition().getX()), Math.abs(position.getY()-source.getPosition().getY()));
+	}*/
 
 	public int getDirectionFromSource(Vector vector) {
 		int info = data[vector.getX()][vector.getY()];
@@ -48,7 +59,7 @@ public class BFS {
 
 	@SafeVarargs
 	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
-		stopLocations.clear();
+		this.stopLocations.clear();
 		if (!checkedSource) {
 			for (T stopCondition : stopConditions) {
 				if (stopCondition.test(source)) {
