@@ -20,7 +20,7 @@ public class WorkerReplicateTask implements PathfinderTask {
 			}
 			if (offset.isPassableTerrain() && offset.isOccupiable()) {
 				int distance = getNearestFriendlyStructureDistance(offset);
-				if(distance<bestDistance) {
+				if(bestDirection == null || distance < bestDistance) {
 					bestDistance = distance;
 					bestDirection = direction;
 				}
@@ -51,12 +51,10 @@ public class WorkerReplicateTask implements PathfinderTask {
 	@Override
 	public void execute(Unit unit, MapLocation location) {
 		if(unit.getLocation().getMapLocation().equals(location)) {
-			if(!unit.hasWorkerActed()) {
-				Direction direction = getReplicateDirection(location);
-				if(unit.canReplicate(direction)) {
-					workerCount++;
-					unit.replicate(direction);
-				}
+			Direction direction = getReplicateDirection(location);
+			if(unit.canReplicate(direction)) {
+				workerCount++;
+				unit.replicate(direction);
 			}
 		}
 	}

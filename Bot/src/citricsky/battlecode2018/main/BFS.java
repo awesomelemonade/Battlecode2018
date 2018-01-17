@@ -79,19 +79,20 @@ public class BFS {
 		this.stopLocation = null;
 		if (!checkedSource) {
 			toReturn = checkStopConditions(stopConditions, cumulative, source);
-			if(toReturn != null) {
+			if(toReturn == null) {
+				checkedSource = true;
+			} else {
 				this.stopLocation = source;
 			}
-			checkedSource = true;
 		}
-		mainLoop: while((!queue.isEmpty()) || (!toAdd.isEmpty()) && stopLocation == null) {
+		mainLoop: while(((!queue.isEmpty()) || (!toAdd.isEmpty())) && stopLocation == null) {
 			Set<MapLocation> adding = new HashSet<MapLocation>(toAdd);
 			for(MapLocation location: adding) {
 				toAdd.remove(location);
 				queue.add(location);
 				toReturn = checkStopConditions(stopConditions, cumulative, location);
 				if (toReturn != null) {
-					this.stopLocation = source;
+					this.stopLocation = location;
 					break mainLoop;
 				}
 			}
@@ -115,8 +116,9 @@ public class BFS {
 			}
 		}
 		for(int i = 0; i < cumulative.length; ++i) {
-			if(cumulative[i] > 10) {
-				System.out.println("BFS Process: " + stopConditions[i].getClass().getSimpleName() + " - " + cumulative[i]);
+			if(cumulative[i] > 10000000) {
+				System.out.println("BFS Process: " + stopConditions[i].getClass().getSimpleName() +
+						" - " + (cumulative[i] / 1000000) + "ms");
 			}
 		}
 		return toReturn;
