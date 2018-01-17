@@ -2,6 +2,7 @@ package citricsky.battlecode2018.main;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.function.Function;
@@ -28,12 +29,13 @@ public class EarthPlayer {
 		Map<UnitType, Set<Function<Unit, UnitHandler>>> handlers = new HashMap<UnitType, Set<Function<Unit, UnitHandler>>>();
 		for (UnitType unitType : UnitType.values()) {
 			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
-			pathfinderTasks.put(unitType, new HashSet<PathfinderTask>());
+			pathfinderTasks.put(unitType, new LinkedHashSet<PathfinderTask>());
 		}
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintTask());
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerReplicateTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerRepairTask());
 		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
 		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
 		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
