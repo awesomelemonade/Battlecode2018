@@ -22,6 +22,14 @@ public class RangerAttackTask implements PathfinderTask {
 		cache = new HashSet<MapLocation>();
 	}
 
+	private static boolean isLowerPriority(Unit unit) {
+		if(unit.getType().equals(UnitType.FACTORY) ||
+				unit.getType().equals(UnitType.WORKER)) {
+			return true;
+		}
+		return false;
+	}
+	
 	@Override
 	public void update() {
 		cache.clear();
@@ -49,13 +57,13 @@ public class RangerAttackTask implements PathfinderTask {
 		for (Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
 			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
 			if(distanceSquared > unit.getRangerCannotAttackRange() && distanceSquared < unit.getAttackRange()) {
-				if(onlySeenFactory && enemyUnit.getType() != UnitType.FACTORY) {
+				if(onlySeenFactory && !isLowerPriority(enemyUnit)) {
 					bestDistanceSquared = distanceSquared;
 					bestTarget = enemyUnit;
 					onlySeenFactory = false;
 				}else {
 					if(distanceSquared < bestDistanceSquared) {
-						if(onlySeenFactory || (!onlySeenFactory && enemyUnit.getType() != UnitType.FACTORY)) {
+						if(onlySeenFactory || (!onlySeenFactory && !isLowerPriority(enemyUnit))) {
 							bestDistanceSquared = distanceSquared;
 							bestTarget = enemyUnit;
 						}
