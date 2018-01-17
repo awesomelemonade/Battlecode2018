@@ -19,7 +19,12 @@ public class WorkerBlueprintTask implements PathfinderTask {
 	private int numBuiltRockets;
 
 	private Predicate<MapLocation> stopCon = location -> {
-		if (getBlueprintDirection(location) == null) return false;
+		if ((numFactories - numBuiltFactories) + (numRockets - numBuiltRockets) >= 2) {
+			return false; // Complete your structures before building others!
+		}
+		if (getBlueprintDirection(location) == null) {
+			return false;
+		}
 		UnitType toBlueprint = getBlueprintType();
 		if (toBlueprint == null) return false;
 		int karbonite = GameController.INSTANCE.getCurrentKarbonite();
