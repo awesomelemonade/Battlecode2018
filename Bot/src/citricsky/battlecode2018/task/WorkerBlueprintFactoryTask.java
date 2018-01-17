@@ -23,16 +23,20 @@ public class WorkerBlueprintFactoryTask implements PathfinderTask {
 	};
 
 	private Direction getBlueprintDirection(MapLocation location) {
+		int bestCounter = Integer.MIN_VALUE;
+		Direction bestDirection = null;
 		for (Direction direction : Direction.COMPASS) {
 			MapLocation offset = location.getOffsetLocation(direction);
 			if (!Util.PASSABLE_PREDICATE.test(offset)) {
 				continue;
 			}
-			if (Util.canBuild(Util.getNeighbors(location.getOffsetLocation(direction), Util.PASSABLE_PREDICATE))) {
-				return direction;
+			int counter = Util.getBuildArray(Util.getNeighbors(location.getOffsetLocation(direction), Util.PASSABLE_PREDICATE));
+			if(counter>bestCounter) {
+				counter = bestCounter;
+				bestDirection = direction;
 			}
 		}
-		return null;
+		return bestDirection;
 	}
 
 	@Override

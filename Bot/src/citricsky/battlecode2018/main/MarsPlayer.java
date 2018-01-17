@@ -40,7 +40,7 @@ public class MarsPlayer {
 					pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 		}
 		while (true) {
-			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms");
+			//System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms");
 			occupied.clear();
 			for (UnitType unitType : UnitType.values()) {
 				pathfinderTasks.get(unitType).forEach(PathfinderTask::update);

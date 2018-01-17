@@ -1,6 +1,7 @@
 package citricsky.battlecode2018.task;
 
 import citricsky.battlecode2018.library.*;
+import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 import java.util.HashSet;
@@ -29,7 +30,6 @@ public class KnightAttackTask implements PathfinderTask {
 	}
 
 	private Set<MapLocation> valid;
-	private Unit[] enemyUnits;
 
 	public KnightAttackTask() {
 		valid = new HashSet<MapLocation>();
@@ -40,9 +40,7 @@ public class KnightAttackTask implements PathfinderTask {
 	@Override
 	public void update() {
 		valid.clear();
-		enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
-				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
-		for (Unit unit : enemyUnits) {
+		for (Unit unit : RoundInfo.getEnemiesOnMap()) {
 			for (Direction direction : Direction.CARDINAL_DIRECTIONS) {
 				MapLocation offset = unit.getLocation().getMapLocation().getOffsetLocation(direction);
 				if (offset.isOnMap()) {
@@ -66,7 +64,7 @@ public class KnightAttackTask implements PathfinderTask {
 			Unit bestTarget = null;
 			boolean onlySeenFactory = true;
 			int bestDistanceSquared = Integer.MAX_VALUE;
-			for (Unit enemyUnit : enemyUnits) {
+			for (Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
 				if(distanceSquared < unit.getAttackRange()) {
 					if(onlySeenFactory && enemyUnit.getType() != UnitType.FACTORY) {

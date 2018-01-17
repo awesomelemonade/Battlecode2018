@@ -6,6 +6,7 @@ import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class WorkerHarvestTask implements PathfinderTask {
@@ -17,7 +18,7 @@ public class WorkerHarvestTask implements PathfinderTask {
 				continue;
 			}
 			boolean notAvailable = false;
-			for (Unit enemyUnit: enemyUnits) {
+			for (Unit enemyUnit: RoundInfo.getEnemiesOnMap()) {
 				if (enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(offset.getPosition())<=enemyUnit.getVisionRange()) {
 					notAvailable = true;
 					break;
@@ -37,12 +38,6 @@ public class WorkerHarvestTask implements PathfinderTask {
 			}
 		}
 		return null;
-	}
-	private Unit[] enemyUnits;
-	@Override
-	public void update() {
-		this.enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(unit -> unit.getLocation().isOnMap() &&
-				unit.getTeam() == GameController.INSTANCE.getEnemyTeam());
 	}
 	@Override
 	public void execute(Unit unit, MapLocation location) {

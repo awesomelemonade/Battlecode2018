@@ -27,7 +27,7 @@ public class FactoryHandler implements UnitHandler {
 			unitType = UnitType.KNIGHT;
 		}
 		if(GameController.INSTANCE.getAllUnitsByFilter(
-				unit -> unit.getTeam() == GameController.INSTANCE.getTeam() && unit.getType() == UnitType.WORKER).length ==0) {
+				unit -> unit.getTeam() == GameController.INSTANCE.getTeam() && unit.getType() == UnitType.WORKER).length == 0) {
 			unitType = UnitType.WORKER;
 		}
 		if (unit.canProduceRobot(unitType)) {

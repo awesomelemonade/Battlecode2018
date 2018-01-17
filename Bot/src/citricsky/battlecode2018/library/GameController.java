@@ -108,8 +108,8 @@ public enum GameController {
 		return enemyTeam;
 	}
 
-	public long getRoundNumber() {
-		return bcGameController.round();
+	public int getRoundNumber() {
+		return (int) bcGameController.round();
 	}
 
 	public int getTimeLeft() {

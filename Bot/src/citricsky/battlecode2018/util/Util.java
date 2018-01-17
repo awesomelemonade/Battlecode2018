@@ -20,14 +20,20 @@ public class Util {
 		}
 		return location.isPassableTerrain();
 	};
-	private static boolean[] buildArray;
+	private static int[] buildArray;
 	public static void init() {
-		buildArray = new boolean[256];
+		buildArray = new int[256];
 		for(int i=0;i<buildArray.length;++i) {
 			buildArray[i] = calcBuildArray(i);
 		}
 	}
-	public static boolean calcBuildArray(int neighbors) {
+	public static int calcBuildArray(int neighbors) {
+		int counter = 0;
+		for(Direction direction: Direction.COMPASS) {
+			if(((neighbors >>> direction.ordinal()) & 1) == 0){
+				counter++;
+			}
+		}
 		//flood fill
 		for(Direction direction: Direction.COMPASS) {
 			if(((neighbors >>> direction.ordinal()) & 1) == 0) {
@@ -38,10 +44,10 @@ public class Util {
 		//loop over
 		for(Direction direction: Direction.COMPASS) {
 			if(((neighbors >>> direction.ordinal()) & 1) == 0) {
-				return false;
+				return -1;
 			}
 		}
-		return true;
+		return counter;
 	}
 	public static int floodFill(int neighbors, int bit) {
 		if(((neighbors >>> bit) & 1) == 1) {
@@ -100,7 +106,7 @@ public class Util {
 		}
 		return neighbors;
 	}
-	public static boolean canBuild(int neighbors) {
+	public static int getBuildArray(int neighbors) {
 		return buildArray[neighbors];
 	}
 }

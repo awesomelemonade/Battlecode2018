@@ -55,7 +55,7 @@ public class WorkerBlueprintRocketTask implements PathfinderTask {
 			if (!Util.PASSABLE_PREDICATE.test(offset)) {
 				continue;
 			}
-			if (Util.canBuild(Util.getNeighbors(location.getOffsetLocation(direction), Util.PASSABLE_PREDICATE))) {
+			if (Util.getBuildArray(Util.getNeighbors(location.getOffsetLocation(direction), Util.PASSABLE_PREDICATE)) > 0) {
 				return direction;
 			}
 		}
