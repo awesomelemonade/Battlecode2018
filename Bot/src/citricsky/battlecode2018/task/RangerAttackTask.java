@@ -1,57 +1,46 @@
 package citricsky.battlecode2018.task;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.MapLocation;
+import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class RangerAttackTask implements PathfinderTask {
-	private Set<MapLocation> invalid;
-	private Set<MapLocation> valid;
-	private Predicate<MapLocation> stopCondition = location -> {
-		if (invalid.contains(location)) {
-			return false;
-		}
-		if (valid.contains(location)) {
-			return true;
-		}
-		Unit[] enemyUnits = RoundInfo.getEnemiesOnMap().clone();
-		Arrays.sort(enemyUnits, (unit1, unit2) -> {
-			int distanceSquared1 = unit1.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			int distanceSquared2 = unit2.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			return Integer.compare(distanceSquared1, distanceSquared2);
-		});
-		
-		for (Unit enemyUnit : enemyUnits) {
-			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if (distanceSquared < 40) {
-				invalid.add(location);
-				return false;
-			}
-			if (distanceSquared <= 50) {
-				valid.add(location);
-				return true;
-			}
-		}
-		invalid.add(location);
-		return false;
-	};
+	// 40 to 50 attack range for Ranger
+	private static final int[] OFFSET_X = new int[] {7, 7, 6, 6, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -6, -6, -7,
+													-7, -7, -6, -6, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5, 6, 6, 7};
+	private static final int[] OFFSET_Y = new int[] {0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 1,
+													0, -1, -2, -3, -4, -5, -5, -6, -6, -7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1};
+	private Set<MapLocation> cache;
+	private Predicate<MapLocation> stopCondition = location -> cache.contains(location);
 
 	public RangerAttackTask() {
-		invalid = new HashSet<MapLocation>();
-		valid = new HashSet<MapLocation>();
+		cache = new HashSet<MapLocation>();
 	}
 
 	@Override
 	public void update() {
-		invalid.clear();
-		valid.clear();
+		cache.clear();
+		for(Unit enemy: RoundInfo.getEnemiesOnMap()) {
+			for(int i = 0; i < OFFSET_X.length; ++i) {
+				int offsetX = enemy.getLocation().getMapLocation().getPosition().getX() + OFFSET_X[i];
+				int offsetY = enemy.getLocation().getMapLocation().getPosition().getY() + OFFSET_Y[i];
+				Planet planet = enemy.getLocation().getMapLocation().getPlanet();
+				if(isOnMap(offsetX, offsetY, planet)) {
+					cache.add(planet.getMapLocation(offsetX, offsetY));
+				}
+			}
+		}
+	}
+	
+	private boolean isOnMap(int x, int y, Planet planet) {
+		return x >= 0 && x < planet.getWidth() && y >= 0 && y < planet.getHeight();
 	}
 
 	@Override
