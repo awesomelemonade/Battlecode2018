@@ -35,7 +35,11 @@ public class WorkerBlueprintTask implements PathfinderTask {
 				bestDirection = direction;
 			}
 		}
-		return bestDirection;
+		if(bestCounter>0) {
+			return bestDirection;
+		}else {
+			return null;
+		}
 	}
 
 	private UnitType getBlueprintType() {
