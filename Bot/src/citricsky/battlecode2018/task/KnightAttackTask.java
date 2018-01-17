@@ -16,7 +16,7 @@ public class KnightAttackTask implements PathfinderTask {
 				if (offset.hasUnitAtLocation()) {
 					Unit locationUnit = offset.getUnit();
 					if (locationUnit.getTeam().equals(GameController.INSTANCE.getEnemyTeam())) {
-						if (locationUnit.getType().equals(UnitType.FACTORY) && factoryUnit == null) {
+						if (isLowerPriority(locationUnit) && factoryUnit == null) {
 							factoryUnit = locationUnit;
 						} else {
 							return locationUnit;
@@ -26,6 +26,13 @@ public class KnightAttackTask implements PathfinderTask {
 			}
 		}
 		return factoryUnit;
+	}
+	private static boolean isLowerPriority(Unit unit) {
+		if(unit.getType().equals(UnitType.FACTORY) ||
+				unit.getType().equals(UnitType.WORKER)) {
+			return true;
+		}
+		return false;
 	}
 
 	private Set<MapLocation> cache;
@@ -64,13 +71,13 @@ public class KnightAttackTask implements PathfinderTask {
 			for (Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
 				if(distanceSquared < unit.getAttackRange()) {
-					if(onlySeenFactory && enemyUnit.getType() != UnitType.FACTORY) {
+					if(onlySeenFactory && !isLowerPriority(enemyUnit)) {
 						bestDistanceSquared = distanceSquared;
 						bestTarget = enemyUnit;
 						onlySeenFactory = false;
 					}else {
 						if(distanceSquared < bestDistanceSquared) {
-							if(onlySeenFactory || (!onlySeenFactory && enemyUnit.getType() != UnitType.FACTORY)) {
+							if(onlySeenFactory || (!onlySeenFactory && !isLowerPriority(enemyUnit))) {
 								bestDistanceSquared = distanceSquared;
 								bestTarget = enemyUnit;
 							}
