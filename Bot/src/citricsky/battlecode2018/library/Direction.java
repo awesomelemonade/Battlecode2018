@@ -34,7 +34,7 @@ public enum Direction {
 
 	public Direction getOpposite() {
 		if (this == CENTER) return this;
-		return Direction.values()[(this.ordinal() + 4) % LENGTH - 1];
+		return Direction.values()[(this.ordinal() + 4) % LENGTH];
 	}
 
 	public Direction rotateClockwise() {
@@ -78,6 +78,13 @@ public enum Direction {
 			default:
 				return null;
 		}
+	}
+
+	public static Direction valueOf(Vector vector) {
+		for (Direction d : Direction.values()) {
+			if (vector.getUnit() == d.getOffsetVector()) return d;
+		}
+		return CENTER;
 	}
 
 	public static Direction randomDirection() {

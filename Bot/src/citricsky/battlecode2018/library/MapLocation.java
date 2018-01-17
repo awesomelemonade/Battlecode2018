@@ -1,5 +1,6 @@
 package citricsky.battlecode2018.library;
 
+import java.util.Objects;
 import java.util.function.Predicate;
 
 public class MapLocation {
@@ -13,7 +14,7 @@ public class MapLocation {
 		this.position = new Vector(bcMapLocation.getX(), bcMapLocation.getY());
 	}
 
-	public MapLocation(Planet planet, int x, int y) {
+	protected MapLocation(Planet planet, int x, int y) {
 		this.bcMapLocation = new bc.MapLocation(planet.getBcPlanet(), x, y);
 		this.planet = planet;
 		this.position = new Vector(x, y);
@@ -90,5 +91,15 @@ public class MapLocation {
 			return (planet == mapLocation.getPlanet() && position.equals(mapLocation.getPosition()));
 		}
 		return false;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(planet, position);
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("MapLocation[%s, %s]", planet.toString(), position.toString());
 	}
 }
