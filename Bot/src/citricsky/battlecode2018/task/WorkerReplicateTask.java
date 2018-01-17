@@ -40,6 +40,7 @@ public class WorkerReplicateTask implements PathfinderTask {
 	}
 	private static final int MIN_WORKERS = 3;
 	private Unit[] friendlyStructures;
+	private int workerCap = 8;
 	private int workerCount = 0;
 	private int factoryCount = 0;
 	@Override
@@ -47,6 +48,7 @@ public class WorkerReplicateTask implements PathfinderTask {
 		friendlyStructures = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.isStructure());
 		workerCount = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.WORKER).length;
 		factoryCount = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.FACTORY).length;
+		workerCap = 2*factoryCount+6;
 	}
 	@Override
 	public void execute(Unit unit, MapLocation location) {
@@ -71,6 +73,9 @@ public class WorkerReplicateTask implements PathfinderTask {
 			return false;
 		}
 		if (factoryCount > 0 && workerCount >= MIN_WORKERS && GameController.INSTANCE.getCurrentKarbonite() < 150) {
+			return false;
+		}
+		if (workerCount >= workerCap) {
 			return false;
 		}
 		return getReplicateDirection(location) != null;
