@@ -46,7 +46,7 @@ public class WorkerBlueprintRocketTask implements PathfinderTask {
 			}
 		}
 		karbonite = GameController.INSTANCE.getCurrentKarbonite();
-		locked = GameController.INSTANCE.getResearchInfo().getQueue().length >= 8;
+		locked = GameController.INSTANCE.getRoundNumber() <= 225;
 	}
 
 	private Direction getBlueprintDirection(MapLocation location) {
