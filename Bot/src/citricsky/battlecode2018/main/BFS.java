@@ -32,10 +32,6 @@ public class BFS {
 		queue.add(source);
 		this.checkedSource = false;
 	}
-	
-	/*private int getMovementDistanceFromSource(Vector position) {
-		return Math.max(Math.abs(position.getX()-source.getPosition().getX()), Math.abs(position.getY()-source.getPosition().getY()));
-	}*/
 
 	public int getDirectionFromSource(Vector vector) {
 		int info = data[vector.getX()][vector.getY()];
