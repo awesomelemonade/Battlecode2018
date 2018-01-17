@@ -61,7 +61,6 @@ parser.add_argument('-f', '--file', help="File name of bot", required=True)
 parser.add_argument('-l', '--label', help="Name for bot", required=True)
 
 args = parser.parse_args()
-map_path = args.map
 
 
 # Input validation
