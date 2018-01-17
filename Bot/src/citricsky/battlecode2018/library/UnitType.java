@@ -8,7 +8,6 @@ public enum UnitType {
 	HEALER(bc.UnitType.Healer, 20, 100, -10, 30, 50),
 	ROCKET(bc.UnitType.Rocket, 75, 200, 0, 0, 2),
 	FACTORY(bc.UnitType.Factory, 100, 300, 0, 0, 2);
-		
 
 	private bc.UnitType bcUnitType;
 	private int baseCost;
