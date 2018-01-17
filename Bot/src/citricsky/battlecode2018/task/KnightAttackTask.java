@@ -65,19 +65,19 @@ public class KnightAttackTask implements PathfinderTask {
 		}
 		if(unit.isAbilityUnlocked() && unit.getAbilityHeat()<10) {
 			Unit bestUnit = null;
-			boolean isFactory = true;
+			boolean onlySeenFactory = true;
 			int bestDistanceSquared = Integer.MAX_VALUE;
 			for(Unit enemyUnit: enemyUnits) {
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
 						.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
-				if(isFactory && enemyUnit.getType()!=UnitType.FACTORY) {
+				if(onlySeenFactory && enemyUnit.getType()!=UnitType.FACTORY) {
 					bestDistanceSquared = distanceSquared;
 					bestUnit = enemyUnit;
-					isFactory = false;
+					onlySeenFactory = false;
 				}
 				else if(distanceSquared < bestDistanceSquared) {
-					if((isFactory && enemyUnit.getType().equals(UnitType.FACTORY)) || 
-							(!isFactory && enemyUnit.getType()!=UnitType.FACTORY)) {
+					if((onlySeenFactory && enemyUnit.getType().equals(UnitType.FACTORY)) || 
+							(!onlySeenFactory && enemyUnit.getType()!=UnitType.FACTORY)) {
 						bestDistanceSquared = distanceSquared;
 						bestUnit = enemyUnit;
 					}
