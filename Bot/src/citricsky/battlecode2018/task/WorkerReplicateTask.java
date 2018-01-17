@@ -12,7 +12,6 @@ import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
 
 public class WorkerReplicateTask implements PathfinderTask {
-	private static final int MAX_WORKERS = 12;
 	private Direction getReplicateDirection(MapLocation location) {
 		Direction bestDirection = null;
 		int bestDistance = Integer.MAX_VALUE;
@@ -41,13 +40,15 @@ public class WorkerReplicateTask implements PathfinderTask {
 		}
 		return bestDistance;
 	}
+	private static final int MIN_WORKERS = 3;
 	private Unit[] friendlyStructures;
 	private int workerCount = 0;
+	private int factoryCount = 0;
 	private Predicate<MapLocation> stopCondition = location -> {
 		if (GameController.INSTANCE.getCurrentKarbonite() < Constants.WORKER_REPLICATE_COST) {
 			return false;
 		}
-		if (workerCount >= MAX_WORKERS) {
+		if (factoryCount > 0 && workerCount >= MIN_WORKERS && GameController.INSTANCE.getCurrentKarbonite() < 150) {
 			return false;
 		}
 		return getReplicateDirection(location) != null;
@@ -56,6 +57,7 @@ public class WorkerReplicateTask implements PathfinderTask {
 	public void update() {
 		friendlyStructures = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.isStructure());
 		workerCount = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.WORKER).length;
+		factoryCount = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.FACTORY).length;
 	}
 	@Override
 	public void execute(Unit unit, MapLocation location) {
