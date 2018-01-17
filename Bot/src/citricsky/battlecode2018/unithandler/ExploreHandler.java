@@ -22,6 +22,11 @@ public class ExploreHandler implements UnitHandler {
 		BFS bfs = new BFS(unit.getLocation().getMapLocation());
 		
 		bfs.process(location -> {
+			if(location.hasUnitAtLocation()) {
+				if(location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
+					return false;
+				}
+			}
 			for(Unit enemy: RoundInfo.getEnemiesOnMap()) {
 				if(enemy.isStructure() || enemy.getType() == UnitType.WORKER) {
 					continue;

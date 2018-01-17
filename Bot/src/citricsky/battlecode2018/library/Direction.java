@@ -20,7 +20,7 @@ public enum Direction {
 			{Direction.NORTHEAST, Direction.SOUTHEAST, Direction.SOUTHWEST, Direction.NORTHWEST, Direction.CENTER};
 	public static final Direction[] COMPASS = new Direction[] {
 			Direction.NORTH, Direction.NORTHEAST, Direction.EAST, Direction.SOUTHEAST,
-			Direction.SOUTH, Direction.SOUTHWEST, Direction.WEST, Direction.SOUTHWEST
+			Direction.SOUTH, Direction.NORTHWEST, Direction.WEST, Direction.SOUTHWEST
 	};
 	private static final int LENGTH = 8; // While there are 9 values, this is still 8 to not include CENTER in opposite/rotations/random
 
