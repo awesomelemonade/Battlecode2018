@@ -54,10 +54,8 @@ public class WorkerReplicateTask implements PathfinderTask {
 	};
 	@Override
 	public void update() {
-		friendlyStructures = GameController.INSTANCE.getAllUnitsByFilter(unit -> unit.getTeam() == GameController.INSTANCE.getTeam() &&
-				unit.isStructure());
-		workerCount = GameController.INSTANCE.getAllUnitsByFilter(unit -> unit.getTeam() == GameController.INSTANCE.getTeam() &&
-				unit.getType() == UnitType.WORKER).length;
+		friendlyStructures = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.isStructure());
+		workerCount = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.WORKER).length;
 	}
 	@Override
 	public void execute(Unit unit, MapLocation location) {
