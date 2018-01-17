@@ -62,29 +62,30 @@ public class KnightAttackTask implements PathfinderTask {
 				}
 			}
 		}
-		if(unit.isAbilityUnlocked() && unit.getAbilityHeat()<10) {
-			Unit bestUnit = null;
+		if(unit.isAbilityUnlocked() && unit.getAbilityHeat() < 10) {
+			Unit bestTarget = null;
 			boolean onlySeenFactory = true;
 			int bestDistanceSquared = Integer.MAX_VALUE;
-			for(Unit enemyUnit: enemyUnits) {
-				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
-						.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
-				if(onlySeenFactory && enemyUnit.getType()!=UnitType.FACTORY) {
-					bestDistanceSquared = distanceSquared;
-					bestUnit = enemyUnit;
-					onlySeenFactory = false;
-				}
-				else if(distanceSquared < bestDistanceSquared) {
-					if((onlySeenFactory && enemyUnit.getType().equals(UnitType.FACTORY)) || 
-							(!onlySeenFactory && enemyUnit.getType()!=UnitType.FACTORY)) {
+			for (Unit enemyUnit : enemyUnits) {
+				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
+				if(distanceSquared < unit.getAttackRange()) {
+					if(onlySeenFactory && enemyUnit.getType() != UnitType.FACTORY) {
 						bestDistanceSquared = distanceSquared;
-						bestUnit = enemyUnit;
+						bestTarget = enemyUnit;
+						onlySeenFactory = false;
+					}else {
+						if(distanceSquared < bestDistanceSquared) {
+							if(onlySeenFactory || (!onlySeenFactory && enemyUnit.getType() != UnitType.FACTORY)) {
+								bestDistanceSquared = distanceSquared;
+								bestTarget = enemyUnit;
+							}
+						}
 					}
 				}
 			}
-			if(bestUnit != null) {
-				if(unit.canJavelin(bestUnit)) {
-					unit.javelin(bestUnit);
+			if(bestTarget != null) {
+				if(unit.canJavelin(bestTarget)) {
+					unit.javelin(bestTarget);
 				}
 			}
 		}
