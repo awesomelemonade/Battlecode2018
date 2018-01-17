@@ -1,7 +1,5 @@
 package citricsky.battlecode2018.task;
 
-import java.util.function.Predicate;
-
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
@@ -44,15 +42,6 @@ public class WorkerReplicateTask implements PathfinderTask {
 	private Unit[] friendlyStructures;
 	private int workerCount = 0;
 	private int factoryCount = 0;
-	private Predicate<MapLocation> stopCondition = location -> {
-		if (GameController.INSTANCE.getCurrentKarbonite() < Constants.WORKER_REPLICATE_COST) {
-			return false;
-		}
-		if (factoryCount > 0 && workerCount >= MIN_WORKERS && GameController.INSTANCE.getCurrentKarbonite() < 150) {
-			return false;
-		}
-		return getReplicateDirection(location) != null;
-	};
 	@Override
 	public void update() {
 		friendlyStructures = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.isStructure());
@@ -72,7 +61,17 @@ public class WorkerReplicateTask implements PathfinderTask {
 		}
 	}
 	@Override
-	public Predicate<MapLocation> getStopCondition() {
-		return stopCondition;
+	public boolean isActivated(Unit unit) {
+		return unit.getAbilityHeat() < Constants.MIN_HEAT;
+	}
+	@Override
+	public boolean isStopCondition(MapLocation location) {
+		if (GameController.INSTANCE.getCurrentKarbonite() < Constants.WORKER_REPLICATE_COST) {
+			return false;
+		}
+		if (factoryCount > 0 && workerCount >= MIN_WORKERS && GameController.INSTANCE.getCurrentKarbonite() < 150) {
+			return false;
+		}
+		return getReplicateDirection(location) != null;
 	}
 }

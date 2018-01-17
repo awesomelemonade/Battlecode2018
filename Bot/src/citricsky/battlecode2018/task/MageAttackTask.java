@@ -5,26 +5,12 @@ import citricsky.battlecode2018.main.EnemyMap;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 import java.util.*;
-import java.util.function.Predicate;
 
 public class MageAttackTask implements PathfinderTask {
 	private static final int MAGE_ATTACK_RANGE = 30;
 	private Set<MapLocation> valid;
 	private Set<MapLocation> invalid;
 	private Unit[] enemyUnits;
-
-	private Predicate<MapLocation> stopCondition = location -> {
-		if (valid.contains(location)) return true;
-		if (invalid.contains(location)) return false;
-
-		if (getAttackTarget(location) != null) {
-			valid.add(location);
-			return true;
-		} else {
-			invalid.add(location);
-			return false;
-		}
-	};
 
 	public MageAttackTask() {
 		valid = new HashSet<>();
@@ -58,7 +44,16 @@ public class MageAttackTask implements PathfinderTask {
 	}
 
 	@Override
-	public Predicate<MapLocation> getStopCondition() {
-		return stopCondition;
+	public boolean isStopCondition(MapLocation location) {
+		if (valid.contains(location)) return true;
+		if (invalid.contains(location)) return false;
+
+		if (getAttackTarget(location) != null) {
+			valid.add(location);
+			return true;
+		} else {
+			invalid.add(location);
+			return false;
+		}
 	}
 }

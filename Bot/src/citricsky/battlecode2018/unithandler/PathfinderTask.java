@@ -9,10 +9,13 @@ public interface PathfinderTask extends Predicate<MapLocation> {
 	public default void update() {
 		
 	}
+	public default boolean isActivated(Unit unit) {
+		return true;
+	}
 	public void execute(Unit unit, MapLocation location);
-	public Predicate<MapLocation> getStopCondition();
+	public boolean isStopCondition(MapLocation location);
 	@Override
 	public default boolean test(MapLocation location) {
-		return this.getStopCondition().test(location);
+		return this.isStopCondition(location);
 	}
 }

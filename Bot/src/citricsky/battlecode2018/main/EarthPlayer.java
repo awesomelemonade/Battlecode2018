@@ -133,7 +133,7 @@ public class EarthPlayer {
 			}
 			double deltaTime = benchmark.pop() / 1000000.0;
 			if(deltaTime > 20) {
-				System.out.println("Round: " + RoundInfo.getRoundNumber() + " - " + deltaTime + "ms");
+				System.out.println("Round: " + RoundInfo.getRoundNumber() + " - " + deltaTime + "/" + gc.getTimeLeft() + "ms");
 			}
 			gc.yield();
 		}

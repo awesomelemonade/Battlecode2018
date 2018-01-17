@@ -1,5 +1,6 @@
 package citricsky.battlecode2018.unithandler;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -22,7 +23,13 @@ public class BFSHandler implements UnitHandler {
 		this.unit = unit;
 		this.passablePredicate = passablePredicate;
 		this.occupied = occupied;
-		this.pathfinderTasks = pathfinderTasks;
+		Set<PathfinderTask> tasks = new HashSet<PathfinderTask>();
+		for(PathfinderTask task: pathfinderTasks) {
+			if(task.isActivated(unit)) {
+				tasks.add(task);
+			}
+		}
+		this.pathfinderTasks = tasks.toArray(new PathfinderTask[tasks.size()]);
 		if (unit.getLocation().isOnMap()) {
 			this.bfs = new BFS(unit.getLocation().getMapLocation());
 		}
@@ -31,6 +38,9 @@ public class BFSHandler implements UnitHandler {
 	@Override
 	public int getPriority(int priority) {
 		if (!unit.getLocation().isOnMap()) {
+			return Integer.MIN_VALUE;
+		}
+		if(pathfinderTasks.length == 0) {
 			return Integer.MIN_VALUE;
 		}
 		MapLocation mapLocation = unit.getLocation().getMapLocation();

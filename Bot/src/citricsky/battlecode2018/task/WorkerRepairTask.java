@@ -1,13 +1,9 @@
 package citricsky.battlecode2018.task;
 
-import java.util.function.Predicate;
-
 import citricsky.battlecode2018.library.*;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class WorkerRepairTask implements PathfinderTask {
-	private static final Predicate<MapLocation> STOP_CONDITION = location -> WorkerRepairTask.getRepairTarget(location) != null;
-
 	private static Unit getRepairTarget(MapLocation location) {
 		for (Direction direction : Direction.COMPASS) {
 			MapLocation offset = location.getOffsetLocation(direction);
@@ -35,9 +31,9 @@ public class WorkerRepairTask implements PathfinderTask {
 			}
 		}
 	}
-
+	
 	@Override
-	public Predicate<MapLocation> getStopCondition() {
-		return STOP_CONDITION;
+	public boolean isStopCondition(MapLocation location) {
+		return WorkerRepairTask.getRepairTarget(location) != null;
 	}
 }
