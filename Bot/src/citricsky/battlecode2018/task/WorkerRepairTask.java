@@ -5,8 +5,8 @@ import java.util.function.Predicate;
 import citricsky.battlecode2018.library.*;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
-public class WorkerRepairFactoryTask implements PathfinderTask {
-	private static final Predicate<MapLocation> STOP_CONDITION = location -> WorkerRepairFactoryTask.getRepairTarget(location) != null;
+public class WorkerRepairTask implements PathfinderTask {
+	private static final Predicate<MapLocation> STOP_CONDITION = location -> WorkerRepairTask.getRepairTarget(location) != null;
 
 	private static Unit getRepairTarget(MapLocation location) {
 		for (Direction direction : Direction.COMPASS) {
@@ -14,13 +14,9 @@ public class WorkerRepairFactoryTask implements PathfinderTask {
 			if (GameController.INSTANCE.canSenseLocation(offset)) {
 				if (offset.hasUnitAtLocation()) {
 					Unit unit = offset.getUnit();
-					if ((unit.isStructure() && (!unit.isStructureBuilt()) &&
-							unit.getTeam() == GameController.INSTANCE.getTeam())) {
-						if(unit.getType() == UnitType.FACTORY) {
-							if(unit.getHealth()<unit.getMaxHealth()) {
-								return unit;
-							}
-						}
+					if (unit.isStructure() && unit.isStructureBuilt() &&
+							unit.getTeam() == GameController.INSTANCE.getTeam() && unit.getHealth() < unit.getMaxHealth()) {
+						return unit;
 					}
 				}
 			}
@@ -32,9 +28,9 @@ public class WorkerRepairFactoryTask implements PathfinderTask {
 	public void execute(Unit unit, MapLocation location) {
 		if (unit.getLocation().getMapLocation().equals(location)) {
 			if (!unit.hasWorkerActed()) {
-				Unit repairTarget = WorkerRepairFactoryTask.getRepairTarget(location);
-				if (unit.canBuild(repairTarget)) {
-					unit.build(repairTarget);
+				Unit repairTarget = WorkerRepairTask.getRepairTarget(location);
+				if (unit.canRepair(repairTarget)) {
+					unit.repair(repairTarget);
 				}
 			}
 		}

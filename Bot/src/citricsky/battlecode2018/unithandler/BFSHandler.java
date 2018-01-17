@@ -7,6 +7,7 @@ import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.main.BFS;
+import citricsky.battlecode2018.util.Util;
 
 public class BFSHandler implements UnitHandler {
 	private Unit unit;
@@ -34,7 +35,7 @@ public class BFSHandler implements UnitHandler {
 		}
 		MapLocation mapLocation = unit.getLocation().getMapLocation();
 		if (bfs.getStopLocation() != null) {
-			int bestPriority = -bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
+			int bestPriority = -Util.getMovementDistance(bfs.getStopLocation().getPosition(), mapLocation.getPosition());
 			if (bestPriority <= priority) {
 				return Integer.MIN_VALUE;
 			}
@@ -49,7 +50,7 @@ public class BFSHandler implements UnitHandler {
 		if(time > 10) {
 			System.out.println("BFS Time: "+time+"/"+cumulativeTime+"ms - "+task.getClass().getSimpleName()+" w/ "+unit.getId());
 		}
-		return -bfs.getStopLocation().getPosition().getDistanceSquared(mapLocation.getPosition());
+		return -Util.getMovementDistance(bfs.getStopLocation().getPosition(), mapLocation.getPosition());
 	}
 	@Override
 	public void execute() {

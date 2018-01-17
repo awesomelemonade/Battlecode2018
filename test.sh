@@ -16,6 +16,12 @@ BUILD_NUMBER="${1}"
 GIT_BRANCH=$(echo ${2} | cut -f2 -d'/')
 GIT_PREVIOUS_SUCCESSFUL_COMMIT="${3}"
 
+UPLOAD_USER="${4}"
+UPLOAD_PASS="${5}"
+UPLOAD_LABEL="ARandoBot${BUILD_NUMBER}"
+
+MASTER_BRANCH="master"
+
 NUMWINS=0
 NUMGAMES=0
 
@@ -102,6 +108,18 @@ git clean -fdx
 git checkout ${GIT_BRANCH}
 git pull --all
 
+if [[ ${GIT_BRANCH} == ${MASTER_BRANCH} ]]; then
+    echo ">>>> Master branch: uploading bot"
+    cd ${DIR}
+    mkdir -p MasterBot
+    cp -r Bot/src/* MasterBot/
+    echo "${RUN_SCRIPT}" > "MasterBot/run.sh"
+
+    python ./upload.py -u ${UPLOAD_USER} -p "${UPLOAD_PASS}" -f MasterBot -l ${UPLOAD_LABEL}
+    touch "Uploaded as ${UPLOAD_LABEL}"
+    exit 0
+fi
+
 echo ">>>> Copying previous successful bot"
 mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
 
@@ -112,7 +130,7 @@ BOTS+=("Bot_prev")
 
 git checkout ${GIT_BRANCH}
 
-if [[ ${GIT_BRANCH} != "master" ]]; then
+if [[ ${GIT_BRANCH} != ${MASTER_BRANCH} ]]; then
     echo ">>>> Not on master branch: copying master bot"
     mkdir -p "${SCAFFOLD_DIR}/Bot_master"
 
@@ -140,7 +158,7 @@ for bot in ${BOTS[@]}; do
         rungame ${bot} ${map}
     done
 done
-kill $(jobs -p)
+#kill $(jobs -p)
 
 cp -r replays "${DIR}/"
 

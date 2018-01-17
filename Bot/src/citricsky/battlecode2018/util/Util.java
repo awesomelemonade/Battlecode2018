@@ -5,6 +5,7 @@ import java.util.function.Predicate;
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
+import citricsky.battlecode2018.library.Vector;
 
 public class Util {
 	public static final Predicate<MapLocation> PASSABLE_PREDICATE = location -> {
@@ -108,5 +109,8 @@ public class Util {
 	}
 	public static int getBuildArray(int neighbors) {
 		return buildArray[neighbors];
+	}
+	public static int getMovementDistance(Vector a, Vector b) {
+		return Math.max(Math.abs(a.getX()-b.getX()), Math.abs(a.getY()-b.getY()));
 	}
 }
