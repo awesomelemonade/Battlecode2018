@@ -29,9 +29,9 @@ public class WorkerBlueprintTask implements PathfinderTask {
 					continue;
 				}
 			}
-			int counter = Util.getBuildArray(Util.getNeighbors(location.getOffsetLocation(direction), Util.PASSABLE_PREDICATE));
-			if(counter>bestCounter) {
-				counter = bestCounter;
+			int counter = Util.getBuildArray(Util.getNeighbors(offset, Util.PASSABLE_PREDICATE));
+			if(counter > bestCounter) {
+				bestCounter = counter;
 				bestDirection = direction;
 			}
 		}

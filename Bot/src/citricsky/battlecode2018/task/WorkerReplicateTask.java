@@ -60,6 +60,9 @@ public class WorkerReplicateTask implements PathfinderTask {
 	}
 	@Override
 	public boolean isActivated(Unit unit) {
+		if (GameController.INSTANCE.getRoundNumber() <= 1) {
+			return false;
+		}
 		return unit.getAbilityHeat() < Constants.MIN_HEAT;
 	}
 	@Override

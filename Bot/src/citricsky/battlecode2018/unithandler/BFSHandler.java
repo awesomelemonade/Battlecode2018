@@ -49,7 +49,7 @@ public class BFSHandler implements UnitHandler {
 				return Integer.MIN_VALUE;
 			}
 		}
-		task = bfs.process(passablePredicate, pathfinderTasks);
+		task = bfs.process(location -> passablePredicate.test(location) && (!occupied.contains(location)), pathfinderTasks);
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
 		}
