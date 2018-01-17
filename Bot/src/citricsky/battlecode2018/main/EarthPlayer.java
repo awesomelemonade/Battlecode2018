@@ -73,6 +73,7 @@ public class EarthPlayer {
 		}
 		int lastRoundNumber = GameController.INSTANCE.getRoundNumber();
 		while (true) {
+			long time = System.currentTimeMillis();
 			RoundInfo.update();
 			if(RoundInfo.getRoundNumber() > lastRoundNumber + 1) {
 				System.out.println("Skipped Round? "+lastRoundNumber+" - "+RoundInfo.getRoundNumber());
@@ -124,6 +125,10 @@ public class EarthPlayer {
 					System.out.println(ex.getMessage());
 					ex.printStackTrace();
 				}
+			}
+			time = System.currentTimeMillis() - time;
+			if(time > 20) {
+				System.out.println("Round: " + RoundInfo.getRoundNumber() + " - " + time + "ms");
 			}
 			gc.yield();
 		}
