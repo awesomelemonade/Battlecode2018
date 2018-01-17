@@ -97,4 +97,9 @@ public class MapLocation {
 	public int hashCode() {
 		return Objects.hash(planet, position);
 	}
+	
+	@Override
+	public String toString() {
+		return String.format("MapLocation[%s, %s]", planet.toString(), position.toString());
+	}
 }

@@ -5,6 +5,7 @@ import java.util.Set;
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.main.BFS;
 import citricsky.battlecode2018.util.Util;
 
@@ -49,6 +50,7 @@ public class BFSHandler implements UnitHandler {
 	}
 	@Override
 	public void execute() {
+		//System.out.println("Executing BFSHandler: "+unit.getType().toString()+" - "+unit.getLocation().getMapLocation().getPosition()+" - "+bfs.getStopLocation().getPosition());
 		if (!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
 			if(unit.isMoveReady()) {
 				int directions = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());

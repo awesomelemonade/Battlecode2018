@@ -17,7 +17,9 @@ public class WorkerRepairFactoryTask implements PathfinderTask {
 					if ((unit.isStructure() && (!unit.isStructureBuilt()) &&
 							unit.getTeam() == GameController.INSTANCE.getTeam())) {
 						if(unit.getType() == UnitType.FACTORY) {
-							return unit;
+							if(unit.getHealth()<unit.getMaxHealth()) {
+								return unit;
+							}
 						}
 					}
 				}

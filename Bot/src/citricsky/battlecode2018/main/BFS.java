@@ -27,7 +27,7 @@ public class BFS {
 			}
 		});*/
 		this.queue = new HashSet<MapLocation>();
-		toAdd = new HashSet<MapLocation>();
+		this.toAdd = new HashSet<MapLocation>();
 		this.stopLocation = null;
 		queue.add(source);
 		this.checkedSource = false;
@@ -39,13 +39,15 @@ public class BFS {
 
 	public int getDirectionFromSource(Vector vector) {
 		int info = data[vector.getX()][vector.getY()];
-		if (source.getPosition().equals(vector)) {
-			return ((info >>> 5) & 0b00001111) | ((info << 3) & 0b11110000);
-		}
 		int returnValue = 0;
 		for(Direction direction: Direction.COMPASS) {
 			if (((info >>> (direction.ordinal() + 1)) & 1) == 1) {
-				returnValue = returnValue | getDirectionFromSource(vector.add(direction.getOffsetVector()));
+				Vector offset = vector.add(direction.getOffsetVector());
+				if(offset.equals(source.getPosition())) {
+					returnValue = returnValue | ((info >>> 5) & 0b00001111) | ((info << 3) & 0b11110000);
+				}else {
+					returnValue = returnValue | getDirectionFromSource(vector.add(direction.getOffsetVector()));
+				}
 			}
 		}
 		return returnValue;
@@ -75,6 +77,7 @@ public class BFS {
 			Set<MapLocation> adding = new HashSet<MapLocation>(toAdd);
 			for(MapLocation location: adding) {
 				toAdd.remove(location);
+				queue.add(location);
 				for (T stopCondition : stopConditions) {
 					if (stopCondition.test(location)) {
 						this.stopLocation = location;
@@ -86,10 +89,12 @@ public class BFS {
 				for (Direction direction : Direction.COMPASS) {
 					MapLocation step = location.getOffsetLocation(direction);
 					if(step.isOnMap()) {
-						if(passable.test(step) && (data[step.getPosition().getX()][step.getPosition().getY()] & 1) == 0) {
-							data[step.getPosition().getX()][step.getPosition().getY()] =
-									data[step.getPosition().getX()][step.getPosition().getY()] | (1 << (direction.getOpposite().ordinal()+1));
-							toAdd.add(step);
+						if(!step.equals(source)) {
+							if(passable.test(step) && (data[step.getPosition().getX()][step.getPosition().getY()] & 1) == 0) {
+								data[step.getPosition().getX()][step.getPosition().getY()] =
+										data[step.getPosition().getX()][step.getPosition().getY()] | (1 << (direction.getOpposite().ordinal()+1));
+								toAdd.add(step);
+							}
 						}
 					}
 				}
