@@ -11,15 +11,26 @@ import citricsky.battlecode2018.unithandler.PathfinderTask;
 import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
 
-public class WorkerBlueprintFactoryTask implements PathfinderTask {
-	private Unit[] structures;
+public class WorkerBlueprintTask implements PathfinderTask {
+	private int numWorkers;
 	private int numFactories;
+	private int numBuiltFactories;
 	private int numRockets;
 	private int numBuiltRockets;
+
 	private Predicate<MapLocation> stopCon = location -> {
-		if (numRockets > numBuiltRockets) return false;
-		if (numFactories > numRockets + 1) return false;
-		return GameController.INSTANCE.getCurrentKarbonite() >= Constants.FACTORY_COST && getBlueprintDirection(location) != null;
+		if (getBlueprintDirection(location) == null) return false;
+		UnitType toBlueprint = getBlueprintType();
+		if (toBlueprint == null) return false;
+		int karbonite = GameController.INSTANCE.getCurrentKarbonite();
+		switch(toBlueprint) {
+			case FACTORY:
+				return karbonite >= Constants.FACTORY_COST;
+			case ROCKET:
+				return karbonite >= Constants.ROCKET_COST;
+			default:
+				return false;
+		}
 	};
 
 	private Direction getBlueprintDirection(MapLocation location) {
@@ -39,14 +50,29 @@ public class WorkerBlueprintFactoryTask implements PathfinderTask {
 		return bestDirection;
 	}
 
+	private UnitType getBlueprintType() {
+		if (numFactories < 2 || numBuiltFactories < 1) return UnitType.FACTORY;
+		if (numWorkers < 4) return UnitType.FACTORY;
+		if (numBuiltRockets > numFactories) return UnitType.FACTORY;
+		if (GameController.INSTANCE.getRoundNumber() < 600) return UnitType.FACTORY;
+		return UnitType.ROCKET;
+	}
+
 	@Override
 	public void update() {
-		structures = GameController.INSTANCE.getMyUnitsByFilter(Unit::isStructure);
+		Unit[] structures = GameController.INSTANCE.getMyUnitsByFilter(Unit::isStructure);
+		numWorkers = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.WORKER).length;
 		numFactories = 0;
+		numBuiltFactories = 0;
 		numRockets = 0;
 		numBuiltRockets = 0;
 		for (Unit unit : structures) {
-			if (unit.getType() == UnitType.FACTORY) numFactories++;
+			if (unit.getType() == UnitType.FACTORY) {
+				numFactories++;
+				if (unit.isStructureBuilt()) {
+					numBuiltFactories++;
+				}
+			}
 			if (unit.getType() == UnitType.ROCKET) {
 				numRockets++;
 				if (unit.isStructureBuilt()) {
@@ -60,8 +86,9 @@ public class WorkerBlueprintFactoryTask implements PathfinderTask {
 	public void execute(Unit unit, MapLocation location) {
 		if (unit.getLocation().getMapLocation().equals(location)) {
 			Direction direction = getBlueprintDirection(location);
-			if (!unit.hasWorkerActed() && unit.canBlueprint(UnitType.FACTORY, direction)) {
-				unit.blueprint(UnitType.FACTORY, direction);
+			UnitType type = getBlueprintType();
+			if (!unit.hasWorkerActed() && unit.canBlueprint(type, direction)) {
+				unit.blueprint(type, direction);
 			}
 		}
 	}

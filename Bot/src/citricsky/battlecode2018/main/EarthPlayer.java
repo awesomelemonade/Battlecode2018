@@ -30,8 +30,7 @@ public class EarthPlayer {
 			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
 			pathfinderTasks.put(unitType, new HashSet<PathfinderTask>());
 		}
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintFactoryTask());
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintRocketTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerReplicateTask());
