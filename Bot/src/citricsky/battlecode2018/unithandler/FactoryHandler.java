@@ -23,7 +23,9 @@ public class FactoryHandler implements UnitHandler {
 	@Override
 	public void execute() {
 		UnitType unitType = UnitType.RANGER;
-		if (unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam()).length > 0) {
+		if (GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.WORKER).length < 3) {
+			unitType = UnitType.WORKER;
+		} else if (unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam()).length > 0) {
 			unitType = UnitType.KNIGHT;
 		}
 		if(GameController.INSTANCE.getAllUnitsByFilter(
@@ -43,44 +45,6 @@ public class FactoryHandler implements UnitHandler {
 					}
 				}
 			}
-		}
-	}
-
-	@Override
-	public boolean isRequired() {
-		return true;
-	}
-
-	enum Production {
-		KNIGHT(UnitType.KNIGHT, 0, 20),
-		RANGER(UnitType.RANGER, 20, 75),
-		MAGE(UnitType.MAGE, 75, 85),
-		HEALER(UnitType.HEALER, 85, 95),
-		WORKER(UnitType.WORKER, 95, 100);
-
-		private UnitType type;
-		private byte probMin; // 0 to 100 (inclusive)
-		private byte probMax;
-
-		private static int total = -1;
-
-		Production(UnitType type, int probMin, int probMax) {
-			this.type = type;
-			this.probMin = (byte) probMin;
-			this.probMax = (byte) probMax;
-		}
-
-		public UnitType getType() {
-			return type;
-		}
-
-		public static UnitType getFromProb(int prob) {
-			for (Production prod : Production.values()) {
-				if (prod.probMin > prob) continue;
-				if (prod.probMax < prob) continue;
-				return prod.getType();
-			}
-			return null;
 		}
 	}
 }
