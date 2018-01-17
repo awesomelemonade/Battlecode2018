@@ -23,10 +23,6 @@ def get_token(username, password):
 
 def upload_scrim_server(username, password, file_name, player_name):
     cwd = os.getcwd()
-    if 'NODOCKER' in os.environ:
-        os.chdir('..')
-    else:
-        os.chdir('/player')
     os.chdir(file_name)
     zip_file_name = os.path.abspath(os.path.join('../', file_name))
 
@@ -47,6 +43,7 @@ def upload_scrim_server(username, password, file_name, player_name):
         encoded_string = base64.b64encode(image_file.read())
     data['src'] = encoded_string
     res = requests.post("https://battlecode.org/apis/submissions", headers=headers, data=data)
+    print("Success!")
     return "success"
 
 
