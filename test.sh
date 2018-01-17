@@ -116,6 +116,7 @@ if [[ ${GIT_BRANCH} == ${MASTER_BRANCH} ]]; then
     echo "${RUN_SCRIPT}" > "MasterBot/run.sh"
 
     python ./upload.py -u ${UPLOAD_USER} -p "${UPLOAD_PASS}" -f MasterBot -l ${UPLOAD_LABEL}
+    touch "Uploaded as ${UPLOAD_LABEL}"
     exit 0
 fi
 
