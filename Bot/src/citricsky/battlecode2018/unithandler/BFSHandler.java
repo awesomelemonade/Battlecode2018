@@ -1,5 +1,6 @@
 package citricsky.battlecode2018.unithandler;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
 
@@ -16,13 +17,18 @@ public class BFSHandler implements UnitHandler {
 	private PathfinderTask[] pathfinderTasks;
 	private PathfinderTask task;
 	private Predicate<MapLocation> passablePredicate;
-	private long cumulativeTime;
 
 	public BFSHandler(Unit unit, Predicate<MapLocation> passablePredicate, Set<MapLocation> occupied, PathfinderTask... pathfinderTasks) {
 		this.unit = unit;
 		this.passablePredicate = passablePredicate;
 		this.occupied = occupied;
-		this.pathfinderTasks = pathfinderTasks;
+		Set<PathfinderTask> tasks = new HashSet<PathfinderTask>();
+		for(PathfinderTask task: pathfinderTasks) {
+			if(task.isActivated(unit)) {
+				tasks.add(task);
+			}
+		}
+		this.pathfinderTasks = tasks.toArray(new PathfinderTask[tasks.size()]);
 		if (unit.getLocation().isOnMap()) {
 			this.bfs = new BFS(unit.getLocation().getMapLocation());
 		}
@@ -33,6 +39,9 @@ public class BFSHandler implements UnitHandler {
 		if (!unit.getLocation().isOnMap()) {
 			return Integer.MIN_VALUE;
 		}
+		if(pathfinderTasks.length == 0) {
+			return Integer.MIN_VALUE;
+		}
 		MapLocation mapLocation = unit.getLocation().getMapLocation();
 		if (bfs.getStopLocation() != null) {
 			int bestPriority = -Util.getMovementDistance(bfs.getStopLocation().getPosition(), mapLocation.getPosition());
@@ -40,21 +49,14 @@ public class BFSHandler implements UnitHandler {
 				return Integer.MIN_VALUE;
 			}
 		}
-		long time = System.currentTimeMillis();
 		task = bfs.process(passablePredicate, pathfinderTasks);
-		time = System.currentTimeMillis() - time;
-		cumulativeTime += time;
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
-		}
-		if(time > 10) {
-			System.out.println("BFS Time: "+time+"/"+cumulativeTime+"ms - "+task.getClass().getSimpleName()+" w/ "+unit.getId());
 		}
 		return -Util.getMovementDistance(bfs.getStopLocation().getPosition(), mapLocation.getPosition());
 	}
 	@Override
 	public void execute() {
-		//System.out.println("Executing BFSHandler: "+unit.getType().toString()+" - "+unit.getLocation().getMapLocation().getPosition()+" - "+bfs.getStopLocation().getPosition());
 		if (!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
 			if(unit.isMoveReady()) {
 				int directions = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
@@ -72,9 +74,8 @@ public class BFSHandler implements UnitHandler {
 		long time = System.currentTimeMillis();
 		task.execute(unit, bfs.getStopLocation());
 		time = System.currentTimeMillis() - time;
-		cumulativeTime += time;
 		if(time > 10) {
-			System.out.println("Execution Time: "+time+"/"+cumulativeTime+"ms - "+task.getClass().getSimpleName()+" w/ "+unit.getId());
+			System.out.println("Execution Time: "+time+"ms - "+task.getClass().getSimpleName()+" w/ "+unit.getId());
 		}
 	}
 }

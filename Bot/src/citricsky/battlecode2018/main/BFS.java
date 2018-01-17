@@ -7,10 +7,12 @@ import java.util.function.Predicate;
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.util.Benchmark;
 
 public class BFS {
 	private int[][] data;
 	//private PriorityQueue<MapLocation> queue;
+	private Benchmark benchmark;
 	private Set<MapLocation> queue;
 	private Set<MapLocation> toAdd;
 	private MapLocation source;
@@ -26,6 +28,7 @@ public class BFS {
 				return getMovementDistanceFromSource(a.getPosition())-getMovementDistanceFromSource(b.getPosition());
 			}
 		});*/
+		this.benchmark = new Benchmark();
 		this.queue = new HashSet<MapLocation>();
 		this.toAdd = new HashSet<MapLocation>();
 		this.stopLocation = null;
@@ -56,29 +59,41 @@ public class BFS {
 	public void process(Predicate<MapLocation> passable) {
 		process(passable, x -> false);
 	}
-
+	
+	public <T extends Predicate<MapLocation>> T checkStopConditions(T[] stopConditions, long[] cumulative, MapLocation location){
+		for(int i = 0; i < stopConditions.length; ++i) {
+			benchmark.push();
+			boolean test = stopConditions[i].test(location);
+			cumulative[i] += benchmark.pop();
+			if(test) {
+				return stopConditions[i];
+			}
+		}
+		return null;
+	}
+	
 	@SafeVarargs
 	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
+		long[] cumulative = new long[stopConditions.length];
+		T toReturn = null;
 		this.stopLocation = null;
 		if (!checkedSource) {
-			for (T stopCondition : stopConditions) {
-				if (stopCondition.test(source)) {
-					this.stopLocation = source;
-					return stopCondition;
-				}
+			toReturn = checkStopConditions(stopConditions, cumulative, source);
+			if(toReturn == null) {
+				checkedSource = true;
+			} else {
+				this.stopLocation = source;
 			}
-			checkedSource = true;
 		}
-		while((!queue.isEmpty()) || (!toAdd.isEmpty())) {
+		mainLoop: while(((!queue.isEmpty()) || (!toAdd.isEmpty())) && stopLocation == null) {
 			Set<MapLocation> adding = new HashSet<MapLocation>(toAdd);
 			for(MapLocation location: adding) {
 				toAdd.remove(location);
 				queue.add(location);
-				for (T stopCondition : stopConditions) {
-					if (stopCondition.test(location)) {
-						this.stopLocation = location;
-						return stopCondition;
-					}
+				toReturn = checkStopConditions(stopConditions, cumulative, location);
+				if (toReturn != null) {
+					this.stopLocation = location;
+					break mainLoop;
 				}
 			}
 			for(MapLocation location : queue) {
@@ -100,7 +115,13 @@ public class BFS {
 				data[location.getPosition().getX()][location.getPosition().getY()] = data[location.getPosition().getX()][location.getPosition().getY()] | 1;
 			}
 		}
-		return null;
+		for(int i = 0; i < cumulative.length; ++i) {
+			if(cumulative[i] > 10000000) {
+				System.out.println("BFS Process: " + stopConditions[i].getClass().getSimpleName() +
+						" - " + (cumulative[i] / 1000000) + "ms");
+			}
+		}
+		return toReturn;
 	}
 
 	public Set<MapLocation> getQueueSet() {

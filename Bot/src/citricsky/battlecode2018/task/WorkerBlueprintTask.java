@@ -1,7 +1,5 @@
 package citricsky.battlecode2018.task;
 
-import java.util.function.Predicate;
-
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
@@ -17,26 +15,6 @@ public class WorkerBlueprintTask implements PathfinderTask {
 	private int numBuiltFactories;
 	private int numRockets;
 	private int numBuiltRockets;
-
-	private Predicate<MapLocation> stopCon = location -> {
-		if ((numFactories - numBuiltFactories) + (numRockets - numBuiltRockets) >= 2) {
-			return false; // Complete your structures before building others!
-		}
-		if (getBlueprintDirection(location) == null) {
-			return false;
-		}
-		UnitType toBlueprint = getBlueprintType();
-		if (toBlueprint == null) return false;
-		int karbonite = GameController.INSTANCE.getCurrentKarbonite();
-		switch(toBlueprint) {
-			case FACTORY:
-				return karbonite >= Constants.FACTORY_COST;
-			case ROCKET:
-				return karbonite >= Constants.ROCKET_COST;
-			default:
-				return false;
-		}
-	};
 
 	private Direction getBlueprintDirection(MapLocation location) {
 		int bestCounter = Integer.MIN_VALUE;
@@ -97,9 +75,25 @@ public class WorkerBlueprintTask implements PathfinderTask {
 			}
 		}
 	}
-
+	
 	@Override
-	public Predicate<MapLocation> getStopCondition() {
-		return stopCon;
+	public boolean isStopCondition(MapLocation location) {
+		if ((numFactories - numBuiltFactories) + (numRockets - numBuiltRockets) >= 2) {
+			return false; // Complete your structures before building others!
+		}
+		if (getBlueprintDirection(location) == null) {
+			return false;
+		}
+		UnitType toBlueprint = getBlueprintType();
+		if (toBlueprint == null) return false;
+		int karbonite = GameController.INSTANCE.getCurrentKarbonite();
+		switch(toBlueprint) {
+			case FACTORY:
+				return karbonite >= Constants.FACTORY_COST;
+			case ROCKET:
+				return karbonite >= Constants.ROCKET_COST;
+			default:
+				return false;
+		}
 	}
 }

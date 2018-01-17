@@ -2,7 +2,6 @@ package citricsky.battlecode2018.task;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
@@ -18,7 +17,6 @@ public class RangerAttackTask implements PathfinderTask {
 	private static final int[] OFFSET_Y = new int[] {0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 1,
 													0, -1, -2, -3, -4, -5, -5, -6, -6, -7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1};
 	private Set<MapLocation> cache;
-	private Predicate<MapLocation> stopCondition = location -> cache.contains(location);
 
 	public RangerAttackTask() {
 		cache = new HashSet<MapLocation>();
@@ -73,7 +71,7 @@ public class RangerAttackTask implements PathfinderTask {
 	}
 
 	@Override
-	public Predicate<MapLocation> getStopCondition() {
-		return stopCondition;
+	public boolean isStopCondition(MapLocation location) {
+		return cache.contains(location);
 	}
 }

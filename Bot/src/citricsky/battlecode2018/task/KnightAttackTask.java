@@ -6,7 +6,6 @@ import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Predicate;
 
 public class KnightAttackTask implements PathfinderTask {
 	private static Unit getEnemyUnit(MapLocation location) {
@@ -29,22 +28,20 @@ public class KnightAttackTask implements PathfinderTask {
 		return factoryUnit;
 	}
 
-	private Set<MapLocation> valid;
+	private Set<MapLocation> cache;
 
 	public KnightAttackTask() {
-		valid = new HashSet<MapLocation>();
+		cache = new HashSet<MapLocation>();
 	}
-
-	private Predicate<MapLocation> stopCondition = location -> valid.contains(location);
 
 	@Override
 	public void update() {
-		valid.clear();
+		cache.clear();
 		for (Unit unit : RoundInfo.getEnemiesOnMap()) {
 			for (Direction direction : Direction.CARDINAL_DIRECTIONS) {
 				MapLocation offset = unit.getLocation().getMapLocation().getOffsetLocation(direction);
 				if (offset.isOnMap()) {
-					valid.add(offset);
+					cache.add(offset);
 				}
 			}
 		}
@@ -90,7 +87,7 @@ public class KnightAttackTask implements PathfinderTask {
 	}
 
 	@Override
-	public Predicate<MapLocation> getStopCondition() {
-		return stopCondition;
+	public boolean isStopCondition(MapLocation location) {
+		return cache.contains(location);
 	}
 }

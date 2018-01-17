@@ -1,7 +1,5 @@
 package citricsky.battlecode2018.task;
 
-import java.util.function.Predicate;
-
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
@@ -22,7 +20,7 @@ public class WorkerReplicateTask implements PathfinderTask {
 			}
 			if (offset.isPassableTerrain() && offset.isOccupiable()) {
 				int distance = getNearestFriendlyStructureDistance(offset);
-				if(distance<bestDistance) {
+				if(bestDirection == null || distance < bestDistance) {
 					bestDistance = distance;
 					bestDirection = direction;
 				}
@@ -44,15 +42,6 @@ public class WorkerReplicateTask implements PathfinderTask {
 	private Unit[] friendlyStructures;
 	private int workerCount = 0;
 	private int factoryCount = 0;
-	private Predicate<MapLocation> stopCondition = location -> {
-		if (GameController.INSTANCE.getCurrentKarbonite() < Constants.WORKER_REPLICATE_COST) {
-			return false;
-		}
-		if (factoryCount > 0 && workerCount >= MIN_WORKERS && GameController.INSTANCE.getCurrentKarbonite() < 150) {
-			return false;
-		}
-		return getReplicateDirection(location) != null;
-	};
 	@Override
 	public void update() {
 		friendlyStructures = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.isStructure());
@@ -62,17 +51,25 @@ public class WorkerReplicateTask implements PathfinderTask {
 	@Override
 	public void execute(Unit unit, MapLocation location) {
 		if(unit.getLocation().getMapLocation().equals(location)) {
-			if(!unit.hasWorkerActed()) {
-				Direction direction = getReplicateDirection(location);
-				if(unit.canReplicate(direction)) {
-					workerCount++;
-					unit.replicate(direction);
-				}
+			Direction direction = getReplicateDirection(location);
+			if(unit.canReplicate(direction)) {
+				workerCount++;
+				unit.replicate(direction);
 			}
 		}
 	}
 	@Override
-	public Predicate<MapLocation> getStopCondition() {
-		return stopCondition;
+	public boolean isActivated(Unit unit) {
+		return unit.getAbilityHeat() < Constants.MIN_HEAT;
+	}
+	@Override
+	public boolean isStopCondition(MapLocation location) {
+		if (GameController.INSTANCE.getCurrentKarbonite() < Constants.WORKER_REPLICATE_COST) {
+			return false;
+		}
+		if (factoryCount > 0 && workerCount >= MIN_WORKERS && GameController.INSTANCE.getCurrentKarbonite() < 150) {
+			return false;
+		}
+		return getReplicateDirection(location) != null;
 	}
 }

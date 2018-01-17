@@ -1,7 +1,5 @@
 package citricsky.battlecode2018.task;
 
-import java.util.function.Predicate;
-
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
@@ -9,7 +7,6 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class WorkerHarvestTask implements PathfinderTask {
-	private final Predicate<MapLocation> stopCondition = location -> getHarvestDirection(location) != null;
 	private Direction getHarvestDirection(MapLocation location) {
 		for(Direction direction: Direction.values()) {
 			MapLocation offset = location.getOffsetLocation(direction);
@@ -39,8 +36,9 @@ public class WorkerHarvestTask implements PathfinderTask {
 			}
 		}
 	}
+	
 	@Override
-	public Predicate<MapLocation> getStopCondition() {
-		return stopCondition;
+	public boolean isStopCondition(MapLocation location) {
+		return getHarvestDirection(location) != null;
 	}
 }
