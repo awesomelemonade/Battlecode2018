@@ -13,10 +13,12 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.task.*;
 import citricsky.battlecode2018.unithandler.*;
+import citricsky.battlecode2018.util.Benchmark;
 import citricsky.battlecode2018.util.Util;
 
 public class EarthPlayer {
 	public static void execute() {
+		Benchmark benchmark = new Benchmark();
 		GameController gc = GameController.INSTANCE;
 		UnitType[] researchOrder = new UnitType[]
 				{UnitType.RANGER, UnitType.RANGER, UnitType.ROCKET, UnitType.KNIGHT, UnitType.KNIGHT,
@@ -72,26 +74,21 @@ public class EarthPlayer {
 				}
 			}
 		}
-		int lastRoundNumber = GameController.INSTANCE.getRoundNumber();
 		while (true) {
+			benchmark.push();
 			RoundInfo.update();
-			if(RoundInfo.getRoundNumber() > lastRoundNumber + 1) {
-				System.out.println("Skipped Round? "+lastRoundNumber+" - "+RoundInfo.getRoundNumber());
-			}
-			lastRoundNumber = RoundInfo.getRoundNumber();
 			//System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
 			occupied.clear();
 			for(UnitType unitType : UnitType.values()) {
 				for (PathfinderTask task : pathfinderTasks.get(unitType)) {
-					long time = System.currentTimeMillis();
+					benchmark.push();
 					task.update();
-					time = System.currentTimeMillis() - time;
-					if(time > 10) {
-						System.out.println("Update: " + task.getClass().getSimpleName() + " - " + time + "ms");
+					double deltaTime = benchmark.pop() / 1000000.0;
+					if (deltaTime > 10) {
+						System.out.println("Update: " + task.getClass().getSimpleName() + " - " + deltaTime + "ms");
 					}
 				}
 			}
-			long time = System.currentTimeMillis();
 			Unit[] myUnits = gc.getMyUnits();
 			Map<Unit, Set<UnitHandler>> map = new HashMap<Unit, Set<UnitHandler>>();
 			for (Unit unit : myUnits) {
@@ -100,7 +97,7 @@ public class EarthPlayer {
 					map.get(unit).add(function.apply(unit));
 				}
 			}
-			while (gc.getTimeLeft() > 1000) {
+			while (benchmark.peek() / 1000000 < gc.getTimeLeft() - 1000) {
 				Unit bestUnit = null;
 				UnitHandler bestHandler = null;
 				int bestPriority = Integer.MIN_VALUE;
@@ -134,9 +131,9 @@ public class EarthPlayer {
 					ex.printStackTrace();
 				}
 			}
-			time = System.currentTimeMillis() - time;
-			if(time > 20) {
-				System.out.println("Round: " + RoundInfo.getRoundNumber() + " - " + time + "ms");
+			double deltaTime = benchmark.pop() / 1000000.0;
+			if(deltaTime > 20) {
+				System.out.println("Round: " + RoundInfo.getRoundNumber() + " - " + deltaTime + "ms");
 			}
 			gc.yield();
 		}
