@@ -16,6 +16,12 @@ BUILD_NUMBER="${1}"
 GIT_BRANCH=$(echo ${2} | cut -f2 -d'/')
 GIT_PREVIOUS_SUCCESSFUL_COMMIT="${3}"
 
+UPLOAD_USER="${4}"
+UPLOAD_PASS="${5}"
+UPLOAD_LABEL="${6}"
+
+MASTER_BRANCH="origin/master"
+
 NUMWINS=0
 NUMGAMES=0
 
@@ -112,7 +118,7 @@ BOTS+=("Bot_prev")
 
 git checkout ${GIT_BRANCH}
 
-if [[ ${GIT_BRANCH} != "master" ]]; then
+if [[ ${GIT_BRANCH} != ${MASTER_BRANCH} ]]; then
     echo ">>>> Not on master branch: copying master bot"
     mkdir -p "${SCAFFOLD_DIR}/Bot_master"
 
@@ -172,5 +178,14 @@ touch ../"Won ${NUMWINS} of ${NUMGAMES} games"
 
 if [[ ! ${NUMWINS} > $(( NUMGAMES / 2 )) ]]; then
     exit 1
+fi
+
+if [[ ${GIT_BRANCH} == ${MASTER_BRANCH} ]]; then
+    cd ${DIR}
+    mkdir -p MasterBot
+    cp -r Bot/src/* MasterBot/
+    echo "${RUN_SCRIPT}" > "MasterBot/run.sh"
+
+    python ./upload.py ${UPLOAD_USER} ${UPLOAD_PASS} MasterBot ${UPLOAD_LABEL}
 fi
 exit 0
