@@ -58,20 +58,20 @@ public class RangerAttackTask implements PathfinderTask {
 				enemy -> enemy.getTeam() == GameController.INSTANCE.getEnemyTeam() && enemy.getLocation().isOnMap());
 		int bestDistanceSquared = Integer.MAX_VALUE;
 		Unit bestTarget = null;
-		boolean isFactory = true;
+		boolean onlySeenFactory = true;
 		for (Unit enemyUnit : enemyUnits) {
 			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-			if(isFactory && enemyUnit.getType()!=UnitType.FACTORY) {
-				bestDistanceSquared = distanceSquared;
-				bestTarget = enemyUnit;
-				isFactory = false;
-			}
-			else if (distanceSquared > unit.getRangerCannotAttackRange()) {
-				if (distanceSquared < bestDistanceSquared) {
-					if((isFactory && enemyUnit.getType().equals(UnitType.FACTORY)) || 
-							(!isFactory && enemyUnit.getType()!=UnitType.FACTORY)) {
+			if(distanceSquared > unit.getRangerCannotAttackRange() && distanceSquared < unit.getAttackRange()) {
+				if(onlySeenFactory && enemyUnit.getType() != UnitType.FACTORY) {
 					bestDistanceSquared = distanceSquared;
 					bestTarget = enemyUnit;
+					onlySeenFactory = false;
+				}else {
+					if(distanceSquared < bestDistanceSquared) {
+						if(onlySeenFactory || (!onlySeenFactory && enemyUnit.getType() != UnitType.FACTORY)) {
+							bestDistanceSquared = distanceSquared;
+							bestTarget = enemyUnit;
+						}
 					}
 				}
 			}
