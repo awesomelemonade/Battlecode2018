@@ -26,6 +26,10 @@ public class FactoryHandler implements UnitHandler {
 		if (unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam()).length > 0) {
 			unitType = UnitType.KNIGHT;
 		}
+		if(GameController.INSTANCE.getAllUnitsByFilter(
+				unit -> unit.getTeam() == GameController.INSTANCE.getTeam() && unit.getType() == UnitType.WORKER).length ==0) {
+			unitType = UnitType.WORKER;
+		}
 		if (unit.canProduceRobot(unitType)) {
 			unit.produceRobot(unitType);
 		}

@@ -9,12 +9,17 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 
 public class WorkerHarvestTask implements PathfinderTask {
-	private static final Predicate<MapLocation> STOP_CONDITION = location -> WorkerHarvestTask.getHarvestDirection(location) != null;
-	private static Direction getHarvestDirection(MapLocation location) {
+	private final Predicate<MapLocation> stopCondition = location -> getHarvestDirection(location) != null;
+	private Direction getHarvestDirection(MapLocation location) {
 		for(Direction direction: Direction.values()) {
 			MapLocation offset = location.getOffsetLocation(direction);
 			if(!offset.isOnMap()) {
 				continue;
+			}
+			for (Unit enemyUnit: enemyUnits) {
+				if (enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(offset.getPosition())<=enemyUnit.getVisionRange()) {
+					continue;
+				}
 			}
 			if(GameController.INSTANCE.canSenseLocation(offset)) {
 				if(offset.getKarboniteCount() > 0) {
@@ -28,11 +33,17 @@ public class WorkerHarvestTask implements PathfinderTask {
 		}
 		return null;
 	}
+	private Unit[] enemyUnits;
+	@Override
+	public void update() {
+		this.enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(unit -> unit.getLocation().isOnMap() &&
+				unit.getTeam() == GameController.INSTANCE.getEnemyTeam());
+	}
 	@Override
 	public void execute(Unit unit, MapLocation location) {
 		if(unit.getLocation().getMapLocation().equals(location)) {
 			if(!unit.hasWorkerActed()) {
-				Direction direction = WorkerHarvestTask.getHarvestDirection(location);
+				Direction direction = getHarvestDirection(location);
 				if(unit.canHarvest(direction)) {
 					unit.harvest(direction);
 				}
@@ -41,6 +52,6 @@ public class WorkerHarvestTask implements PathfinderTask {
 	}
 	@Override
 	public Predicate<MapLocation> getStopCondition() {
-		return STOP_CONDITION;
+		return stopCondition;
 	}
 }
