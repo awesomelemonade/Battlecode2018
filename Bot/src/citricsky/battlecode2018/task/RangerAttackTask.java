@@ -1,5 +1,6 @@
 package citricsky.battlecode2018.task;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Predicate;
@@ -20,15 +21,19 @@ public class RangerAttackTask implements PathfinderTask {
 		if (valid.contains(location)) {
 			return true;
 		}
-		for (Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
+		Unit[] enemyUnits = RoundInfo.getEnemiesOnMap().clone();
+		Arrays.sort(enemyUnits, (unit1, unit2) -> {
+			int distanceSquared1 = unit1.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
+			int distanceSquared2 = unit2.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
+			return Integer.compare(distanceSquared1, distanceSquared2);
+		});
+		
+		for (Unit enemyUnit : enemyUnits) {
 			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
 			if (distanceSquared < 40) {
 				invalid.add(location);
 				return false;
 			}
-		}
-		for (Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
-			int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
 			if (distanceSquared <= 50) {
 				valid.add(location);
 				return true;
