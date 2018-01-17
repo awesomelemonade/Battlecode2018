@@ -16,10 +16,15 @@ public class WorkerHarvestTask implements PathfinderTask {
 			if(!offset.isOnMap()) {
 				continue;
 			}
+			boolean notAvailable = false;
 			for (Unit enemyUnit: enemyUnits) {
 				if (enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(offset.getPosition())<=enemyUnit.getVisionRange()) {
-					continue;
+					notAvailable = true;
+					break;
 				}
+			}
+			if(notAvailable) {
+				continue;
 			}
 			if(GameController.INSTANCE.canSenseLocation(offset)) {
 				if(offset.getKarboniteCount() > 0) {
