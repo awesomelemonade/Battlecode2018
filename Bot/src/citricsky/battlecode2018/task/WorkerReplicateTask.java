@@ -12,7 +12,7 @@ import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
 
 public class WorkerReplicateTask implements PathfinderTask {
-	private static final int MAX_WORKERS = 6;
+	private static final int MAX_WORKERS = 12;
 	private Direction getReplicateDirection(MapLocation location) {
 		Direction bestDirection = null;
 		int bestDistance = Integer.MAX_VALUE;
