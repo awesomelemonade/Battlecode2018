@@ -11,6 +11,10 @@ public enum Team {
 		this.bcTeam = bcTeam;
 	}
 
+	public Team getOpposite() {
+		return Team.getOpposite(this);
+	}
+	
 	protected bc.Team getBcTeam(){
 		return bcTeam;
 	}
@@ -21,6 +25,17 @@ public enum Team {
 			return Team.RED;
 		case Blue:
 			return Team.BLUE;
+		default:
+			return null;
+		}
+	}
+	
+	public static Team getOpposite(Team team) {
+		switch(team) {
+		case RED:
+			return Team.BLUE;
+		case BLUE:
+			return Team.RED;
 		default:
 			return null;
 		}

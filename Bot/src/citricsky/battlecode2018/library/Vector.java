@@ -1,5 +1,7 @@
 package citricsky.battlecode2018.library;
 
+import java.util.Objects;
+
 public class Vector {
 	private int x, y;
 
@@ -37,5 +39,37 @@ public class Vector {
 
 	public Vector invert() {
 		return new Vector(-x, -y);
+	}
+
+	public Vector getUnit() {
+		double length = Math.sqrt(getDistanceSquared(0, 0));
+		return new Vector((int) Math.round(x / length), (int) Math.round(y / length));
+	}
+
+	public Direction getDirectionTowards(Vector vector) {
+		return getDirectionTowards(vector.getX(), vector.getY());
+	}
+
+	public Direction getDirectionTowards(int x, int y) {
+		return Direction.valueOf(add(-x, -y).invert());
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if(o instanceof Vector) {
+			Vector vector = (Vector)o;
+			return x == vector.getX() && y == vector.getY();
+		}
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("Vector[%d, %d]", x, y);
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(x, y);
 	}
 }

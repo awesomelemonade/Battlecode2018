@@ -7,7 +7,7 @@ public class ResearchInfo {
 
 	protected ResearchInfo(bc.ResearchInfo bcResearchInfo) {
 		roundsLeft = (int)bcResearchInfo.roundsLeft();
-		queue = Util.toArray(bcResearchInfo.queue());
+		queue = LibraryUtil.toArray(bcResearchInfo.queue());
 		nextInQueue = UnitType.valueOf(bcResearchInfo.nextInQueue());
 	}
 

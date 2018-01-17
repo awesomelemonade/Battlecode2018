@@ -1,6 +1,7 @@
 package citricsky.battlecode2018.library;
 
-@SuppressWarnings("unused")
+import java.util.function.Predicate;
+
 public class Unit {
 	protected bc.Unit bcUnit;
 	
@@ -17,6 +18,135 @@ public class Unit {
 		this.id = bcUnit.id();
 		this.team = Team.valueOf(bcUnit.team());
 		this.type = UnitType.valueOf(bcUnit.unitType());
+		this.location = new Location(bcUnit.location());
+	}
+	
+	public int getAbilityCooldown() {
+		return (int)bcUnit.abilityCooldown();
+	}
+	
+	public int getAbilityHeat() {
+		return (int)bcUnit.abilityHeat();
+	}
+	
+	public int getAbilityRange() {
+		return (int)bcUnit.abilityRange();
+	}
+	
+	public int getAttackCooldown() {
+		return (int)bcUnit.attackCooldown();
+	}
+	
+	public int getAttackHeat() {
+		return (int)bcUnit.attackHeat();
+	}
+	
+	public int getAttackRange() {
+		return (int)bcUnit.attackRange();
+	}
+	
+	public int getDamage() {
+		return (int)bcUnit.damage();
+	}
+	
+	public int getFactoryMaxRoundsLeft() {
+		return (int)bcUnit.factoryMaxRoundsLeft();
+	}
+	
+	public int getFactoryRoundsLeft() {
+		return (int)bcUnit.factoryRoundsLeft();
+	}
+	
+	public UnitType getFactoryUnitType() {
+		return UnitType.valueOf(bcUnit.factoryUnitType());
+	}
+	
+	public int getHealerSelfHealAmount() {
+		return (int)bcUnit.healerSelfHealAmount();
+	}
+	
+	public boolean isAbilityUnlocked() {
+		return bcUnit.isAbilityUnlocked()>0;
+	}
+	
+	public boolean isFactoryProducing() {
+		return bcUnit.isFactoryProducing()>0;
+	}
+	
+	public int getKnightDefense() {
+		return (int)bcUnit.knightDefense();
+	}
+	
+	public int getMovementCooldown() {
+		return (int)bcUnit.movementCooldown();
+	}
+	
+	public int getMovementHeat() {
+		return (int)bcUnit.movementHeat();
+	}
+	
+	public int getRangerCannotAttackRange() {
+		return (int)bcUnit.rangerCannotAttackRange();
+	}
+	
+	public int getRangerCountdown() {
+		return (int)bcUnit.rangerCountdown();
+	}
+	
+	public boolean isRangerSniping() {
+		return bcUnit.rangerIsSniping()>0;
+	}
+	
+	public int getRangerMaxCooldown() {
+		return (int)bcUnit.rangerMaxCountdown();
+	}
+	
+	public MapLocation getRangerTargetLocation() {
+		return Planet.getMapLocation(bcUnit.rangerTargetLocation());
+	}
+	
+	public int getResearchLvel() {
+		return (int)bcUnit.researchLevel();
+	}
+	
+	public int getRocketBlastDamage() {
+		return bcUnit.rocketBlastDamage();
+	}
+	
+	public boolean isRocketUsed() {
+		return bcUnit.rocketIsUsed()>0;
+	}
+	
+	public int getRocketTravelTimeDecrease() {
+		return (int)bcUnit.rocketTravelTimeDecrease();
+	}
+	
+	public boolean isStructureBuilt() {
+		return bcUnit.structureIsBuilt()>0;
+	}
+	
+	public int getStructureMaxCapacity() {
+		return (int)bcUnit.structureMaxCapacity();
+	}
+	
+	public int getVisionRange() {
+		return (int)bcUnit.visionRange();
+	}
+	
+	public int getWorkerBuildHealth() {
+		return (int)bcUnit.workerBuildHealth();
+	}
+	
+	public int getWorkerHarvestAmount() {
+		return (int)bcUnit.workerHarvestAmount();
+	}
+	
+	public boolean hasWorkerActed() {
+		return bcUnit.workerHasActed()>0;
+	}
+	
+	public int getWorkerRepairHealth() {
+		return (int)bcUnit.workerRepairHealth();
 	}
 	
 	public void attack(Unit target) {
@@ -49,6 +179,22 @@ public class Unit {
 	
 	public boolean canBlink(MapLocation location) {
 		return gcInstance.getBcGameController().canBlink(id, location.getBcMapLocation());
+	}
+
+	public Unit[] senseNearbyUnitsByTeam(long radius, Team team) {
+		return LibraryUtil.toArray(gcInstance.getBcGameController().senseNearbyUnitsByTeam(bcUnit.location().mapLocation(), radius, team.getBcTeam()));
+	}
+
+	public Unit[] senseNearbyUnitsByType(long radius, UnitType type) {
+		return LibraryUtil.toArray(gcInstance.getBcGameController().senseNearbyUnitsByType(bcUnit.location().mapLocation(), radius, type.getBcUnitType()));
+	}
+
+	public Unit[] senseNearbyUnits(long radius) {
+		return LibraryUtil.toArray(gcInstance.getBcGameController().senseNearbyUnits(bcUnit.location().mapLocation(), radius));
+	}
+
+	public Unit[] senseNearbyUnitsByFilter(long radius, Predicate<? super Unit> predicate) {
+		return LibraryUtil.toFilteredArray(gcInstance.getBcGameController().senseNearbyUnits(bcUnit.location().mapLocation(), radius), predicate);
 	}
 	
 	public boolean canBlueprint(UnitType unitType, Direction direction) {
@@ -102,6 +248,10 @@ public class Unit {
 	public boolean canUnload(Direction direction) {
 		return gcInstance.getBcGameController().canUnload(id, direction.getBcDirection());
 	}
+
+	public void unload(Direction direction) {
+		gcInstance.getBcGameController().unload(id, direction.getBcDirection());
+	}
 	
 	public void disintegrate() {
 		gcInstance.getBcGameController().disintegrateUnit(id);
@@ -113,6 +263,14 @@ public class Unit {
 	
 	public void heal(Unit target) {
 		gcInstance.getBcGameController().heal(id, target.getId());
+	}
+
+	public int getHealth() {
+		return (int)bcUnit.health();
+	}
+
+	public int getMaxHealth() {
+		return (int)bcUnit.maxHealth();
 	}
 	
 	public boolean isAttackReady() {
@@ -142,6 +300,10 @@ public class Unit {
 	public boolean isOverchargeReady() {
 		return gcInstance.getBcGameController().isOverchargeReady(id);
 	}
+
+	public int[] getGarrisonUnitIds() {
+		return LibraryUtil.toArray(bcUnit.structureGarrison());
+	}
 	
 	public void javelin(Unit target) {
 		gcInstance.getBcGameController().javelin(id, target.getId());
@@ -153,7 +315,7 @@ public class Unit {
 	
 	/**
 	 * Loads a robot into this structure
-	 * @param target Robot to Load
+	 * @param target robot to Load
 	 */
 	public void load(Unit target) {
 		gcInstance.getBcGameController().load(id, target.getId());
@@ -189,6 +351,10 @@ public class Unit {
 	
 	public UnitType getType() {
 		return type;
+	}
+
+	public boolean isStructure() {
+		return getType() == UnitType.FACTORY || getType() == UnitType.ROCKET;
 	}
 	
 	public Team getTeam() {

@@ -1,16 +1,20 @@
 package citricsky.battlecode2018.library;
 
+import java.util.function.Predicate;
+
 public enum GameController {
 	INSTANCE;
 
 	private bc.GameController bcGameController;
 	private Planet planet;
 	private Team team;
+	private Team enemyTeam;
 
-	GameController() {
+	public void init() {
 		this.bcGameController = new bc.GameController();
 		this.planet = Planet.valueOf(bcGameController.planet());
 		this.team = Team.valueOf(bcGameController.team());
+		this.enemyTeam = this.team.getOpposite();
 	}
 
 	public boolean canSenseLocation(MapLocation location) {
@@ -24,31 +28,13 @@ public enum GameController {
 	/**
 	 * The current duration of flight if a rocket were to be launched this round.
 	 * Does not take into account any research done on rockets.
+	 *
 	 * @return
 	 */
 	public int getCurrentFlightDuration() {
 		return (int) bcGameController.currentDurationOfFlight();
 	}
-	
-	//MapLocation related
-	public boolean isOccupiable(MapLocation location) { //TODO
-		return bcGameController.isOccupiable(location.getBcMapLocation())==1;
-	}
 
-	public boolean hasUnitAtLocation(MapLocation location) { //TODO
-		return GameController.INSTANCE.getBcGameController().hasUnitAtLocation(location.getBcMapLocation());
-	}
-
-	public int getKarboniteCount(MapLocation location) { //TODO
-		return (int) bcGameController.karboniteAt(location.getBcMapLocation());
-	}
-
-	//sensing? TODO
-	//VecMapLocation allLocationsWithin(MapLocation location, long radiusSquared)
-	//VecUnit senseNearbyUnits(MapLocation location, long radius)
-	//VecUnit senseNearbyUnitsByTeam(MapLocation location, long radius, Team team)
-	//VecUnit senseNearbyUnitsByType(MapLocation location, long radius, UnitType type)
-	//Unit senseUnitAtLocation(MapLocation location)
 	//Patterns
 
 	public void getAsteroidPattern() { //TODO
@@ -90,16 +76,24 @@ public enum GameController {
 		return bcGameController.isOver();
 	}
 
-	public Unit[] getMyUnits(){
-		return Util.toArray(bcGameController.myUnits());
+	public Unit[] getMyUnits() {
+		return LibraryUtil.toArray(bcGameController.myUnits());
+	}
+
+	public Unit[] getMyUnitsByFilter(Predicate<? super Unit> predicate) {
+		return LibraryUtil.toFilteredArray(bcGameController.myUnits(), predicate);
 	}
 
 	public Unit[] getAllUnits() {
-		return Util.toArray(bcGameController.units());
+		return LibraryUtil.toArray(bcGameController.units());
+	}
+
+	public Unit[] getAllUnitsByFilter(Predicate<? super Unit> predicate) {
+		return LibraryUtil.toFilteredArray(bcGameController.units(), predicate);
 	}
 
 	public Unit[] getUnitsInSpace() {
-		return Util.toArray(bcGameController.unitsInSpace());
+		return LibraryUtil.toArray(bcGameController.unitsInSpace());
 	}
 
 	public Planet getPlanet() {
@@ -110,15 +104,26 @@ public enum GameController {
 		return team;
 	}
 
-	public long getRoundNumber() {
-		return bcGameController.round();
+	public Team getEnemyTeam() {
+		return enemyTeam;
+	}
+
+	public int getRoundNumber() {
+		return (int) bcGameController.round();
+	}
+
+	public int getTimeLeft() {
+		return bcGameController.getTimeLeftMs();
 	}
 
 	public void yield() {
+		for (Planet planet : Planet.values()) {
+			planet.clearMapLocations();
+		}
 		bcGameController.nextTurn();
 	}
 
-	protected bc.GameController getBcGameController(){
+	protected bc.GameController getBcGameController() {
 		return bcGameController;
 	}
 }
