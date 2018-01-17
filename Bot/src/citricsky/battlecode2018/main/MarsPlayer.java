@@ -24,25 +24,54 @@ public class MarsPlayer {
 			pathfinderTasks.put(unitType, new HashSet<PathfinderTask>());
 		}
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
+		pathfinderTasks.get(UnitType.WORKER).add(new WorkerReplicateTask());
 		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
 		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
 		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
 		pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
 
+		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
+		handlers.get(UnitType.ROCKET).add(RocketHandler::new);
 		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
 		handlers.get(UnitType.RANGER).add(ExploreHandler::new);
 		handlers.get(UnitType.MAGE).add(ExploreHandler::new);
 		handlers.get(UnitType.HEALER).add(ExploreHandler::new);
+		handlers.get(UnitType.WORKER).add(ExploreHandler::new);
 
 		Set<MapLocation> occupied = new HashSet<MapLocation>();
 		for (UnitType unitType : UnitType.values()) {
-			handlers.get(unitType).add(unit -> new BFSHandler(unit, Util.PASSABLE_PREDICATE, occupied,
-					pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
+			if (!pathfinderTasks.get(unitType).isEmpty()) {
+				if(unitType == UnitType.WORKER) {
+					handlers.get(unitType).add(unit -> new BFSHandler(unit, location -> {
+						for(Unit enemy: RoundInfo.getEnemiesOnMap()) {
+							if(enemy.isStructure() || enemy.getType() == UnitType.WORKER) {
+								continue;
+							}
+							if(enemy.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) <=
+									enemy.getType().getBaseVisionRange()) {
+								return false;
+							}
+						}
+						return Util.PASSABLE_PREDICATE.test(location);
+					}, occupied,
+							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
+				} else {
+					handlers.get(unitType).add(unit -> new BFSHandler(unit, Util.PASSABLE_PREDICATE, occupied,
+							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
+				}
+			}
 		}
+		int lastRoundNumber = GameController.INSTANCE.getRoundNumber();
 		while (true) {
-			//System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms");
+			RoundInfo.update();
+			if(RoundInfo.getRoundNumber() > lastRoundNumber + 1) {
+				System.out.println("Skipped Round? "+lastRoundNumber+" - "+RoundInfo.getRoundNumber());
+			}
+			lastRoundNumber = RoundInfo.getRoundNumber();
+			//System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
 			occupied.clear();
-			for (UnitType unitType : UnitType.values()) {
+			for(UnitType unitType : UnitType.values()) {
 				pathfinderTasks.get(unitType).forEach(PathfinderTask::update);
 			}
 			Unit[] myUnits = gc.getMyUnits();

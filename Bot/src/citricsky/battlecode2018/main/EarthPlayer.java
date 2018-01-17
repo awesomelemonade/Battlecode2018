@@ -51,16 +51,24 @@ public class EarthPlayer {
 		Set<MapLocation> occupied = new HashSet<MapLocation>();
 		for (UnitType unitType : UnitType.values()) {
 			if (!pathfinderTasks.get(unitType).isEmpty()) {
-				handlers.get(unitType).add(unit -> new BFSHandler(unit, location -> {
-					for(Unit enemy: RoundInfo.getEnemiesOnMap()) {
-						if(enemy.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) <=
-								enemy.getType().getBaseVisionRange()) {
-							return false;
+				if(unitType == UnitType.WORKER) {
+					handlers.get(unitType).add(unit -> new BFSHandler(unit, location -> {
+						for(Unit enemy: RoundInfo.getEnemiesOnMap()) {
+							if(enemy.isStructure() || enemy.getType() == UnitType.WORKER) {
+								continue;
+							}
+							if(enemy.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) <=
+									enemy.getType().getBaseVisionRange()) {
+								return false;
+							}
 						}
-					}
-					return Util.PASSABLE_PREDICATE.test(location);
-				}, occupied,
-						pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
+						return Util.PASSABLE_PREDICATE.test(location);
+					}, occupied,
+							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
+				} else {
+					handlers.get(unitType).add(unit -> new BFSHandler(unit, Util.PASSABLE_PREDICATE, occupied,
+							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
+				}
 			}
 		}
 		int lastRoundNumber = GameController.INSTANCE.getRoundNumber();
