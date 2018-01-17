@@ -24,6 +24,11 @@ public class WorkerBlueprintTask implements PathfinderTask {
 			if (!Util.PASSABLE_PREDICATE.test(offset)) {
 				continue;
 			}
+			if (GameController.INSTANCE.canSenseLocation(offset)) {
+				if (offset.hasUnitAtLocation()) {
+					continue;
+				}
+			}
 			int counter = Util.getBuildArray(Util.getNeighbors(location.getOffsetLocation(direction), Util.PASSABLE_PREDICATE));
 			if(counter>bestCounter) {
 				counter = bestCounter;
