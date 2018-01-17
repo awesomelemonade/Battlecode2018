@@ -17,7 +17,6 @@ public class BFSHandler implements UnitHandler {
 	private PathfinderTask[] pathfinderTasks;
 	private PathfinderTask task;
 	private Predicate<MapLocation> passablePredicate;
-	private long cumulativeTime;
 
 	public BFSHandler(Unit unit, Predicate<MapLocation> passablePredicate, Set<MapLocation> occupied, PathfinderTask... pathfinderTasks) {
 		this.unit = unit;
@@ -50,15 +49,9 @@ public class BFSHandler implements UnitHandler {
 				return Integer.MIN_VALUE;
 			}
 		}
-		long time = System.currentTimeMillis();
 		task = bfs.process(passablePredicate, pathfinderTasks);
-		time = System.currentTimeMillis() - time;
-		cumulativeTime += time;
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
-		}
-		if(time > 10) {
-			System.out.println("BFS Time: "+time+"/"+cumulativeTime+"ms - "+task.getClass().getSimpleName()+" w/ "+unit.getId());
 		}
 		return -Util.getMovementDistance(bfs.getStopLocation().getPosition(), mapLocation.getPosition());
 	}
@@ -82,9 +75,8 @@ public class BFSHandler implements UnitHandler {
 		long time = System.currentTimeMillis();
 		task.execute(unit, bfs.getStopLocation());
 		time = System.currentTimeMillis() - time;
-		cumulativeTime += time;
 		if(time > 10) {
-			System.out.println("Execution Time: "+time+"/"+cumulativeTime+"ms - "+task.getClass().getSimpleName()+" w/ "+unit.getId());
+			System.out.println("Execution Time: "+time+"ms - "+task.getClass().getSimpleName()+" w/ "+unit.getId());
 		}
 	}
 }
