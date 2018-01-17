@@ -22,9 +22,14 @@ public class ExploreHandler implements UnitHandler {
 		bfs.process(Util.PASSABLE_PREDICATE, location -> !GameController.INSTANCE.canSenseLocation(location));
 		
 		if (bfs.getStopLocation() != null) {
-			Direction direction = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
-			if (unit.canMove(direction)) {
-				unit.move(direction);
+			int directions = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
+			for(Direction direction: Direction.COMPASS) {
+				if(((directions >>> direction.ordinal()) & 1) == 1) {
+					if(unit.canMove(direction)) {
+						unit.move(direction);
+						break;
+					}
+				}
 			}
 		}
 	}

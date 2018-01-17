@@ -12,13 +12,15 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.task.*;
 import citricsky.battlecode2018.unithandler.*;
+import citricsky.battlecode2018.util.Util;
 
 public class EarthPlayer {
 	public static void execute() {
 		GameController gc = GameController.INSTANCE;
 		UnitType[] researchOrder = new UnitType[]
 				{UnitType.RANGER, UnitType.RANGER, UnitType.ROCKET, UnitType.KNIGHT, UnitType.KNIGHT,
-						UnitType.KNIGHT, UnitType.ROCKET, UnitType.HEALER, UnitType.HEALER, UnitType.HEALER};
+						UnitType.KNIGHT, UnitType.ROCKET, UnitType.ROCKET, UnitType.WORKER, UnitType.WORKER,
+						UnitType.WORKER, UnitType.WORKER, UnitType.HEALER, UnitType.HEALER, UnitType.HEALER};
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
 		}
@@ -49,7 +51,7 @@ public class EarthPlayer {
 		Set<MapLocation> occupied = new HashSet<MapLocation>();
 		for (UnitType unitType : UnitType.values()) {
 			if (!pathfinderTasks.get(unitType).isEmpty())
-			handlers.get(unitType).add(unit -> new BFSHandler(unit, occupied,
+			handlers.get(unitType).add(unit -> new BFSHandler(unit, Util.PASSABLE_PREDICATE, occupied,
 					pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 		}
 		while (true) {

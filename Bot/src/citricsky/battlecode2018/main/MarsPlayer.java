@@ -6,6 +6,7 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.task.*;
 import citricsky.battlecode2018.unithandler.*;
+import citricsky.battlecode2018.util.Util;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -35,7 +36,7 @@ public class MarsPlayer {
 
 		Set<MapLocation> occupied = new HashSet<MapLocation>();
 		for (UnitType unitType : UnitType.values()) {
-			handlers.get(unitType).add(unit -> new BFSHandler(unit, occupied,
+			handlers.get(unitType).add(unit -> new BFSHandler(unit, Util.PASSABLE_PREDICATE, occupied,
 					pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 		}
 		while (true) {

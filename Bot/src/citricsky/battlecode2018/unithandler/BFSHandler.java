@@ -1,12 +1,12 @@
 package citricsky.battlecode2018.unithandler;
 
 import java.util.Set;
+import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.main.BFS;
-import citricsky.battlecode2018.util.Util;
 
 public class BFSHandler implements UnitHandler {
 	private Unit unit;
@@ -14,9 +14,11 @@ public class BFSHandler implements UnitHandler {
 	private Set<MapLocation> occupied;
 	private PathfinderTask[] pathfinderTasks;
 	private PathfinderTask task;
+	private Predicate<MapLocation> passablePredicate;
 
-	public BFSHandler(Unit unit, Set<MapLocation> occupied, PathfinderTask... pathfinderTasks) {
+	public BFSHandler(Unit unit, Predicate<MapLocation> passablePredicate, Set<MapLocation> occupied, PathfinderTask... pathfinderTasks) {
 		this.unit = unit;
+		this.passablePredicate = passablePredicate;
 		this.occupied = occupied;
 		this.pathfinderTasks = pathfinderTasks;
 		if (unit.getLocation().isOnMap()) {
@@ -37,7 +39,7 @@ public class BFSHandler implements UnitHandler {
 			}
 		}
 		long time = System.currentTimeMillis();
-		task = bfs.process(Util.PASSABLE_PREDICATE, pathfinderTasks);
+		task = bfs.process(passablePredicate, pathfinderTasks);
 		time = System.currentTimeMillis()-time;
 		if (bfs.getStopLocation() == null) {
 			return Integer.MIN_VALUE;
@@ -49,10 +51,18 @@ public class BFSHandler implements UnitHandler {
 	}
 	@Override
 	public void execute() {
+		//System.out.println("Executing BFSHandler: "+unit.getType().toString()+" - "+unit.getLocation().getMapLocation().getPosition()+" - "+bfs.getStopLocation().getPosition());
 		if (!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
-			Direction direction = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
-			if (unit.isMoveReady() && unit.canMove(direction)) {
-				unit.move(direction);
+			if(unit.isMoveReady()) {
+				int directions = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
+				for(Direction direction: Direction.COMPASS) {
+					if(((directions >>> direction.ordinal()) & 1) == 1) {
+						if(unit.canMove(direction)) {
+							unit.move(direction);
+							break;
+						}
+					}
+				}
 			}
 		}
 		occupied.add(bfs.getStopLocation());
