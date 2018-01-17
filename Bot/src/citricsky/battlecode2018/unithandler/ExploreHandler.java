@@ -27,6 +27,7 @@ public class ExploreHandler implements UnitHandler {
 				if(((directions >>> direction.ordinal()) & 1) == 1) {
 					if(unit.canMove(direction)) {
 						unit.move(direction);
+						break;
 					}
 				}
 			}
