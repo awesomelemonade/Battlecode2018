@@ -20,7 +20,7 @@ UPLOAD_USER="${4}"
 UPLOAD_PASS="${5}"
 UPLOAD_LABEL="${6}"
 
-MASTER_BRANCH="origin/master"
+MASTER_BRANCH="master"
 
 NUMWINS=0
 NUMGAMES=0
@@ -108,6 +108,17 @@ git clean -fdx
 git checkout ${GIT_BRANCH}
 git pull --all
 
+if [[ ${GIT_BRANCH} == ${MASTER_BRANCH} ]]; then
+    echo ">>>> Master branch: uploading bot"
+    cd ${DIR}
+    mkdir -p MasterBot
+    cp -r Bot/src/* MasterBot/
+    echo "${RUN_SCRIPT}" > "MasterBot/run.sh"
+
+    python ./upload.py ${UPLOAD_USER} ${UPLOAD_PASS} MasterBot ${UPLOAD_LABEL}
+    exit 0
+fi
+
 echo ">>>> Copying previous successful bot"
 mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
 
@@ -146,7 +157,7 @@ for bot in ${BOTS[@]}; do
         rungame ${bot} ${map}
     done
 done
-kill $(jobs -p)
+#kill $(jobs -p)
 
 cp -r replays "${DIR}/"
 
@@ -178,14 +189,5 @@ touch ../"Won ${NUMWINS} of ${NUMGAMES} games"
 
 if [[ ! ${NUMWINS} > $(( NUMGAMES / 2 )) ]]; then
     exit 1
-fi
-
-if [[ ${GIT_BRANCH} == ${MASTER_BRANCH} ]]; then
-    cd ${DIR}
-    mkdir -p MasterBot
-    cp -r Bot/src/* MasterBot/
-    echo "${RUN_SCRIPT}" > "MasterBot/run.sh"
-
-    python ./upload.py ${UPLOAD_USER} ${UPLOAD_PASS} MasterBot ${UPLOAD_LABEL}
 fi
 exit 0
