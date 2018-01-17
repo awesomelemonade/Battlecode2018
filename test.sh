@@ -115,7 +115,8 @@ if [[ ${GIT_BRANCH} == ${MASTER_BRANCH} ]]; then
     cp -r Bot/src/* MasterBot/
     echo "${RUN_SCRIPT}" > "MasterBot/run.sh"
 
-    python ./upload.py ${UPLOAD_USER} ${UPLOAD_PASS} MasterBot ${UPLOAD_LABEL}
+    python ./upload.py -u ${UPLOAD_USER} -p "${UPLOAD_PASS}" -f MasterBot -l ${UPLOAD_LABEL}
+    touch "Uploaded as ${UPLOAD_LABEL}"
     exit 0
 fi
 
