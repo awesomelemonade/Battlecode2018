@@ -74,7 +74,6 @@ public class EarthPlayer {
 		}
 		int lastRoundNumber = GameController.INSTANCE.getRoundNumber();
 		while (true) {
-			long time = System.currentTimeMillis();
 			RoundInfo.update();
 			if(RoundInfo.getRoundNumber() > lastRoundNumber + 1) {
 				System.out.println("Skipped Round? "+lastRoundNumber+" - "+RoundInfo.getRoundNumber());
@@ -83,8 +82,16 @@ public class EarthPlayer {
 			//System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
 			occupied.clear();
 			for(UnitType unitType : UnitType.values()) {
-				pathfinderTasks.get(unitType).forEach(PathfinderTask::update);
+				for (PathfinderTask task : pathfinderTasks.get(unitType)) {
+					long time = System.currentTimeMillis();
+					task.update();
+					time = System.currentTimeMillis() - time;
+					if(time > 10) {
+						System.out.println("Update: " + task.getClass().getSimpleName() + " - " + time + "ms");
+					}
+				}
 			}
+			long time = System.currentTimeMillis();
 			Unit[] myUnits = gc.getMyUnits();
 			Map<Unit, Set<UnitHandler>> map = new HashMap<Unit, Set<UnitHandler>>();
 			for (Unit unit : myUnits) {
