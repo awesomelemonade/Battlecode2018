@@ -11,6 +11,7 @@ import citricsky.battlecode2018.util.Benchmark;
 
 public class BFS {
 	private int[][] data;
+	private int[][] data2;
 	//private PriorityQueue<MapLocation> queue;
 	private Benchmark benchmark;
 	private Set<MapLocation> queue;
@@ -22,6 +23,7 @@ public class BFS {
 	public BFS(MapLocation source) {
 		this.source = source;
 		this.data = new int[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
+		this.data2 = new int[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
 		/*this.queue = new PriorityQueue<MapLocation>(7, new Comparator<MapLocation>() {
 			@Override
 			public int compare(MapLocation a, MapLocation b) { //movement is not circular, it's taxi geometry with weird diagonals
@@ -37,7 +39,7 @@ public class BFS {
 	}
 
 	public int getDirectionFromSource(Vector vector) {
-		int info = data[vector.getX()][vector.getY()];
+		/*int info = data[vector.getX()][vector.getY()];
 		int returnValue = 0;
 		for(Direction direction: Direction.COMPASS) {
 			if (((info >>> (direction.ordinal() + 1)) & 1) == 1) {
@@ -49,7 +51,8 @@ public class BFS {
 				}
 			}
 		}
-		return returnValue;
+		return returnValue;*/
+		return data2[vector.getX()][vector.getY()];
 	}
 
 	public int getDirectionToSource(Vector vector) {
@@ -104,6 +107,14 @@ public class BFS {
 							if(passable.test(step) && (data[step.getPosition().getX()][step.getPosition().getY()] & 1) == 0) {
 								data[step.getPosition().getX()][step.getPosition().getY()] =
 										data[step.getPosition().getX()][step.getPosition().getY()] | (1 << (direction.getOpposite().ordinal()+1));
+								if(location.equals(source)) {
+									data2[step.getPosition().getX()][step.getPosition().getY()] = 
+											data2[step.getPosition().getX()][step.getPosition().getY()] | 
+											direction.ordinal();
+								}else {
+									data2[step.getPosition().getX()][step.getPosition().getY()] = 
+											data2[step.getPosition().getX()][step.getPosition().getY()] | data2[location.getPosition().getX()][location.getPosition().getY()];
+								}
 								toAdd.add(step);
 							}
 						}

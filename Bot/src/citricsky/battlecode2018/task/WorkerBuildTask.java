@@ -6,7 +6,7 @@ import citricsky.battlecode2018.unithandler.PathfinderTask;
 public class WorkerBuildTask implements PathfinderTask {
 	private static Unit getBuildTarget(MapLocation location) {
 		Unit bestTarget = null;
-		double lowestHealth = Double.MAX_VALUE;
+		double highestHealth = -Double.MAX_VALUE;
 		
 		for(Direction direction : Direction.COMPASS) {
 			MapLocation offset = location.getOffsetLocation(direction);
@@ -16,8 +16,8 @@ public class WorkerBuildTask implements PathfinderTask {
 					if(unit.isStructure() && (!unit.isStructureBuilt()) &&
 							unit.getTeam() == GameController.INSTANCE.getTeam()) {
 						double health = ((double)unit.getHealth())/((double)unit.getMaxHealth());
-						if(health < lowestHealth) {
-							lowestHealth = health;
+						if(health > highestHealth) {
+							highestHealth = health;
 							bestTarget = unit;
 						}
 					}

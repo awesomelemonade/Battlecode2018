@@ -22,13 +22,13 @@ public class EarthPlayer {
 		GameController gc = GameController.INSTANCE;
 		UnitType[] researchOrder = new UnitType[]
 				{UnitType.WORKER, //finishes at Round 25
-				 UnitType.RANGER, //finishes at Round 50
-				 UnitType.KNIGHT, //finishes at Round 75
-				 UnitType.WORKER, //finishes at Round 150
-				 UnitType.RANGER, //finishes at Round 250
-				 UnitType.KNIGHT, //finishes at Round 325
+				 UnitType.ROCKET, //finishes at Round 125
+				 UnitType.RANGER, //finishes at Round 150
+				 UnitType.KNIGHT, //finishes at Round 175
+				 UnitType.WORKER, //finishes at Round 250
+				 UnitType.RANGER, //finishes at Round 350
+				 UnitType.KNIGHT, //finishes at Round 425
 				 UnitType.KNIGHT, //finishes at Round 475
-				 UnitType.ROCKET, //finishes at Round 575
 				 UnitType.WORKER, //finishes at Round 650
 				 UnitType.ROCKET, //finishes at Round 725
 				 UnitType.HEALER, //finishes at Round 750
@@ -50,8 +50,8 @@ public class EarthPlayer {
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerRepairTask());
 		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
 		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
-		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
-		pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
+		//pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
+		//pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
 
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 		handlers.get(UnitType.ROCKET).add(RocketHandler::new);
@@ -107,6 +107,7 @@ public class EarthPlayer {
 					map.get(unit).add(function.apply(unit));
 				}
 			}
+			
 			while (benchmark.peek() / 1000000 < gc.getTimeLeft() - 1000) {
 				Unit bestUnit = null;
 				UnitHandler bestHandler = null;
