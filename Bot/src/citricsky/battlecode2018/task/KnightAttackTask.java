@@ -27,12 +27,24 @@ public class KnightAttackTask implements PathfinderTask {
 		}
 		return factoryUnit;
 	}
+
 	private static boolean isLowerPriority(Unit unit) {
-		if(unit.getType().equals(UnitType.FACTORY) ||
-				unit.getType().equals(UnitType.WORKER)) {
+		if (unit.getType().equals(UnitType.FACTORY) || unit.getType().equals(UnitType.WORKER)) {
 			return true;
 		}
 		return false;
+	}
+
+	private static int getPriorityIndex(Unit unit) {
+		UnitType unitType = unit.getType();
+		if (unitType.equals(UnitType.FACTORY) || unitType.equals(UnitType.WORKER)) {
+			return 0;
+		}
+		if (unitType.equals(UnitType.ROCKET)) {
+			return 2;
+		} else {
+			return 1;
+		}
 	}
 
 	private Set<MapLocation> cache;
@@ -56,37 +68,39 @@ public class KnightAttackTask implements PathfinderTask {
 
 	@Override
 	public void execute(Unit unit, MapLocation location) {
-		if (unit.getLocation().getMapLocation().equals(location)) {
-			Unit enemyUnit = KnightAttackTask.getEnemyUnit(location);
-			if(enemyUnit != null) {
-				if (unit.isAttackReady() && unit.canAttack(enemyUnit)) {
-					unit.attack(enemyUnit);
+		if (unit.isAttackReady()) {
+			if (unit.getLocation().getMapLocation().equals(location)) {
+				Unit enemyUnit = KnightAttackTask.getEnemyUnit(location);
+				if (enemyUnit != null) {
+					if (unit.canAttack(enemyUnit)) {
+						unit.attack(enemyUnit);
+					}
 				}
 			}
 		}
-		if(unit.isAbilityUnlocked() && unit.getAbilityHeat() < 10) {
+		if (unit.isAbilityUnlocked() && unit.getAbilityHeat() < 10) {
 			Unit bestTarget = null;
-			boolean onlySeenFactory = true;
+			int priorityIndex = 0;
 			int bestDistanceSquared = Integer.MAX_VALUE;
 			for (Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
-				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition());
-				if(distanceSquared < unit.getAttackRange()) {
-					if(onlySeenFactory && !isLowerPriority(enemyUnit)) {
+				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
+						.getDistanceSquared(location.getPosition());
+				int unitPriority = getPriorityIndex(enemyUnit);
+				if (distanceSquared < unit.getAttackRange()) {
+					if (unitPriority > priorityIndex) {
 						bestDistanceSquared = distanceSquared;
 						bestTarget = enemyUnit;
-						onlySeenFactory = false;
-					}else {
-						if(distanceSquared < bestDistanceSquared) {
-							if(onlySeenFactory || (!onlySeenFactory && !isLowerPriority(enemyUnit))) {
-								bestDistanceSquared = distanceSquared;
-								bestTarget = enemyUnit;
-							}
+						priorityIndex = unitPriority;
+					} else if (unitPriority == priorityIndex) {
+						if (distanceSquared < bestDistanceSquared) {
+							bestDistanceSquared = distanceSquared;
+							bestTarget = enemyUnit;
 						}
 					}
 				}
 			}
-			if(bestTarget != null) {
-				if(unit.canJavelin(bestTarget)) {
+			if (bestTarget != null) {
+				if (unit.canJavelin(bestTarget)) {
 					unit.javelin(bestTarget);
 				}
 			}
