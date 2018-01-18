@@ -6,7 +6,7 @@ import citricsky.battlecode2018.unithandler.PathfinderTask;
 public class WorkerBuildTask implements PathfinderTask {
 	private static Unit getBuildTarget(MapLocation location) {
 		Unit bestTarget = null;
-		double highestHealth = Double.MAX_VALUE;
+		double highestHealth = -Double.MAX_VALUE;
 		
 		for(Direction direction : Direction.COMPASS) {
 			MapLocation offset = location.getOffsetLocation(direction);
