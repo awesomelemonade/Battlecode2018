@@ -21,7 +21,7 @@ public class RocketHandler implements UnitHandler {
 	public void execute() {
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
 			if (unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity() ||
-					GameController.INSTANCE.getRoundNumber() == 749 || 
+					GameController.INSTANCE.getRoundNumber() == 549 ||
 					((double)unit.getHealth()) / ((double)unit.getMaxHealth()) < 0.5) {
 				int offsetX = (int)(Math.random() * Planet.MARS.getWidth());
 				int offsetY = (int)(Math.random() * Planet.MARS.getHeight());

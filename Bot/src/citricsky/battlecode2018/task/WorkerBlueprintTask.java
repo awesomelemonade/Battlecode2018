@@ -5,6 +5,7 @@ import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.unithandler.PathfinderTask;
 import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
@@ -46,7 +47,7 @@ public class WorkerBlueprintTask implements PathfinderTask {
 		if (numFactories < 2 || numBuiltFactories < 1) return UnitType.FACTORY;
 		if (numWorkers < 4) return UnitType.FACTORY;
 		if (numBuiltRockets > numFactories) return UnitType.FACTORY;
-		if (GameController.INSTANCE.getRoundNumber() < 600) return UnitType.FACTORY;
+		if (GameController.INSTANCE.getRoundNumber() < 400) return UnitType.FACTORY;
 		return UnitType.ROCKET;
 	}
 
