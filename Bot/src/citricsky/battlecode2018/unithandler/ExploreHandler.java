@@ -49,6 +49,11 @@ public class ExploreHandler implements UnitHandler {
 					}
 				}
 			}
+		}else {
+			Direction direction = Direction.randomDirection();
+			if(unit.canMove(direction)) {
+				unit.move(direction);
+			}
 		}
 	}
 	@Override
