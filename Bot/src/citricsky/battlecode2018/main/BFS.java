@@ -107,12 +107,13 @@ public class BFS {
 							if(passable.test(step) && (data[step.getPosition().getX()][step.getPosition().getY()] & 1) == 0) {
 								data[step.getPosition().getX()][step.getPosition().getY()] =
 										data[step.getPosition().getX()][step.getPosition().getY()] | (1 << (direction.getOpposite().ordinal()+1));
-								data2[step.getPosition().getX()][step.getPosition().getY()] = 
-										data2[step.getPosition().getX()][step.getPosition().getY()] | data2[location.getPosition().getX()][location.getPosition().getY()];
 								if(location.equals(source)) {
 									data2[step.getPosition().getX()][step.getPosition().getY()] = 
 											data2[step.getPosition().getX()][step.getPosition().getY()] | 
 											direction.ordinal();
+								}else {
+									data2[step.getPosition().getX()][step.getPosition().getY()] = 
+											data2[step.getPosition().getX()][step.getPosition().getY()] | data2[location.getPosition().getX()][location.getPosition().getY()];
 								}
 								toAdd.add(step);
 							}
