@@ -107,6 +107,7 @@ public class EarthPlayer {
 					map.get(unit).add(function.apply(unit));
 				}
 			}
+			
 			while (benchmark.peek() / 1000000 < gc.getTimeLeft() - 1000) {
 				Unit bestUnit = null;
 				UnitHandler bestHandler = null;
