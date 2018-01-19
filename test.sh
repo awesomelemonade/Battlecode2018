@@ -27,8 +27,7 @@ NUMGAMES=0
 
 PRE="00000000"
 
-MAPS=("socket" "bananas")
-BOTS=("examplefuncsplayer-python")
+BOTS=("SuperCowPowers")
 
 P_ENEMIES=()
 P_RESULTS=()
@@ -97,6 +96,7 @@ cd "${SCAFFOLD_DIR}"
 git reset --hard
 git clean -fdx
 git pull
+cp -r ../SuperCowPowers .
 
 RUN_SCRIPT=$(cat examplefuncsplayer-java/run.sh)
 mkdir -p replays
@@ -154,9 +154,8 @@ mkdir -p "${DIR}/logs"
 
 #killmonitor &
 for bot in ${BOTS[@]}; do
-    for map in ${MAPS[@]}; do
-        rungame ${bot} ${map}
-    done
+    map=$(ls battlecode-maps | sort -R | tail -1 | cut -d'.' -f1)
+    rungame ${bot} ${map}
 done
 #kill $(jobs -p)
 
