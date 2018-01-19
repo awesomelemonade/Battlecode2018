@@ -14,7 +14,7 @@ public class RocketHandler implements UnitHandler {
 		if (!unit.isStructureBuilt()) {
 			return Integer.MIN_VALUE;
 		}
-		return Integer.MIN_VALUE + 1;
+		return Integer.MAX_VALUE;
 	}
 
 	@Override
