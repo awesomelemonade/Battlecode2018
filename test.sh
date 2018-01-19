@@ -28,7 +28,7 @@ NUMGAMES=0
 PRE="00000000"
 
 MAPS=("socket" "bananas")
-BOTS=("examplefuncsplayer-python")
+BOTS=("SuperCowPowers")
 
 P_ENEMIES=()
 P_RESULTS=()
@@ -97,6 +97,7 @@ cd "${SCAFFOLD_DIR}"
 git reset --hard
 git clean -fdx
 git pull
+cp -r ../SuperCowPowers .
 
 RUN_SCRIPT=$(cat examplefuncsplayer-java/run.sh)
 mkdir -p replays
