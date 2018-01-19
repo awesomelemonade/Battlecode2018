@@ -13,19 +13,27 @@ public class BFS {
 	private Set<Vector> queue;
 	private int step;
 	
-	public BFS(Vector... sources) {
+	public BFS(int width, int height, Predicate<Vector> passable, Vector... sources) {
+		this.data = new int[width][height];
+		this.passable = passable;
+		this.queue = new HashSet<Vector>();
+		this.step = 0;
 		for(Vector source: sources) {
 			queue.add(source);
 			data[source.getX()][source.getY()] = 0b11;
 		}
-		this.queue = new HashSet<Vector>();
-		this.step = 0;
 	}
-	public int getDirectionFromSource(Vector vector) {
-		return (data[vector.getX()][vector.getY()] >>> 2) & 0b11111111;
+	public int getWidth() {
+		return data.length;
 	}
-	public int getDirectionToSource(Vector vector) {
-		return (data[vector.getX()][vector.getY()] >>> 10) & 0b11111111;
+	public int getHeight() {
+		return data[0].length;
+	}
+	public int getDirectionFromSource(int x, int y) {
+		return (data[x][y] >>> 2) & 0b11111111;
+	}
+	public int getDirectionToSource(int x, int y) {
+		return (data[x][y] >>> 10) & 0b11111111;
 	}
 	public boolean outOfBounds(Vector vector) {
 		return vector.getX() < 0 || vector.getY() < 0 || vector.getX() >= data.length || vector.getY() >= data[0].length;
@@ -46,8 +54,10 @@ public class BFS {
 				}
 			}
 		}
+		queue.clear();
 		for(Vector vector: toAdd) {
 			data[vector.getX()][vector.getY()] |= 0b10; // Set to visited
+			queue.add(vector);
 		}
 		step++;
 	}
