@@ -17,9 +17,9 @@ public class ExploreHandler implements UnitHandler {
 	public void execute() {
 		if (!unit.getLocation().isOnMap()) return;
 		if (!unit.isMoveReady()) return;
+		/*
 		
-		
-		BFS bfs = new BFS(unit.getLocation().getMapLocation());
+		BFS bfs = new BFS(unit.getLocation().getMapLocation().getPosition());
 		
 		bfs.process(location -> {
 			if(location.hasUnitAtLocation()) {
@@ -49,12 +49,12 @@ public class ExploreHandler implements UnitHandler {
 					}
 				}
 			}
-		}else {
+		}else {*/
 			Direction direction = Direction.randomDirection();
 			if(unit.canMove(direction)) {
 				unit.move(direction);
 			}
-		}
+		//}
 	}
 	@Override
 	public int getPriority(int priority) {

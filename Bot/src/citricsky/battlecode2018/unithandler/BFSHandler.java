@@ -6,7 +6,9 @@ import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
+import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.BFS;
 import citricsky.battlecode2018.util.Util;
 
@@ -16,11 +18,11 @@ public class BFSHandler implements UnitHandler {
 	private Set<MapLocation> occupied;
 	private PathfinderTask[] pathfinderTasks;
 	private PathfinderTask task;
-	private Predicate<MapLocation> passablePredicate;
+	private MapLocation stopLocation;
+	private Planet planet;
 
 	public BFSHandler(Unit unit, Predicate<MapLocation> passablePredicate, Set<MapLocation> occupied, PathfinderTask... pathfinderTasks) {
 		this.unit = unit;
-		this.passablePredicate = passablePredicate;
 		this.occupied = occupied;
 		Set<PathfinderTask> tasks = new HashSet<PathfinderTask>();
 		for(PathfinderTask task: pathfinderTasks) {
@@ -30,7 +32,13 @@ public class BFSHandler implements UnitHandler {
 		}
 		this.pathfinderTasks = tasks.toArray(new PathfinderTask[tasks.size()]);
 		if (unit.getLocation().isOnMap()) {
-			this.bfs = new BFS(unit.getLocation().getMapLocation());
+			MapLocation source = unit.getLocation().getMapLocation();
+			this.planet = source.getPlanet();
+			this.bfs = new BFS(planet.getWidth(), planet.getHeight(),
+					vector -> {
+						MapLocation location = planet.getMapLocation(vector);
+						return passablePredicate.test(location) && (!occupied.contains(location));
+					}, source.getPosition());
 		}
 	}
 
@@ -42,24 +50,26 @@ public class BFSHandler implements UnitHandler {
 		if(pathfinderTasks.length == 0) {
 			return Integer.MIN_VALUE;
 		}
-		MapLocation mapLocation = unit.getLocation().getMapLocation();
-		if (bfs.getStopLocation() != null) {
-			int bestPriority = -Util.getMovementDistance(bfs.getStopLocation().getPosition(), mapLocation.getPosition());
-			if (bestPriority <= priority) {
-				return Integer.MIN_VALUE;
+		bfs.reset();
+		for (;bfs.getCurrentStep() < priority; bfs.step()) {
+			for (Vector vector: bfs.getQueue()) {
+				MapLocation location = planet.getMapLocation(vector);
+				for (PathfinderTask pathfinderTask: pathfinderTasks) {
+					if (pathfinderTask.test(location)) {
+						this.task = pathfinderTask;
+						this.stopLocation = location;
+						return -Util.getMovementDistance(location.getPosition(), unit.getLocation().getMapLocation().getPosition());
+					}
+				}
 			}
 		}
-		task = bfs.process(location -> passablePredicate.test(location) && (!occupied.contains(location)), pathfinderTasks);
-		if (bfs.getStopLocation() == null) {
-			return Integer.MIN_VALUE;
-		}
-		return -Util.getMovementDistance(bfs.getStopLocation().getPosition(), mapLocation.getPosition());
+		return Integer.MIN_VALUE;
 	}
 	@Override
 	public void execute() {
-		if (!unit.getLocation().getMapLocation().equals(bfs.getStopLocation())) {
+		if (!unit.getLocation().getMapLocation().equals(stopLocation)) {
 			if(unit.isMoveReady()) {
-				int directions = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
+				int directions = bfs.getDirectionFromSource(stopLocation.getPosition().getX(), stopLocation.getPosition().getY());
 				for(Direction direction: Direction.COMPASS) {
 					if(((directions >>> direction.ordinal()) & 1) == 1) {
 						if(unit.canMove(direction)) {
@@ -70,9 +80,9 @@ public class BFSHandler implements UnitHandler {
 				}
 			}
 		}
-		occupied.add(bfs.getStopLocation());
+		occupied.add(stopLocation);
 		long time = System.currentTimeMillis();
-		task.execute(unit, bfs.getStopLocation());
+		task.execute(unit, stopLocation);
 		time = System.currentTimeMillis() - time;
 		if(time > 10) {
 			System.out.println("Execution Time: "+time+"ms - "+task.getClass().getSimpleName()+" w/ "+unit.getId());

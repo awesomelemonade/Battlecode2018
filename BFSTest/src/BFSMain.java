@@ -10,13 +10,13 @@ public class BFSMain {
 		}
 		int[][] map= new int[][] {
 				{0, 0, 0, 0, 0, 0, 0, 0},
+				{0, 0, 1, 0, 0, 0, 0, 0},
+				{0, 1, 1, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0},
 				{0, 0, 0, 0, 0, 0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0},
-				{0, 0, 0, 0, 0, 0, 0, 0}
+				{0, 1, 1, 0, 0, 1, 1, 1},
+				{0, 0, 1, 0, 1, 1, 0, 0},
+				{0, 0, 1, 0, 0, 0, 0, 0}
 		};
 		BFS bfs = new BFS(map.length, map[0].length, vector -> map[vector.getX()][vector.getY()]==0, new Vector(1, 1));
 		while(bfs.getQueue().size()>0) {
@@ -36,6 +36,13 @@ public class BFSMain {
 		for(int j=0;j<bfs.getHeight();++j) {
 			for(int i=0;i<bfs.getWidth();++i) {
 				System.out.print(getFormatted(bfs.getDirectionToSource(i, bfs.getHeight()-j-1))+" ");
+			}
+			System.out.println();
+		}
+		System.out.println("BFS[Step]");
+		for(int j=0;j<bfs.getHeight();++j) {
+			for(int i=0;i<bfs.getWidth();++i) {
+				System.out.print(getFormatted(bfs.getStep(i, bfs.getHeight()-j-1))+" ");
 			}
 			System.out.println();
 		}

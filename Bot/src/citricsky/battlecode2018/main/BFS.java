@@ -1,145 +1,96 @@
 package citricsky.battlecode2018.main;
 
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
-import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Vector;
-import citricsky.battlecode2018.util.Benchmark;
 
 public class BFS {
+	private Predicate<Vector> passable;
+	//Least significant bit = Stores whether it has been visited
+	//2nd-9th least significant bits = stores direction from source
+	//10th-17th least significant bits = stores direction to source
+	//18th-32nd bits = max = 32768 = step number
+	private static final int FROM_SHIFT = 0;
+	private static final int TO_SHIFT = 8;
+	private static final int STEP_SHIFT = 16;
+	private static final int DIRECTION_BITMASK = 0b11111111;
+	private static final int STEP_BITMASK = 0b1111111111111111;
+	private static final int SOURCE_STEP = 0b1;
 	private int[][] data;
-	//private PriorityQueue<MapLocation> queue;
-	private Benchmark benchmark;
-	private Set<MapLocation> queue;
-	private Set<MapLocation> toAdd;
-	private MapLocation source;
-	private MapLocation stopLocation;
-	private boolean checkedSource;
-
-	public BFS(MapLocation source) {
-		this.source = source;
-		this.data = new int[source.getPlanet().getWidth()][source.getPlanet().getHeight()];
-		/*this.queue = new PriorityQueue<MapLocation>(7, new Comparator<MapLocation>() {
-			@Override
-			public int compare(MapLocation a, MapLocation b) { //movement is not circular, it's taxi geometry with weird diagonals
-				return getMovementDistanceFromSource(a.getPosition())-getMovementDistanceFromSource(b.getPosition());
-			}
-		});*/
-		this.benchmark = new Benchmark();
-		this.queue = new HashSet<MapLocation>();
-		this.toAdd = new HashSet<MapLocation>();
-		this.stopLocation = null;
-		queue.add(source);
-		this.checkedSource = false;
-		this.cache = new HashMap<Vector, Integer>();
-	}
-	private Map<Vector, Integer> cache;
-	public int getDirectionFromSource(Vector vector) {
-		if(cache.containsKey(vector)) {
-			return cache.get(vector);
+	
+	private Set<Vector> queue;
+	private int step;
+	
+	public BFS(int width, int height, Predicate<Vector> passable, Vector... sources) {
+		this.data = new int[width][height];
+		this.passable = passable;
+		this.queue = new HashSet<Vector>();
+		this.step = SOURCE_STEP + 1;
+		for(Vector source: sources) {
+			queue.add(source);
+			data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT); //set step = 1
 		}
-		int info = data[vector.getX()][vector.getY()];
-		int returnValue = 0;
-		for(Direction direction: Direction.COMPASS) {
-			if (((info >>> (direction.ordinal() + 1)) & 1) == 1) {
-				Vector offset = vector.add(direction.getOffsetVector());
-				if(offset.equals(source.getPosition())) {
-					returnValue = returnValue | ((info >>> 5) & 0b00001111) | ((info << 3) & 0b11110000);
-				}else {
-					returnValue = returnValue | getDirectionFromSource(vector.add(direction.getOffsetVector()));
+	}
+	public void reset() {
+		queue.clear();
+		for (int i=0;i<getWidth();++i) {
+			for (int j=0;j<getHeight();++j) {
+				if (((data[i][j] >>> STEP_SHIFT) & STEP_BITMASK) == SOURCE_STEP) {
+					queue.add(new Vector(i, j));
+				} else {
+					data[i][j] = 0;
 				}
 			}
 		}
-		cache.put(vector, returnValue);
-		return returnValue;
 	}
-
-	public int getDirectionToSource(Vector vector) {
-		return (data[vector.getX()][vector.getY()] >>> 1) & 0b11111111;
+	public int getWidth() {
+		return data.length;
 	}
-
-	public void process(Predicate<MapLocation> passable) {
-		process(passable, x -> false);
+	public int getHeight() {
+		return data[0].length;
 	}
-	
-	public <T extends Predicate<MapLocation>> T checkStopConditions(T[] stopConditions, long[] cumulative, MapLocation location){
-		for(int i = 0; i < stopConditions.length; ++i) {
-			benchmark.push();
-			boolean test = stopConditions[i].test(location);
-			cumulative[i] += benchmark.pop();
-			if(test) {
-				return stopConditions[i];
-			}
-		}
-		return null;
+	public int getDirectionFromSource(int x, int y) {
+		return (data[x][y] >>> FROM_SHIFT) & DIRECTION_BITMASK;
 	}
-	
-	@SafeVarargs
-	public final <T extends Predicate<MapLocation>> T process(Predicate<MapLocation> passable, T... stopConditions) {
-		long[] cumulative = new long[stopConditions.length];
-		T toReturn = null;
-		this.stopLocation = null;
-		if (!checkedSource) {
-			toReturn = checkStopConditions(stopConditions, cumulative, source);
-			if(toReturn == null) {
-				checkedSource = true;
-			} else {
-				this.stopLocation = source;
-			}
-		}
-		mainLoop: while(((!queue.isEmpty()) || (!toAdd.isEmpty())) && stopLocation == null) {
-			Set<MapLocation> adding = new HashSet<MapLocation>(toAdd);
-			for(MapLocation location: adding) {
-				toAdd.remove(location);
-				queue.add(location);
-				toReturn = checkStopConditions(stopConditions, cumulative, location);
-				if (toReturn != null) {
-					this.stopLocation = location;
-					break mainLoop;
-				}
-			}
-			for(MapLocation location : queue) {
-				for (Direction direction : Direction.COMPASS) {
-					MapLocation step = location.getOffsetLocation(direction);
-					if(step.isOnMap()) {
-						if(!step.equals(source)) {
-							if(passable.test(step) && (data[step.getPosition().getX()][step.getPosition().getY()] & 1) == 0) {
-								data[step.getPosition().getX()][step.getPosition().getY()] =
-										data[step.getPosition().getX()][step.getPosition().getY()] | (1 << (direction.getOpposite().ordinal()+1));
-								toAdd.add(step);
-							}
-						}
+	public int getDirectionToSource(int x, int y) {
+		return (data[x][y] >>> TO_SHIFT) & DIRECTION_BITMASK;
+	}
+	public int getStep(int x, int y) {
+		return (data[x][y] >>> STEP_SHIFT) & STEP_BITMASK;
+	}
+	public boolean outOfBounds(Vector vector) {
+		return vector.getX() < 0 || vector.getY() < 0 || vector.getX() >= data.length || vector.getY() >= data[0].length;
+	}
+	public void step() {
+		Set<Vector> toAdd = new HashSet<Vector>();
+		for(Vector vector: queue) {
+			for(Direction direction: Direction.COMPASS) {
+				Vector candidate = vector.add(direction.getOffsetVector());
+				if((!outOfBounds(candidate)) && passable.test(candidate) && (((data[candidate.getX()][candidate.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == 0)) {
+					if(((data[vector.getX()][vector.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == SOURCE_STEP) { //checks whether vector is source
+						data[candidate.getX()][candidate.getY()] |= (1 << (direction.ordinal() + FROM_SHIFT)); 
+					}else {
+						data[candidate.getX()][candidate.getY()] |= (data[vector.getX()][vector.getY()] & (DIRECTION_BITMASK << FROM_SHIFT));
 					}
+					data[candidate.getX()][candidate.getY()] |= (1 << (direction.getOpposite().ordinal() + TO_SHIFT)); //direction to source
+					toAdd.add(candidate);
 				}
 			}
-			queue.clear();
-			for(MapLocation location: toAdd) {
-				data[location.getPosition().getX()][location.getPosition().getY()] = data[location.getPosition().getX()][location.getPosition().getY()] | 1;
-			}
 		}
-		for(int i = 0; i < cumulative.length; ++i) {
-			if(cumulative[i] > 10000000) {
-				System.out.println("BFS Process: " + stopConditions[i].getClass().getSimpleName() +
-						" - " + (cumulative[i] / 1000000) + "ms");
-			}
+		queue.clear();
+		for(Vector vector: toAdd) {
+			data[vector.getX()][vector.getY()] |= (step << STEP_SHIFT);
+			queue.add(vector);
 		}
-		return toReturn;
+		step++;
 	}
-
-	public Set<MapLocation> getQueueSet() {
+	public Set<Vector> getQueue(){
 		return queue;
 	}
-
-	public MapLocation getSource() {
-		return source;
-	}
-
-	public MapLocation getStopLocation() {
-		return stopLocation;
+	public int getCurrentStep() {
+		return step;
 	}
 }
