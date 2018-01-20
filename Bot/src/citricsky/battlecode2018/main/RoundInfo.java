@@ -17,7 +17,10 @@ public class RoundInfo {
 				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() &&
 						unit.getLocation().isOnMap()
 		);
-		for(Unit unit: GameController.INSTANCE.getMyUnits()) {
+		for (int i = 0; i < unitCounts.length; ++i) {
+			unitCounts[i] = 0;
+		}
+		for (Unit unit: GameController.INSTANCE.getMyUnits()) {
 			unitCounts[unit.getType().ordinal()]++;
 		}
 	}
