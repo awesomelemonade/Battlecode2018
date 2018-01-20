@@ -154,7 +154,7 @@ mkdir -p "${DIR}/logs"
 
 #killmonitor &
 for map in $(ls battlecode-maps | sort -R | tail -3); do
-    rungame SuperCowPowers ${map}
+    rungame SuperCowPowers $(echo "${map}" | cut -d'.' -f1)
 done
 #kill $(jobs -p)
 
