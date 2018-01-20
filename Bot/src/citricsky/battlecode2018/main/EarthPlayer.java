@@ -94,67 +94,69 @@ public class EarthPlayer {
 			RoundInfo.update();
 			//System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
 			occupied.clear();
-			for(UnitType unitType : UnitType.values()) {
-				for (PathfinderTask task : pathfinderTasks.get(unitType)) {
-					benchmark.push();
-					task.update();
-					double deltaTime = benchmark.pop() / 1000000.0;
-					if (deltaTime > 10) {
-						System.out.println("Update: " + task.getClass().getSimpleName() + " - " + deltaTime + "ms");
-					}
-				}
-			}
-			Unit[] myUnits = gc.getMyUnits();
-			Map<Unit, Set<UnitHandler>> map = new HashMap<Unit, Set<UnitHandler>>();
-			for (Unit unit : myUnits) {
-				map.put(unit, new HashSet<UnitHandler>());
-				for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
-					map.get(unit).add(function.apply(unit));
-				}
-			}
 			
-			while (benchmark.peek() / 1000000 < gc.getTimeLeft() - 1000) {
-				Unit bestUnit = null;
-				UnitHandler bestHandler = null;
-				int bestPriority = Integer.MIN_VALUE;
-				for (Unit unit : myUnits) {
-					for (UnitHandler handler : map.get(unit)) {
-						try {
-							benchmark.push();
-							int priority = handler.getPriority(bestPriority);
-							double deltaTime = benchmark.pop() / 1000000.0;
-							if (deltaTime > 10) {
-								System.out.println("Priority: " + handler.getClass().getSimpleName() + " - " + deltaTime + "ms");
-							}
-							if (priority > bestPriority) {
-								bestPriority = priority;
-								bestHandler = handler;
-								bestUnit = unit;
-							}
-						} catch (Exception ex) {
-							System.out.println(ex.getMessage());
-							ex.printStackTrace();
+			if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
+				for(UnitType unitType : UnitType.values()) {
+					for (PathfinderTask task : pathfinderTasks.get(unitType)) {
+						benchmark.push();
+						task.update();
+						double deltaTime = benchmark.pop() / 1000000.0;
+						if (deltaTime > 10) {
+							System.out.println("Update: " + task.getClass().getSimpleName() + " - " + deltaTime + "ms");
 						}
 					}
 				}
-				if (bestHandler == null) {
-					break;
+				Unit[] myUnits = gc.getMyUnits();
+				Map<Unit, Set<UnitHandler>> map = new HashMap<Unit, Set<UnitHandler>>();
+				for (Unit unit : myUnits) {
+					map.put(unit, new HashSet<UnitHandler>());
+					for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
+						map.get(unit).add(function.apply(unit));
+					}
 				}
-				try {
-					benchmark.push();
-					bestHandler.execute();
-					double deltaTime = benchmark.pop() / 1000000.0;
-					if (deltaTime > 10) {
-						System.out.println("Execution: " + bestHandler.getClass().getSimpleName() + " - " + deltaTime + "ms");
+				while (benchmark.peek() / 1000000 < gc.getTimeLeft() - 1000) {
+					Unit bestUnit = null;
+					UnitHandler bestHandler = null;
+					int bestPriority = Integer.MIN_VALUE;
+					for (Unit unit : myUnits) {
+						for (UnitHandler handler : map.get(unit)) {
+							try {
+								benchmark.push();
+								int priority = handler.getPriority(bestPriority);
+								double deltaTime = benchmark.pop() / 1000000.0;
+								if (deltaTime > 10) {
+									System.out.println("Priority: " + handler.getClass().getSimpleName() + " - " + deltaTime + "ms");
+								}
+								if (priority > bestPriority) {
+									bestPriority = priority;
+									bestHandler = handler;
+									bestUnit = unit;
+								}
+							} catch (Exception ex) {
+								System.out.println(ex.getMessage());
+								ex.printStackTrace();
+							}
+						}
 					}
-					if (bestHandler.isRequired()) {
-						map.get(bestUnit).remove(bestHandler);
-					} else {
-						map.get(bestUnit).removeIf(handler -> !handler.isRequired());
+					if (bestHandler == null) {
+						break;
 					}
-				} catch (Exception ex) {
-					System.out.println(ex.getMessage());
-					ex.printStackTrace();
+					try {
+						benchmark.push();
+						bestHandler.execute();
+						double deltaTime = benchmark.pop() / 1000000.0;
+						if (deltaTime > 10) {
+							System.out.println("Execution: " + bestHandler.getClass().getSimpleName() + " - " + deltaTime + "ms");
+						}
+						if (bestHandler.isRequired()) {
+							map.get(bestUnit).remove(bestHandler);
+						} else {
+							map.get(bestUnit).removeIf(handler -> !handler.isRequired());
+						}
+					} catch (Exception ex) {
+						System.out.println(ex.getMessage());
+						ex.printStackTrace();
+					}
 				}
 			}
 			double deltaTime = benchmark.pop() / 1000000.0;
