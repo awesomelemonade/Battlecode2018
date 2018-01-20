@@ -51,7 +51,7 @@ public class BFSHandler implements UnitHandler {
 			return Integer.MIN_VALUE;
 		}
 		bfs.reset();
-		for (;bfs.getCurrentStep() < priority; bfs.step()) {
+		for (;bfs.getCurrentStep()-2 < -priority && (!bfs.getQueue().isEmpty()); bfs.step()) {
 			for (Vector vector: bfs.getQueue()) {
 				MapLocation location = planet.getMapLocation(vector);
 				for (PathfinderTask pathfinderTask: pathfinderTasks) {
@@ -67,8 +67,6 @@ public class BFSHandler implements UnitHandler {
 	}
 	@Override
 	public void execute() {
-		System.out.println("Executing: " + unit.getType() + " - " + task.getClass() + " - " + 
-				unit.getLocation().getMapLocation().getPosition() + " - " + stopLocation.getPosition());
 		if (!unit.getLocation().getMapLocation().equals(stopLocation)) {
 			if(unit.isMoveReady()) {
 				int directions = bfs.getDirectionFromSource(stopLocation.getPosition().getX(), stopLocation.getPosition().getY());

@@ -35,6 +35,7 @@ public class BFS {
 		}
 	}
 	public void reset() {
+		this.step = SOURCE_STEP + 1;
 		queue.clear();
 		for (int i=0;i<getWidth();++i) {
 			for (int j=0;j<getHeight();++j) {
