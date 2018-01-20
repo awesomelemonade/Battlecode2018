@@ -27,7 +27,7 @@ NUMGAMES=0
 
 PRE="00000000"
 
-BOTS=("SuperCowPowers")
+#BOTS=("SuperCowPowers")
 
 P_ENEMIES=()
 P_RESULTS=()
@@ -108,39 +108,39 @@ git clean -fdx
 git checkout ${GIT_BRANCH}
 git pull --all
 
-if [[ ${GIT_BRANCH} == ${MASTER_BRANCH} ]]; then
-    echo ">>>> Master branch: uploading bot"
-    cd ${DIR}
-    mkdir -p MasterBot
-    cp -r Bot/src/* MasterBot/
-    echo "${RUN_SCRIPT}" > "MasterBot/run.sh"
-
-    python ./upload.py -u ${UPLOAD_USER} -p "${UPLOAD_PASS}" -f MasterBot -l ${UPLOAD_LABEL}
-    touch "Uploaded as ${UPLOAD_LABEL}"
-    exit 0
-fi
-
-echo ">>>> Copying previous successful bot"
-mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
-
-git checkout ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}
-cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_prev/"
-echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot_prev/run.sh"
-BOTS+=("Bot_prev")
-
-git checkout ${GIT_BRANCH}
-
-if [[ ${GIT_BRANCH} != ${MASTER_BRANCH} ]]; then
-    echo ">>>> Not on master branch: copying master bot"
-    mkdir -p "${SCAFFOLD_DIR}/Bot_master"
-
-    git checkout master
-    cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_master/"
-    echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot_master/run.sh"
-    BOTS+=("Bot_master")
-
-    git checkout ${GIT_BRANCH}
-fi
+#if [[ ${GIT_BRANCH} == ${MASTER_BRANCH} ]]; then
+#    echo ">>>> Master branch: uploading bot"
+#    cd ${DIR}
+#    mkdir -p MasterBot
+#    cp -r Bot/src/* MasterBot/
+#    echo "${RUN_SCRIPT}" > "MasterBot/run.sh"
+#
+#    python ./upload.py -u ${UPLOAD_USER} -p "${UPLOAD_PASS}" -f MasterBot -l ${UPLOAD_LABEL}
+#    touch "Uploaded as ${UPLOAD_LABEL}"
+#    exit 0
+#fi
+#
+#echo ">>>> Copying previous successful bot"
+#mkdir -p "${SCAFFOLD_DIR}/Bot_prev"
+#
+#git checkout ${GIT_PREVIOUS_SUCCESSFUL_COMMIT}
+#cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_prev/"
+#echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot_prev/run.sh"
+#BOTS+=("Bot_prev")
+#
+#git checkout ${GIT_BRANCH}
+#
+#if [[ ${GIT_BRANCH} != ${MASTER_BRANCH} ]]; then
+#    echo ">>>> Not on master branch: copying master bot"
+#    mkdir -p "${SCAFFOLD_DIR}/Bot_master"
+#
+#    git checkout master
+#    cp -r Bot/src/* "${SCAFFOLD_DIR}/Bot_master/"
+#    echo "${RUN_SCRIPT}" > "${SCAFFOLD_DIR}/Bot_master/run.sh"
+#    BOTS+=("Bot_master")
+#
+#    git checkout ${GIT_BRANCH}
+#fi
 
 echo ">>>> Copying current bot"
 mkdir -p "${SCAFFOLD_DIR}/Bot"
@@ -153,9 +153,8 @@ sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\np
 mkdir -p "${DIR}/logs"
 
 #killmonitor &
-for bot in ${BOTS[@]}; do
-    map=$(ls battlecode-maps | sort -R | tail -1 | cut -d'.' -f1)
-    rungame ${bot} ${map}
+for map in $(ls battlecode-maps | sort -R | tail -3); do
+    rungame SuperCowPowers ${map}
 done
 #kill $(jobs -p)
 
