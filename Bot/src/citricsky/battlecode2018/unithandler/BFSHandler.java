@@ -51,7 +51,7 @@ public class BFSHandler implements UnitHandler {
 			return Integer.MIN_VALUE;
 		}
 		bfs.reset();
-		for (;bfs.getCurrentStep()-2 < -priority && (!bfs.getQueue().isEmpty()); bfs.step()) {
+		for (int i=0;bfs.getCurrentStep()-2 < -priority && (!bfs.getQueue().isEmpty()) && i < 20; bfs.step(), ++i) {
 			for (Vector vector: bfs.getQueue()) {
 				MapLocation location = planet.getMapLocation(vector);
 				for (PathfinderTask pathfinderTask: pathfinderTasks) {

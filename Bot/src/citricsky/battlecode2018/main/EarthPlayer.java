@@ -79,7 +79,12 @@ public class EarthPlayer {
 					}, occupied,
 							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 				} else {
-					handlers.get(unitType).add(unit -> new BFSHandler(unit, Util.PASSABLE_PREDICATE, occupied,
+					handlers.get(unitType).add(unit -> new BFSHandler(unit, location -> {
+						if(!GameController.INSTANCE.canSenseLocation(location)) {
+							return false;
+						}
+						return Util.PASSABLE_PREDICATE.test(location);
+					}, occupied,
 							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 				}
 			}
