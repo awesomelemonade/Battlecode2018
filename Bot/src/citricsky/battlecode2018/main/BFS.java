@@ -1,11 +1,12 @@
 package citricsky.battlecode2018.main;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.util.Benchmark;
 
 public class BFS {
 	private Predicate<Vector> passable;
@@ -21,13 +22,13 @@ public class BFS {
 	private static final int SOURCE_STEP = 0b1;
 	private int[][] data;
 	
-	private Set<Vector> queue;
+	private Deque<Vector> queue;
 	private int step;
 	
 	public BFS(int width, int height, Predicate<Vector> passable, Vector... sources) {
 		this.data = new int[width][height];
 		this.passable = passable;
-		this.queue = new HashSet<Vector>();
+		this.queue = new ArrayDeque<Vector>();
 		this.step = SOURCE_STEP + 1;
 		for(Vector source: sources) {
 			queue.add(source);
@@ -66,8 +67,11 @@ public class BFS {
 		return vector.getX() < 0 || vector.getY() < 0 || vector.getX() >= data.length || vector.getY() >= data[0].length;
 	}
 	public void step() {
-		Set<Vector> toAdd = new HashSet<Vector>();
-		for(Vector vector: queue) {
+		Benchmark benchmark = new Benchmark();
+		benchmark.push();
+		int size = queue.size();
+		for(int i = 0; i < size; ++i) {
+			Vector vector = queue.poll();
 			for(Direction direction: Direction.COMPASS) {
 				Vector candidate = vector.add(direction.getOffsetVector());
 				if((!outOfBounds(candidate)) && passable.test(candidate) && (((data[candidate.getX()][candidate.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == 0)) {
@@ -77,18 +81,20 @@ public class BFS {
 						data[candidate.getX()][candidate.getY()] |= (data[vector.getX()][vector.getY()] & (DIRECTION_BITMASK << FROM_SHIFT));
 					}
 					data[candidate.getX()][candidate.getY()] |= (1 << (direction.getOpposite().ordinal() + TO_SHIFT)); //direction to source
-					toAdd.add(candidate);
+					if(((data[vector.getX()][vector.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == 0) {
+						data[vector.getX()][vector.getY()] |= (step << STEP_SHIFT);
+						queue.add(candidate);
+					}
 				}
 			}
 		}
-		queue.clear();
-		for(Vector vector: toAdd) {
-			data[vector.getX()][vector.getY()] |= (step << STEP_SHIFT);
-			queue.add(vector);
-		}
 		step++;
+		double deltaTime = benchmark.pop() / 1000000.0;
+		if (deltaTime > 10) {
+			System.out.println("Step: " + deltaTime + "ms");
+		}
 	}
-	public Set<Vector> getQueue(){
+	public Deque<Vector> getQueue(){
 		return queue;
 	}
 	public int getCurrentStep() {

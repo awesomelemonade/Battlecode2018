@@ -10,7 +10,6 @@ import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.BFS;
-import citricsky.battlecode2018.util.Util;
 
 public class BFSHandler implements UnitHandler {
 	private Unit unit;
@@ -51,14 +50,14 @@ public class BFSHandler implements UnitHandler {
 			return Integer.MIN_VALUE;
 		}
 		bfs.reset();
-		for (int i=0;bfs.getCurrentStep()-2 < -priority && (!bfs.getQueue().isEmpty()) && i < 20; bfs.step(), ++i) {
+		for (;bfs.getCurrentStep()-2 < -priority && (!bfs.getQueue().isEmpty()); bfs.step()) {
 			for (Vector vector: bfs.getQueue()) {
 				MapLocation location = planet.getMapLocation(vector);
 				for (PathfinderTask pathfinderTask: pathfinderTasks) {
 					if (pathfinderTask.test(location)) {
 						this.task = pathfinderTask;
 						this.stopLocation = location;
-						return -Util.getMovementDistance(location.getPosition(), unit.getLocation().getMapLocation().getPosition());
+						return -(bfs.getCurrentStep()-2);
 					}
 				}
 			}

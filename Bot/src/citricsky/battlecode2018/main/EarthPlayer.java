@@ -120,7 +120,12 @@ public class EarthPlayer {
 				for (Unit unit : myUnits) {
 					for (UnitHandler handler : map.get(unit)) {
 						try {
+							benchmark.push();
 							int priority = handler.getPriority(bestPriority);
+							double deltaTime = benchmark.pop() / 1000000.0;
+							if (deltaTime > 10) {
+								System.out.println("Priority: " + handler.getClass().getSimpleName() + " - " + deltaTime + "ms");
+							}
 							if (priority > bestPriority) {
 								bestPriority = priority;
 								bestHandler = handler;
@@ -136,7 +141,12 @@ public class EarthPlayer {
 					break;
 				}
 				try {
+					benchmark.push();
 					bestHandler.execute();
+					double deltaTime = benchmark.pop() / 1000000.0;
+					if (deltaTime > 10) {
+						System.out.println("Execution: " + bestHandler.getClass().getSimpleName() + " - " + deltaTime + "ms");
+					}
 					if (bestHandler.isRequired()) {
 						map.get(bestUnit).remove(bestHandler);
 					} else {

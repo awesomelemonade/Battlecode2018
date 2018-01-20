@@ -44,7 +44,7 @@ public class ExploreHandler implements UnitHandler {
 		}
 	}
 	public MapLocation processBFS(BFS bfs, Planet planet) {
-		for (int i=0;(!bfs.getQueue().isEmpty()) && i < 20; bfs.step(), ++i) {
+		for (;(!bfs.getQueue().isEmpty()); bfs.step()) {
 			for (Vector vector: bfs.getQueue()) {
 				MapLocation location = planet.getMapLocation(vector);
 				if (!GameController.INSTANCE.canSenseLocation(location)) {
