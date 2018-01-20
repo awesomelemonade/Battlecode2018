@@ -58,7 +58,7 @@ rungame() {
 
     WINNER=$(tail -1 ${LOGFILE} | cut -f4 -d' ')
     sed -i "1 i\ ${CMD}" ${LOGFILE}
-    if [[ ${WINNER} == "2" ]]; then
+    if [[ ${WINNER} == "1" ]]; then
         NUMWINS=$(( NUMWINS + 1 ))
         P_RESULTS[GAME_ID]="Win"
     elif [[ ${WINNER} == "1" ]]; then
