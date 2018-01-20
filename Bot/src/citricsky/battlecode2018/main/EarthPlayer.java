@@ -50,8 +50,8 @@ public class EarthPlayer {
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerRepairTask());
 		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
 		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
-		//pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
-		//pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
+		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
+		pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
 
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 		handlers.get(UnitType.ROCKET).add(RocketHandler::new);
@@ -92,7 +92,10 @@ public class EarthPlayer {
 		while (true) {
 			benchmark.push();
 			RoundInfo.update();
-			//System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
+			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
+			for (UnitType type: UnitType.values()) {
+				System.out.println(type + " Count: " + RoundInfo.getUnitCounts()[type.ordinal()]);
+			}
 			occupied.clear();
 			
 			if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
@@ -158,6 +161,8 @@ public class EarthPlayer {
 						ex.printStackTrace();
 					}
 				}
+			} else {
+				System.out.println("Skipping Round: " + RoundInfo.getRoundNumber() + " - " + gc.getTimeLeft());
 			}
 			double deltaTime = benchmark.pop() / 1000000.0;
 			if(deltaTime > 20) {
