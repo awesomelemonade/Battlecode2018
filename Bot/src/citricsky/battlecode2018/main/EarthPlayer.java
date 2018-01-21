@@ -91,14 +91,13 @@ public class EarthPlayer {
 		}
 		while (true) {
 			benchmark.push();
-			RoundInfo.update();
-			System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
-			for (UnitType type: UnitType.values()) {
-				System.out.println(type + " Count: " + RoundInfo.getUnitCounts()[type.ordinal()]);
-			}
-			occupied.clear();
-			
 			if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
+				RoundInfo.update();
+				System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
+				for (UnitType type: UnitType.values()) {
+					System.out.println(type + " Count: " + RoundInfo.getUnitCounts()[type.ordinal()]);
+				}
+				occupied.clear();
 				for(UnitType unitType : UnitType.values()) {
 					for (PathfinderTask task : pathfinderTasks.get(unitType)) {
 						benchmark.push();
@@ -162,11 +161,11 @@ public class EarthPlayer {
 					}
 				}
 			} else {
-				System.out.println("Skipping Round: " + RoundInfo.getRoundNumber() + " - " + gc.getTimeLeft());
+				System.out.println("Skipping Round: " + gc.getRoundNumber() + " - " + gc.getTimeLeft());
 			}
 			double deltaTime = benchmark.pop() / 1000000.0;
 			if(deltaTime > 20) {
-				System.out.println("Round: " + RoundInfo.getRoundNumber() + " - " + deltaTime + "/" + gc.getTimeLeft() + "ms");
+				System.out.println("Round Time: " + gc.getRoundNumber() + " - " + deltaTime + "/" + gc.getTimeLeft() + "ms");
 			}
 			gc.yield();
 		}
