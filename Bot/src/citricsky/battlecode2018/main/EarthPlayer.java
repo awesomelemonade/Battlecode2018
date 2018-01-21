@@ -22,17 +22,17 @@ public class EarthPlayer {
 		GameController gc = GameController.INSTANCE;
 		UnitType[] researchOrder = new UnitType[]
 				{UnitType.WORKER, //finishes at Round 25
-				 UnitType.ROCKET, //finishes at Round 125
-				 UnitType.RANGER, //finishes at Round 150
-				 UnitType.KNIGHT, //finishes at Round 175
-				 UnitType.WORKER, //finishes at Round 250
-				 UnitType.RANGER, //finishes at Round 350
-				 UnitType.KNIGHT, //finishes at Round 425
-				 UnitType.KNIGHT, //finishes at Round 475
-				 UnitType.WORKER, //finishes at Round 650
-				 UnitType.ROCKET, //finishes at Round 725
-				 UnitType.HEALER, //finishes at Round 750
-				 UnitType.HEALER, //finishes at Round 850
+				 UnitType.KNIGHT, //finishes at Round 50
+				 UnitType.KNIGHT, //finishes at Round 125
+				 UnitType.KNIGHT, //finishes at Round 225
+				 UnitType.ROCKET, //finishes at Round 325
+				 UnitType.HEALER, //finishes at Round 350
+				 UnitType.HEALER, //finishes at Round 450
+				 UnitType.WORKER, //finishes at Round 525
+				 UnitType.HEALER, //finishes at Round 625
+				 UnitType.MAGE, //finishes at Round 650
+				 UnitType.MAGE, //finishes at Round 725
+				 UnitType.MAGE, //finishes at Round 825
 				 }; 
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
