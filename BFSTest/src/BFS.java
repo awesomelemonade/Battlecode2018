@@ -4,12 +4,6 @@ import java.util.function.Predicate;
 
 public class BFS {
 	private Predicate<Vector> passable;
-	//Least significant bit = Stores whether it is a source
-	//2nd least significant bit = Stores whether it has been visited by BFS
-	//3rd-10th least significant bits = Stores the direction from source
-	//11th-18th least significant bits = Stores direction to source
-	//19th-32nd bits = 16384 max
-	
 	//Least significant bit = Stores whether it has been visited
 	//2nd-9th least significant bits = stores direction from source
 	//10th-17th least significant bits = stores direction to source
@@ -29,10 +23,22 @@ public class BFS {
 		this.data = new int[width][height];
 		this.passable = passable;
 		this.queue = new HashSet<Vector>();
-		this.step = SOURCE_STEP;
+		this.step = SOURCE_STEP + 1;
 		for(Vector source: sources) {
 			queue.add(source);
 			data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT); //set step = 1
+		}
+	}
+	public void reset() {
+		queue.clear();
+		for (int i=0;i<getWidth();++i) {
+			for (int j=0;j<getHeight();++j) {
+				if (((data[i][j] >>> STEP_SHIFT) & STEP_BITMASK) == SOURCE_STEP) {
+					queue.add(new Vector(i, j));
+				} else {
+					data[i][j] = 0;
+				}
+			}
 		}
 	}
 	public int getWidth() {
@@ -46,6 +52,9 @@ public class BFS {
 	}
 	public int getDirectionToSource(int x, int y) {
 		return (data[x][y] >>> TO_SHIFT) & DIRECTION_BITMASK;
+	}
+	public int getStep(int x, int y) {
+		return (data[x][y] >>> STEP_SHIFT) & STEP_BITMASK;
 	}
 	public boolean outOfBounds(Vector vector) {
 		return vector.getX() < 0 || vector.getY() < 0 || vector.getX() >= data.length || vector.getY() >= data[0].length;
@@ -68,6 +77,7 @@ public class BFS {
 		}
 		queue.clear();
 		for(Vector vector: toAdd) {
+			data[vector.getX()][vector.getY()] |= (step << STEP_SHIFT);
 			queue.add(vector);
 		}
 		step++;

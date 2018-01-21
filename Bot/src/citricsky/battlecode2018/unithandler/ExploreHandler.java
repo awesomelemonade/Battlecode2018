@@ -2,10 +2,11 @@ package citricsky.battlecode2018.unithandler;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
+import citricsky.battlecode2018.library.MapLocation;
+import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
-import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.BFS;
-import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.util.Util;
 
 public class ExploreHandler implements UnitHandler {
@@ -18,29 +19,15 @@ public class ExploreHandler implements UnitHandler {
 		if (!unit.getLocation().isOnMap()) return;
 		if (!unit.isMoveReady()) return;
 		
+		MapLocation source = unit.getLocation().getMapLocation();
 		
-		BFS bfs = new BFS(unit.getLocation().getMapLocation());
+		BFS bfs = new BFS(source.getPlanet().getWidth(), source.getPlanet().getHeight(),
+				vector -> Util.PASSABLE_PREDICATE.test(source.getPlanet().getMapLocation(vector)), source.getPosition());
 		
-		bfs.process(location -> {
-			if(location.hasUnitAtLocation()) {
-				if(location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
-					return false;
-				}
-			}
-			for(Unit enemy: RoundInfo.getEnemiesOnMap()) {
-				if(enemy.isStructure() || enemy.getType() == UnitType.WORKER) {
-					continue;
-				}
-				if(enemy.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) <=
-						enemy.getType().getBaseVisionRange()) {
-					return false;
-				}
-			}
-			return Util.PASSABLE_PREDICATE.test(location);
-		}, location -> !GameController.INSTANCE.canSenseLocation(location));
+		MapLocation location = processBFS(bfs, source.getPlanet());
 		
-		if (bfs.getStopLocation() != null) {
-			int directions = bfs.getDirectionFromSource(bfs.getStopLocation().getPosition());
+		if (location != null) {
+			int directions = bfs.getDirectionFromSource(location.getPosition().getX(), location.getPosition().getY());
 			for(Direction direction: Direction.COMPASS) {
 				if(((directions >>> direction.ordinal()) & 1) == 1) {
 					if(unit.canMove(direction)) {
@@ -55,6 +42,17 @@ public class ExploreHandler implements UnitHandler {
 				unit.move(direction);
 			}
 		}
+	}
+	public MapLocation processBFS(BFS bfs, Planet planet) {
+		for (;(!bfs.getQueue().isEmpty()); bfs.step()) {
+			for (Vector vector: bfs.getQueue()) {
+				MapLocation location = planet.getMapLocation(vector);
+				if (!GameController.INSTANCE.canSenseLocation(location)) {
+					return location;
+				}
+			}
+		}
+		return null;
 	}
 	@Override
 	public int getPriority(int priority) {

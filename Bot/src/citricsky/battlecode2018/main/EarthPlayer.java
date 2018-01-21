@@ -50,8 +50,8 @@ public class EarthPlayer {
 		pathfinderTasks.get(UnitType.WORKER).add(new WorkerRepairTask());
 		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
 		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
-		//pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
-		//pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
+		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
+		pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
 
 		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
 		handlers.get(UnitType.ROCKET).add(RocketHandler::new);
@@ -79,72 +79,93 @@ public class EarthPlayer {
 					}, occupied,
 							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 				} else {
-					handlers.get(unitType).add(unit -> new BFSHandler(unit, Util.PASSABLE_PREDICATE, occupied,
+					handlers.get(unitType).add(unit -> new BFSHandler(unit, location -> {
+						if(!GameController.INSTANCE.canSenseLocation(location)) {
+							return false;
+						}
+						return Util.PASSABLE_PREDICATE.test(location);
+					}, occupied,
 							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
 				}
 			}
 		}
 		while (true) {
 			benchmark.push();
-			RoundInfo.update();
-			//System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
-			occupied.clear();
-			for(UnitType unitType : UnitType.values()) {
-				for (PathfinderTask task : pathfinderTasks.get(unitType)) {
-					benchmark.push();
-					task.update();
-					double deltaTime = benchmark.pop() / 1000000.0;
-					if (deltaTime > 10) {
-						System.out.println("Update: " + task.getClass().getSimpleName() + " - " + deltaTime + "ms");
-					}
+			if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
+				RoundInfo.update();
+				System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
+				for (UnitType type: UnitType.values()) {
+					System.out.println(type + " Count: " + RoundInfo.getUnitCounts()[type.ordinal()]);
 				}
-			}
-			Unit[] myUnits = gc.getMyUnits();
-			Map<Unit, Set<UnitHandler>> map = new HashMap<Unit, Set<UnitHandler>>();
-			for (Unit unit : myUnits) {
-				map.put(unit, new HashSet<UnitHandler>());
-				for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
-					map.get(unit).add(function.apply(unit));
-				}
-			}
-			
-			while (benchmark.peek() / 1000000 < gc.getTimeLeft() - 1000) {
-				Unit bestUnit = null;
-				UnitHandler bestHandler = null;
-				int bestPriority = Integer.MIN_VALUE;
-				for (Unit unit : myUnits) {
-					for (UnitHandler handler : map.get(unit)) {
-						try {
-							int priority = handler.getPriority(bestPriority);
-							if (priority > bestPriority) {
-								bestPriority = priority;
-								bestHandler = handler;
-								bestUnit = unit;
-							}
-						} catch (Exception ex) {
-							System.out.println(ex.getMessage());
-							ex.printStackTrace();
+				occupied.clear();
+				for(UnitType unitType : UnitType.values()) {
+					for (PathfinderTask task : pathfinderTasks.get(unitType)) {
+						benchmark.push();
+						task.update();
+						double deltaTime = benchmark.pop() / 1000000.0;
+						if (deltaTime > 10) {
+							System.out.println("Update: " + task.getClass().getSimpleName() + " - " + deltaTime + "ms");
 						}
 					}
 				}
-				if (bestHandler == null) {
-					break;
-				}
-				try {
-					bestHandler.execute();
-					if (bestHandler.isRequired()) {
-						map.get(bestUnit).remove(bestHandler);
-					} else {
-						map.get(bestUnit).removeIf(handler -> !handler.isRequired());
+				Unit[] myUnits = gc.getMyUnits();
+				Map<Unit, Set<UnitHandler>> map = new HashMap<Unit, Set<UnitHandler>>();
+				for (Unit unit : myUnits) {
+					map.put(unit, new HashSet<UnitHandler>());
+					for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
+						map.get(unit).add(function.apply(unit));
 					}
-				} catch (Exception ex) {
-					System.out.println(ex.getMessage());
-					ex.printStackTrace();
 				}
+				while (benchmark.peek() / 1000000 < gc.getTimeLeft() - 1000) {
+					Unit bestUnit = null;
+					UnitHandler bestHandler = null;
+					int bestPriority = Integer.MIN_VALUE;
+					for (Unit unit : myUnits) {
+						for (UnitHandler handler : map.get(unit)) {
+							try {
+								benchmark.push();
+								int priority = handler.getPriority(bestPriority);
+								double deltaTime = benchmark.pop() / 1000000.0;
+								if (deltaTime > 10) {
+									System.out.println("Priority: " + handler.getClass().getSimpleName() + " - " + deltaTime + "ms");
+								}
+								if (priority > bestPriority) {
+									bestPriority = priority;
+									bestHandler = handler;
+									bestUnit = unit;
+								}
+							} catch (Exception ex) {
+								System.out.println(ex.getMessage());
+								ex.printStackTrace();
+							}
+						}
+					}
+					if (bestHandler == null) {
+						break;
+					}
+					try {
+						benchmark.push();
+						bestHandler.execute();
+						double deltaTime = benchmark.pop() / 1000000.0;
+						if (deltaTime > 10) {
+							System.out.println("Execution: " + bestHandler.getClass().getSimpleName() + " - " + deltaTime + "ms");
+						}
+						if (bestHandler.isRequired()) {
+							map.get(bestUnit).remove(bestHandler);
+						} else {
+							map.get(bestUnit).removeIf(handler -> !handler.isRequired());
+						}
+					} catch (Exception ex) {
+						System.out.println(ex.getMessage());
+						ex.printStackTrace();
+					}
+				}
+			} else {
+				System.out.println("Skipping Round: " + gc.getRoundNumber() + " - " + gc.getTimeLeft());
 			}
 			double deltaTime = benchmark.pop() / 1000000.0;
 			if(deltaTime > 20) {
-				System.out.println("Round: " + RoundInfo.getRoundNumber() + " - " + deltaTime + "/" + gc.getTimeLeft() + "ms");
+				System.out.println("Round Time: " + gc.getRoundNumber() + " - " + deltaTime + "/" + gc.getTimeLeft() + "ms");
 			}
 			gc.yield();
 		}

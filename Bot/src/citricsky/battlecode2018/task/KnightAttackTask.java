@@ -11,7 +11,7 @@ import java.util.Set;
 public class KnightAttackTask implements PathfinderTask {
 	private static Unit getEnemyUnit(MapLocation location) {
 		Unit factoryUnit = null;
-		for (Direction direction : Direction.CARDINAL_DIRECTIONS) {
+		for (Direction direction : Direction.COMPASS) {
 			MapLocation offset = location.getOffsetLocation(direction);
 			if (GameController.INSTANCE.canSenseLocation(offset)) {
 				if (offset.hasUnitAtLocation()) {
@@ -58,7 +58,7 @@ public class KnightAttackTask implements PathfinderTask {
 	public void update() {
 		cache.clear();
 		for (Unit unit : RoundInfo.getEnemiesOnMap()) {
-			for (Direction direction : Direction.CARDINAL_DIRECTIONS) {
+			for (Direction direction : Direction.COMPASS) {
 				MapLocation offset = unit.getLocation().getMapLocation().getOffsetLocation(direction);
 				if (offset.isOnMap()) {
 					cache.add(offset);
@@ -87,7 +87,7 @@ public class KnightAttackTask implements PathfinderTask {
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
 						.getDistanceSquared(location.getPosition());
 				int unitPriority = getPriorityIndex(enemyUnit);
-				if (distanceSquared < unit.getAttackRange()) {
+				if (distanceSquared <= unit.getAbilityRange()) {
 					if (unitPriority > priorityIndex) {
 						bestDistanceSquared = distanceSquared;
 						bestTarget = enemyUnit;

@@ -1,13 +1,13 @@
  package citricsky.battlecode2018.library;
 
 public enum UnitType {
-	WORKER(bc.UnitType.Worker, 25, 100, 0, 0, 50),
-	KNIGHT(bc.UnitType.Knight, 20, 250, 60, 1, 50),
-	RANGER(bc.UnitType.Ranger, 20, 200, 40, 50, 70),
-	MAGE(bc.UnitType.Mage, 20, 80, 60, 30, 30),
-	HEALER(bc.UnitType.Healer, 20, 100, -10, 30, 50),
-	ROCKET(bc.UnitType.Rocket, 75, 200, 0, 0, 2),
-	FACTORY(bc.UnitType.Factory, 100, 300, 0, 0, 2);
+	WORKER  (bc.UnitType.Worker,   25, 100,   0,  0, 50),
+	KNIGHT  (bc.UnitType.Knight,   20, 250,  80,  2, 50),
+	RANGER  (bc.UnitType.Ranger,   20, 200,  30, 50, 70),
+	MAGE    (bc.UnitType.Mage,     20,  80,  60, 30, 30),
+	HEALER  (bc.UnitType.Healer,   20, 100, -10, 30, 50),
+	ROCKET  (bc.UnitType.Rocket,   75, 200,   0,  0,  2),
+	FACTORY (bc.UnitType.Factory, 100, 300,   0,  0,  2);
 
 	private bc.UnitType bcUnitType;
 	private int baseCost;
