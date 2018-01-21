@@ -7,6 +7,7 @@ import citricsky.battlecode2018.unithandler.PathfinderTask;
 import java.util.HashSet;
 import java.util.Set;
 
+
 public class KnightAttackTask implements PathfinderTask {
 	private static Unit getEnemyUnit(MapLocation location) {
 		Unit factoryUnit = null;
