@@ -61,7 +61,7 @@ rungame() {
     if [[ ${WINNER} == "1" ]]; then
         NUMWINS=$(( NUMWINS + 1 ))
         P_RESULTS[GAME_ID]="Win"
-    elif [[ ${WINNER} == "1" ]]; then
+    elif [[ ${WINNER} == "2" ]]; then
         P_RESULTS[GAME_ID]="Loss"
     else
         P_RESULTS[GAME_ID]="Inconclusive"
