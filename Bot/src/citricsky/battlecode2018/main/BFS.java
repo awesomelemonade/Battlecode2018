@@ -69,21 +69,23 @@ public class BFS {
 	public void step() {
 		Benchmark benchmark = new Benchmark();
 		benchmark.push();
-		int size = queue.size();
-		for(int i = 0; i < size; ++i) {
+		for(int i = 0, size = queue.size(); i < size; ++i) {
 			Vector vector = queue.poll();
 			for(Direction direction: Direction.COMPASS) {
 				Vector candidate = vector.add(direction.getOffsetVector());
-				if((!outOfBounds(candidate)) && passable.test(candidate) && (((data[candidate.getX()][candidate.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == 0)) {
-					if(((data[vector.getX()][vector.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == SOURCE_STEP) { //checks whether vector is source
-						data[candidate.getX()][candidate.getY()] |= (1 << (direction.ordinal() + FROM_SHIFT)); 
-					}else {
-						data[candidate.getX()][candidate.getY()] |= (data[vector.getX()][vector.getY()] & (DIRECTION_BITMASK << FROM_SHIFT));
-					}
-					data[candidate.getX()][candidate.getY()] |= (1 << (direction.getOpposite().ordinal() + TO_SHIFT)); //direction to source
-					if(((data[vector.getX()][vector.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == 0) {
-						data[vector.getX()][vector.getY()] |= (step << STEP_SHIFT);
-						queue.add(candidate);
+				if((!outOfBounds(candidate)) && passable.test(candidate)) {
+					int currentStep = (data[candidate.getX()][candidate.getY()] >>> STEP_SHIFT) & STEP_BITMASK;
+					if(currentStep == 0 || currentStep == step) {
+						if(((data[vector.getX()][vector.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == SOURCE_STEP) { //checks whether vector is source
+							data[candidate.getX()][candidate.getY()] |= (1 << (direction.ordinal() + FROM_SHIFT)); 
+						}else {
+							data[candidate.getX()][candidate.getY()] |= (data[vector.getX()][vector.getY()] & (DIRECTION_BITMASK << FROM_SHIFT));
+						}
+						data[candidate.getX()][candidate.getY()] |= (1 << (direction.getOpposite().ordinal() + TO_SHIFT)); //direction to source
+						if(currentStep == 0) { //check whether step has been set
+							data[candidate.getX()][candidate.getY()] |= (step << STEP_SHIFT);
+							queue.add(candidate);
+						}
 					}
 				}
 			}
