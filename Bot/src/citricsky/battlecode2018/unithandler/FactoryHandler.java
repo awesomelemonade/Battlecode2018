@@ -22,9 +22,9 @@ public class FactoryHandler implements UnitHandler {
 
 	@Override
 	public void execute() {
-		UnitType unitType = UnitType.RANGER;
-		if (unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam()).length > 0) {
-			unitType = UnitType.KNIGHT;
+		UnitType unitType = UnitType.KNIGHT;
+		if (unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam()).length > 3) {
+			unitType = UnitType.MAGE;
 		}
 		if(GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.WORKER).length == 0) {
 			unitType = UnitType.WORKER;

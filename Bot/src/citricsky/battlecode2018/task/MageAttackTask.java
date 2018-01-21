@@ -7,7 +7,6 @@ import citricsky.battlecode2018.unithandler.PathfinderTask;
 import java.util.*;
 
 public class MageAttackTask implements PathfinderTask {
-	private static final int MAGE_ATTACK_RANGE = 30;
 	private Set<MapLocation> valid;
 	private Set<MapLocation> invalid;
 	private Unit[] enemyUnits;
@@ -21,24 +20,31 @@ public class MageAttackTask implements PathfinderTask {
 	public void update() {
 		valid.clear();
 		invalid.clear();
-		enemyUnits = EnemyMap.getEnemyChunks();
 	}
 
 	private Unit getAttackTarget(MapLocation location) {
+		enemyUnits = location.getUnit().senseNearbyUnitsByTeam(30, GameController.INSTANCE.getTeam());
+		int bestScore = Integer.MIN_VALUE;
+		Unit bestTarget = null;
  		for (Unit enemyUnit : enemyUnits) {
-			if (EnemyMap.getScore(enemyUnit) <= 0) return null;
-			if (enemyUnit.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) < MAGE_ATTACK_RANGE)
-				return enemyUnit;
+ 			int thisScore = EnemyMap.getScore(enemyUnit);
+			if (thisScore <= 0) return null;
+			if (thisScore > bestScore) {
+				bestScore = thisScore;
+				bestTarget = enemyUnit;
+			}
 		}
-		return null;
+		return bestTarget;
 	}
 
 	@Override
 	public void execute(Unit unit, MapLocation location) {
-		if (unit.getLocation().getMapLocation().equals(location)) {
-			Unit target = getAttackTarget(location);
-			if (unit.isAttackReady() && unit.canAttack(target)) {
-				unit.attack(target);
+		if(unit.isAttackReady()) {
+			if (unit.getLocation().getMapLocation().equals(location)) {
+				Unit target = getAttackTarget(location);
+				if (unit.canAttack(target)) {
+					unit.attack(target);
+				}
 			}
 		}
 	}

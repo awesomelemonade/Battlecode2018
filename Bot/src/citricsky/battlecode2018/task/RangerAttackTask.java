@@ -3,6 +3,7 @@ package citricsky.battlecode2018.task;
 import java.util.HashSet;
 import java.util.Set;
 
+import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
@@ -59,7 +60,7 @@ public class RangerAttackTask implements PathfinderTask {
 			int bestDistanceSquared = Integer.MAX_VALUE;
 			Unit bestTarget = null;
 			int priorityIndex = 0;
-			for (Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
+			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(50, GameController.INSTANCE.getTeam())) {
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
 						.getDistanceSquared(location.getPosition());
 				int unitPriority = getPriorityIndex(enemyUnit);

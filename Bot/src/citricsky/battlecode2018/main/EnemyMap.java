@@ -34,7 +34,7 @@ public class EnemyMap {
 		int numEnemies = (int) Arrays.stream(nearby).filter(unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam()).count();
 		int numFriendlies = nearby.length - numEnemies;
 
-		int score = numEnemies - (3 * numFriendlies);
+		int score = numEnemies - (2 * numFriendlies);
 		scoreCache.put(enemyLoc, score);
 		return score;
 	}
