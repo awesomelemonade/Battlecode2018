@@ -29,6 +29,10 @@ public class FactoryHandler implements UnitHandler {
 		if(GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.WORKER).length == 0) {
 			unitType = UnitType.WORKER;
 		}
+		if(GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.KNIGHT).length / 3 > 
+			GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.HEALER).length) {
+			unitType = UnitType.HEALER;
+		}
 		if (unit.canProduceRobot(unitType)) {
 			unit.produceRobot(unitType);
 		}
