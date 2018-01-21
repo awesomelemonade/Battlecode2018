@@ -4,6 +4,7 @@ import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.main.RoundInfo;
 
 public class FactoryHandler implements UnitHandler {
 	private Unit unit;
@@ -26,11 +27,13 @@ public class FactoryHandler implements UnitHandler {
 		if (unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam()).length > 0) {
 			unitType = UnitType.KNIGHT;
 		}
-		if(GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getType() == UnitType.WORKER).length == 0) {
+		if(RoundInfo.getUnitCount(UnitType.WORKER) == 0) {
 			unitType = UnitType.WORKER;
 		}
-		if (unit.canProduceRobot(unitType)) {
-			unit.produceRobot(unitType);
+		if(GameController.INSTANCE.getCurrentKarbonite() >= unitType.getBaseCost()){
+			if (unit.canProduceRobot(unitType)) {
+				unit.produceRobot(unitType);
+			}
 		}
 		int garrisonSize = unit.getGarrisonUnitIds().length;
 		if (garrisonSize > 0) {

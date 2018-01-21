@@ -66,6 +66,7 @@ public class BFSHandler implements UnitHandler {
 	}
 	@Override
 	public void execute() {
+		long time = System.currentTimeMillis();
 		if (!unit.getLocation().getMapLocation().equals(stopLocation)) {
 			if(unit.isMoveReady()) {
 				int directions = bfs.getDirectionFromSource(stopLocation.getPosition().getX(), stopLocation.getPosition().getY());
@@ -80,7 +81,6 @@ public class BFSHandler implements UnitHandler {
 			}
 		}
 		occupied.add(stopLocation);
-		long time = System.currentTimeMillis();
 		task.execute(unit, stopLocation);
 		time = System.currentTimeMillis() - time;
 		if(time > 10) {
