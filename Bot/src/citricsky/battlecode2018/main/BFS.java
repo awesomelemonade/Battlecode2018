@@ -31,9 +31,12 @@ public class BFS {
 		this.queue = new ArrayDeque<Vector>();
 		this.step = SOURCE_STEP + 1;
 		for(Vector source: sources) {
-			queue.add(source);
-			data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT); //set step = 1
+			addSource(source);
 		}
+	}
+	public void addSource(Vector source) {
+		queue.add(source);
+		data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT);
 	}
 	public void reset() {
 		this.step = SOURCE_STEP + 1;
