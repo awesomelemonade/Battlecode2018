@@ -46,7 +46,10 @@ public class BFSHandler implements UnitHandler {
 		if (!unit.getLocation().isOnMap()) {
 			return Integer.MIN_VALUE;
 		}
-		if(pathfinderTasks.length == 0) {
+		if (pathfinderTasks.length == 0) {
+			return Integer.MIN_VALUE;
+		}
+		if (!hasSpaceToMove()) {
 			return Integer.MIN_VALUE;
 		}
 		bfs.reset();
@@ -64,6 +67,17 @@ public class BFSHandler implements UnitHandler {
 		}
 		return Integer.MIN_VALUE;
 	}
+	
+	public boolean hasSpaceToMove() {
+		for (Direction direction: Direction.COMPASS) {
+			MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
+			if(location.isPassableTerrain() && (!location.hasUnitAtLocation())) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	@Override
 	public void execute() {
 		long time = System.currentTimeMillis();
