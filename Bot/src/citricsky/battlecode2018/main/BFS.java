@@ -35,6 +35,9 @@ public class BFS {
 		}
 	}
 	public void addSource(Vector source) {
+		if(outOfBounds(source)) {
+			return;
+		}
 		queue.add(source);
 		data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT);
 	}
