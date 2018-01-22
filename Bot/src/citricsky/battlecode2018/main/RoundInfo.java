@@ -30,6 +30,9 @@ public class RoundInfo {
 	public static int getRoundNumber() {
 		return roundNumber;
 	}
+	public static int getUnitCount(UnitType type) {
+		return unitCounts[type.ordinal()];
+	}
 	public static int[] getUnitCounts() {
 		return unitCounts;
 	}

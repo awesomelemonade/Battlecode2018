@@ -31,9 +31,12 @@ public class BFS {
 		this.queue = new ArrayDeque<Vector>();
 		this.step = SOURCE_STEP + 1;
 		for(Vector source: sources) {
-			queue.add(source);
-			data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT); //set step = 1
+			addSource(source);
 		}
+	}
+	public void addSource(Vector source) {
+		queue.add(source);
+		data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT);
 	}
 	public void reset() {
 		this.step = SOURCE_STEP + 1;
@@ -75,6 +78,10 @@ public class BFS {
 				Vector candidate = vector.add(direction.getOffsetVector());
 				if((!outOfBounds(candidate)) && passable.test(candidate)) {
 					int currentStep = (data[candidate.getX()][candidate.getY()] >>> STEP_SHIFT) & STEP_BITMASK;
+					if(currentStep == 0) { //check whether step has been set
+						data[candidate.getX()][candidate.getY()] |= (step << STEP_SHIFT);
+						queue.add(candidate);
+					}
 					if(currentStep == 0 || currentStep == step) {
 						if(((data[vector.getX()][vector.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == SOURCE_STEP) { //checks whether vector is source
 							data[candidate.getX()][candidate.getY()] |= (1 << (direction.ordinal() + FROM_SHIFT)); 
@@ -82,10 +89,6 @@ public class BFS {
 							data[candidate.getX()][candidate.getY()] |= (data[vector.getX()][vector.getY()] & (DIRECTION_BITMASK << FROM_SHIFT));
 						}
 						data[candidate.getX()][candidate.getY()] |= (1 << (direction.getOpposite().ordinal() + TO_SHIFT)); //direction to source
-						if(currentStep == 0) { //check whether step has been set
-							data[candidate.getX()][candidate.getY()] |= (step << STEP_SHIFT);
-							queue.add(candidate);
-						}
 					}
 				}
 			}

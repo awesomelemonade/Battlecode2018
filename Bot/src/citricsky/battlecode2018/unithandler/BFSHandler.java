@@ -46,11 +46,11 @@ public class BFSHandler implements UnitHandler {
 		if (!unit.getLocation().isOnMap()) {
 			return Integer.MIN_VALUE;
 		}
-		if(pathfinderTasks.length == 0) {
+		if (pathfinderTasks.length == 0) {
 			return Integer.MIN_VALUE;
 		}
 		bfs.reset();
-		for (;-(bfs.getCurrentStep()-2) > priority && (!bfs.getQueue().isEmpty()); bfs.step()) {
+		for (;-(bfs.getCurrentStep()-2) > priority && (!bfs.getQueue().isEmpty()) && bfs.getCurrentStep() < 20; bfs.step()) {
 			for (Vector vector: bfs.getQueue()) {
 				MapLocation location = planet.getMapLocation(vector);
 				for (PathfinderTask pathfinderTask: pathfinderTasks) {
@@ -64,8 +64,10 @@ public class BFSHandler implements UnitHandler {
 		}
 		return Integer.MIN_VALUE;
 	}
+	
 	@Override
 	public void execute() {
+		long time = System.currentTimeMillis();
 		if (!unit.getLocation().getMapLocation().equals(stopLocation)) {
 			if(unit.isMoveReady()) {
 				int directions = bfs.getDirectionFromSource(stopLocation.getPosition().getX(), stopLocation.getPosition().getY());
@@ -80,7 +82,6 @@ public class BFSHandler implements UnitHandler {
 			}
 		}
 		occupied.add(stopLocation);
-		long time = System.currentTimeMillis();
 		task.execute(unit, stopLocation);
 		time = System.currentTimeMillis() - time;
 		if(time > 10) {

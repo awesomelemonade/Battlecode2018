@@ -1,5 +1,8 @@
 package citricsky.battlecode2018.unithandler;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
@@ -10,7 +13,11 @@ import citricsky.battlecode2018.main.BFS;
 import citricsky.battlecode2018.util.Util;
 
 public class ExploreHandler implements UnitHandler {
+	private static Set<Vector> visited;
 	private Unit unit;
+	static {
+		visited = new HashSet<Vector>();
+	}
 	public ExploreHandler(Unit unit) {
 		this.unit = unit;
 	}
@@ -44,10 +51,15 @@ public class ExploreHandler implements UnitHandler {
 		}
 	}
 	public MapLocation processBFS(BFS bfs, Planet planet) {
-		for (;(!bfs.getQueue().isEmpty()); bfs.step()) {
+		for (;(!bfs.getQueue().isEmpty()) && bfs.getCurrentStep() < 20; bfs.step()) {
 			for (Vector vector: bfs.getQueue()) {
+				if(visited.contains(vector)) {
+					continue;
+				}
 				MapLocation location = planet.getMapLocation(vector);
-				if (!GameController.INSTANCE.canSenseLocation(location)) {
+				if (GameController.INSTANCE.canSenseLocation(location)) {
+					visited.add(vector);
+				} else {
 					return location;
 				}
 			}
