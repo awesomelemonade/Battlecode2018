@@ -4,6 +4,7 @@ import citricsky.battlecode2018.library.*;
 
 public class RocketHandler implements UnitHandler {
 	private Unit unit;
+	private int aliveCount = 0;
 
 	public RocketHandler(Unit unit) {
 		this.unit = unit;
@@ -19,10 +20,12 @@ public class RocketHandler implements UnitHandler {
 
 	@Override
 	public void execute() {
+		aliveCount++;
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
 			if (unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity() ||
-					GameController.INSTANCE.getRoundNumber() == 749 ||
-					((double)unit.getHealth()) / ((double)unit.getMaxHealth()) < 0.5) {
+					((double)unit.getHealth()) / ((double)unit.getMaxHealth()) < 0.5 || 
+						aliveCount>=100 ||
+							GameController.INSTANCE.getRoundNumber() > 740) {
 				int offsetX = (int)(Math.random() * Planet.MARS.getWidth());
 				int offsetY = (int)(Math.random() * Planet.MARS.getHeight());
 				for(int x = 0; x < Planet.MARS.getWidth(); x++) {
@@ -37,6 +40,7 @@ public class RocketHandler implements UnitHandler {
 						}
 					}
 				}
+			
 			} else {
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
 					if (target.isStructure()) continue;
