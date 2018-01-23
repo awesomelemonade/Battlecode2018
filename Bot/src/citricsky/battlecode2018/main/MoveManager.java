@@ -62,7 +62,7 @@ public class MoveManager {
 				Vector position = unit.getLocation().getMapLocation().getPosition();
 				if (unit.getHealth() < unit.getMaxHealth()) {
 					if (unit.isStructure()) {
-						bfsArray[BFS_WORKER_TASK].addSource(position);
+						addSource(BFS_WORKER_TASK, position, Direction.COMPASS);
 					} else {
 						bfsArray[BFS_HEALER_HEAL].addSource(position);
 					}
@@ -172,7 +172,7 @@ public class MoveManager {
 		if (unit.getType() == UnitType.WORKER) {
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
 			int workerHarvestStep = getBFSStep(BFS_WORKER_HARVEST, position);
-			if (workerTaskStep - 1 <= workerHarvestStep) {
+			if (workerTaskStep - 3 <= workerHarvestStep) {
 				return BFS_WORKER_TASK;
 			} else {
 				return BFS_WORKER_HARVEST;
