@@ -26,10 +26,11 @@ public class FactoryExecutor implements UnitExecutor {
 	
 	@Override
 	public void execute(Unit unit) {
-		if (unit.canProduceRobot(getProduceType())) { //more logic here
-			unit.produceRobot(getProduceType());
+		UnitType produceType = getProduceType();
+		if (unit.canProduceRobot(produceType)) {
+			unit.produceRobot(produceType);
 		}
-		if (RoundInfo.getMyUnits().length < 70) {
+		if (RoundInfo.getUnitCountOnMap() < 70) {
 			if (unit.getGarrisonUnitIds().length > 0) {
 				Direction bestUnloadDirection = null;
 				int closestEnemy = Integer.MAX_VALUE;

@@ -9,10 +9,12 @@ public class RoundInfo {
 	private static Unit[] myUnits;
 	private static Unit[] enemiesOnMap;
 	private static int[] unitCounts;
+	private static int unitCountOnMap;
 	static {
 		unitCounts = new int[UnitType.values().length];
 	}
 	public static void update() {
+		unitCountOnMap = 0;
 		roundNumber = GameController.INSTANCE.getRoundNumber();
 		myUnits = GameController.INSTANCE.getMyUnits();
 		enemiesOnMap = GameController.INSTANCE.getAllUnitsByFilter(
@@ -24,7 +26,13 @@ public class RoundInfo {
 		}
 		for (Unit unit: myUnits) {
 			unitCounts[unit.getType().ordinal()]++;
+			if (unit.getLocation().isOnMap()) {
+				unitCountOnMap++;
+			}
 		}
+	}
+	public static int getUnitCountOnMap() {
+		return unitCountOnMap;
 	}
 	public static Unit[] getMyUnits() {
 		return myUnits;
