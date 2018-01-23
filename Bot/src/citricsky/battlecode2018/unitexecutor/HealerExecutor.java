@@ -26,7 +26,7 @@ public class HealerExecutor implements UnitExecutor {
 		}
 		if(unit.isAbilityUnlocked() && unit.getAbilityHeat() < 10) {
 			for(Unit friendlyUnit : friendlyUnits) {
-				if(friendlyUnit.getAbilityHeat()>60) {
+				if((!friendlyUnit.isStructure()) && friendlyUnit.getAbilityHeat() > 60) {
 					unit.overcharge(friendlyUnit);
 					break;
 				}
