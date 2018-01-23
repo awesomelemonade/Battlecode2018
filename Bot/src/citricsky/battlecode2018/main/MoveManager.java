@@ -164,9 +164,11 @@ public class MoveManager {
 		if (unit.getType() == UnitType.WORKER) {
 			return BFS_WORKER;
 		}
-		int loadRocketStep = getBFSStep(BFS_LOAD_ROCKET, position);
-		if (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 700) {
-			return BFS_LOAD_ROCKET;
+		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
+			int loadRocketStep = getBFSStep(BFS_LOAD_ROCKET, position);
+			if (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 700) {
+				return BFS_LOAD_ROCKET;
+			}
 		}
 		int bfsAttackIndex = -1;
 		if (unit.getType() == UnitType.KNIGHT) {
