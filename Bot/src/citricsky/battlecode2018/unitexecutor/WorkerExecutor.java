@@ -111,10 +111,10 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 		}
 		//try blueprint
-		if (RoundInfo.getUnitCount(UnitType.FACTORY) < 6) {
+		UnitType blueprintType = getBlueprintType();
+		if (blueprintType == UnitType.ROCKET || RoundInfo.getUnitCount(UnitType.FACTORY) < 6) {
 			Direction blueprintDirection = null;
 			int bestBuild = -1;
-			UnitType blueprintType = getBlueprintType();
 			for (Direction direction: Direction.COMPASS) {
 				MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
 				if (unit.canBlueprint(blueprintType, direction)) {
