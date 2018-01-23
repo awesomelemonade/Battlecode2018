@@ -47,17 +47,21 @@ public class EarthPlayer {
 			if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
 				RoundInfo.update();
 				for (UnitExecutor executor: executors) {
-					benchmark.push();
 					if(executor != null) {
+						benchmark.push();
 						executor.update();
-					}
-					double deltaTime = benchmark.pop() / 1000000.0;
-					if (deltaTime > 10) {
-						System.out.println("Update: " + executor.getClass().getSimpleName() + " - " + deltaTime + "ms");
+						double deltaTime = benchmark.pop() / 1000000.0;
+						if (deltaTime > 10) {
+							System.out.println("Update: " + executor.getClass().getSimpleName() + " - " + deltaTime + "ms");
+						}
 					}
 				}
 				moveManager.update();
-				moveManager.move(unit -> executors[unit.getType().ordinal()].execute(unit));
+				moveManager.move(unit -> {
+					if(executors[unit.getType().ordinal()] != null) {
+						executors[unit.getType().ordinal()].execute(unit);
+					}
+				});
 			} else {
 				System.out.println("Skipping Round: " + gc.getRoundNumber() + " - " + gc.getTimeLeft() + "ms");
 			}
