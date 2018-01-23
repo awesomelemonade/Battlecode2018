@@ -118,7 +118,7 @@ public class WorkerExecutor implements UnitExecutor {
 		for (Direction direction: Direction.COMPASS) {
 			MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
 			if (unit.canBlueprint(blueprintType, direction)) {
-				int buildArray = Util.getBuildArray(Util.calcBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE)));
+				int buildArray = Util.getBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE));
 				if (buildArray > bestBuild) {
 					bestBuild = buildArray;
 					blueprintDirection = direction;
