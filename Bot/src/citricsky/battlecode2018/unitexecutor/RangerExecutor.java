@@ -28,7 +28,7 @@ public class RangerExecutor implements UnitExecutor {
 			int bestDistanceSquared = Integer.MAX_VALUE;
 			Unit bestTarget = null;
 			int priorityIndex = 0;
-			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(50, GameController.INSTANCE.getTeam())) {
+			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(50, GameController.INSTANCE.getEnemyTeam())) {
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
 						.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
 				int unitPriority = getPriorityIndex(enemyUnit);
