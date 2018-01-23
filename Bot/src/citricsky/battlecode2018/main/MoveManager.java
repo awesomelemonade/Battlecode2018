@@ -127,39 +127,44 @@ public class MoveManager {
 				queue.add(unit);
 			}
 			while (!queue.isEmpty()) {
-				Unit unit = queue.poll();
-				if ((!unit.isStructure()) && unit.isMoveReady()) {
-					MapLocation location = unit.getLocation().getMapLocation();
-					int bfsIndex = bfsIndices.get(unit.getId());
-					int step = getBFSStep(bfsIndex, location.getPosition());
-					if (step == Integer.MAX_VALUE) {
-						Direction random = Direction.randomDirection();
-						if (unit.canMove(random)) {
-							unit.move(random);
-						}
-					} else if (step == BFS.SOURCE_STEP) {
-						for (Direction direction: Direction.COMPASS) {
-							MapLocation offset = location.getOffsetLocation(direction);
-							if (Util.PASSABLE_PREDICATE.test(offset) && getBFSStep(bfsIndex, offset.getPosition()) == BFS.SOURCE_STEP) {
-								if (unit.canMove(direction)) {
-									unit.move(direction);
-									break;
+				try {
+					Unit unit = queue.poll();
+					if ((!unit.isStructure()) && unit.isMoveReady()) {
+						MapLocation location = unit.getLocation().getMapLocation();
+						int bfsIndex = bfsIndices.get(unit.getId());
+						int step = getBFSStep(bfsIndex, location.getPosition());
+						if (step == Integer.MAX_VALUE) {
+							Direction random = Direction.randomDirection();
+							if (unit.canMove(random)) {
+								unit.move(random);
+							}
+						} else if (step == BFS.SOURCE_STEP) {
+							for (Direction direction: Direction.COMPASS) {
+								MapLocation offset = location.getOffsetLocation(direction);
+								if (Util.PASSABLE_PREDICATE.test(offset) && getBFSStep(bfsIndex, offset.getPosition()) == BFS.SOURCE_STEP) {
+									if (unit.canMove(direction)) {
+										unit.move(direction);
+										break;
+									}
 								}
 							}
-						}
-					}else {
-						int directions = getBFSDirection(bfsIndex, location.getPosition());
-						for (Direction direction: Direction.COMPASS) {
-							if(((directions >>> direction.ordinal()) & 1) == 1) {
-								if(unit.canMove(direction)) {
-									unit.move(direction);
-									break;
+						}else {
+							int directions = getBFSDirection(bfsIndex, location.getPosition());
+							for (Direction direction: Direction.COMPASS) {
+								if(((directions >>> direction.ordinal()) & 1) == 1) {
+									if(unit.canMove(direction)) {
+										unit.move(direction);
+										break;
+									}
 								}
 							}
 						}
 					}
+					executor.accept(unit);
+				} catch (Exception ex) {
+					System.out.println("Move Exception: "+ex.getMessage());
+					ex.printStackTrace();
 				}
-				executor.accept(unit);
 			}
 		}
 	}
