@@ -12,6 +12,7 @@ import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.util.Util;
 
 public class MoveManager {
 	// 40 to 50 attack range for Ranger
@@ -25,16 +26,25 @@ public class MoveManager {
 	private static final int BFS_KNIGHT_ATTACK = 3;
 	private static final int BFS_RANGER_ATTACK = 4;
 	private static final int BFS_LOAD_ROCKET = 5;
+	private static final int BFS_EXPLORE = 6;
 	private BFS[] bfsArray;
+	private boolean[] processed;
 	private Planet planet;
 	
 	public MoveManager() {
 		this.planet = GameController.INSTANCE.getPlanet();
 		//Initialize bfsArray
+		this.bfsArray = new BFS[7];
+		this.processed = new boolean[bfsArray.length];
+		for (int i = 0; i < bfsArray.length; ++i) {
+			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
+					vector -> Util.PASSABLE_PREDICATE.test(planet.getMapLocation(vector)));
+		}
 	}
 	public void update() {
-		for (BFS bfs: bfsArray) {
-			bfs.resetHard();
+		for (int i = 0; i < bfsArray.length; ++i) {
+			bfsArray[i].resetHard();
+			processed[i] = false;
 		}
 		for (Unit unit: RoundInfo.getEnemiesOnMap()) {
 			Vector position = unit.getLocation().getMapLocation().getPosition();
@@ -48,11 +58,14 @@ public class MoveManager {
 			if (unit.getLocation().isOnMap()) {
 				Vector position = unit.getLocation().getMapLocation().getPosition();
 				if (unit.isStructure() && unit.getHealth() < unit.getMaxHealth()) {
-					addSource(BFS_WORKER, position, Direction.COMPASS);
+					bfsArray[BFS_WORKER].addSource(position);
+				}
+				if (unit.getType() == UnitType.FACTORY) {
+					bfsArray[BFS_EXPLORE].addSource(position);
 				}
 				if (unit.getType() == UnitType.ROCKET && unit.isStructureBuilt() &&
 						unit.getGarrisonUnitIds().length < unit.getStructureMaxCapacity()) {
-					addSource(BFS_LOAD_ROCKET, position, Direction.COMPASS);
+					bfsArray[BFS_LOAD_ROCKET].addSource(position);
 				}
 				if (unit.getType() == UnitType.HEALER) {
 					bfsArray[BFS_FIND_HEAL].addSource(position); //simplicity sake, you could probably precompute offsets later
@@ -81,8 +94,10 @@ public class MoveManager {
 		}
 	}
 	public void move() {
-		Unit[] units = GameController.INSTANCE.getMyUnitsByFilter(unit -> unit.getLocation().isOnMap());
+		Unit[] units = GameController.INSTANCE.getMyUnitsByFilter(
+				unit -> unit.getLocation().isOnMap() && (!unit.isStructure()));
 		Map<Integer, Integer> priorities = new HashMap<Integer, Integer>();
+		Map<Integer, Integer> bfsIndices = new HashMap<Integer, Integer>();
 		PriorityQueue<Unit> queue = new PriorityQueue<Unit>(units.length, new Comparator<Unit>() {
 			@Override
 			public int compare(Unit a, Unit b) {
@@ -90,18 +105,75 @@ public class MoveManager {
 			}
 		});
 		for (Unit unit: units) {
-			priorities.put(unit.getId(), getPriority(unit));
+			Vector position = unit.getLocation().getMapLocation().getPosition();
+			int bfsIndex = getBFSIndex(unit, position);
+			bfsIndices.put(unit.getId(), bfsIndex);
+			if(bfsIndex != BFS_EXPLORE) {
+				priorities.put(unit.getId(), -bfsArray[bfsIndex].getStep(position.getX(), position.getY()));
+			}else {
+				priorities.put(unit.getId(), Integer.MIN_VALUE);
+			}
 			queue.add(unit);
 		}
 		while (!queue.isEmpty()) {
-			move(queue.poll());
+			Unit unit = queue.poll();
+			Vector position = unit.getLocation().getMapLocation().getPosition();
+			int bfsIndex = bfsIndices.get(unit.getId());
+			int directions = bfsArray[bfsIndex].getDirectionToSource(position.getX(), position.getY());
+			if(bfsIndex == BFS_EXPLORE) {
+				directions = ((directions << 4) & 0b11110000) | ((directions >>> 4) & 0b1111);
+			}
+			for(Direction direction: Direction.COMPASS) {
+				if(((directions >>> direction.ordinal()) & 1) == 1) {
+					if(unit.canMove(direction)) {
+						unit.move(direction);
+						break;
+					}
+				}
+			}
 		}
 	}
-	public int getPriority(Unit unit) {
-		return Integer.MIN_VALUE;
+	public int getBFSIndex(Unit unit, Vector position) {
+		if (unit.getHealth() < unit.getMaxHealth() / 2) {
+			if (getBFSStep(BFS_FIND_HEAL, position) != 0) {
+				return BFS_FIND_HEAL;
+			}
+		}
+		if (unit.getType() == UnitType.WORKER) {
+			return BFS_WORKER;
+		}
+		int loadRocketStep = getBFSStep(BFS_LOAD_ROCKET, position);
+		if (loadRocketStep != 0 && (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 700)) {
+			return BFS_LOAD_ROCKET;
+		}
+		int bfsAttackIndex = -1;
+		if (unit.getType() == UnitType.KNIGHT) {
+			bfsAttackIndex = BFS_KNIGHT_ATTACK;
+		}
+		if (unit.getType() == UnitType.RANGER) {
+			bfsAttackIndex = BFS_RANGER_ATTACK;
+		}
+		if (bfsAttackIndex == -1) {
+			bfsAttackIndex = BFS_FIND_ENEMY;
+		}
+		int attackStep = getBFSStep(bfsAttackIndex, position);
+		if (attackStep != 0 && attackStep < 10) {
+			return bfsAttackIndex;
+		}else {
+			if (bfsAttackIndex != BFS_FIND_ENEMY) {
+				int findStep = getBFSStep(BFS_FIND_ENEMY, position);
+				if (findStep != 0) {
+					return BFS_FIND_ENEMY;
+				}
+			}
+		}
+		return BFS_EXPLORE;
 	}
-	public void move(Unit unit) {
-		
+	public int getBFSStep(int bfsIndex, Vector position) {
+		if (!processed[bfsIndex]) {
+			processBFS(bfsIndex);
+		}
+		return bfsArray[bfsIndex].getStep(position.getX(), position.getY());
 	}
 	public void processBFS(int index) {
 		while (!bfsArray[index].getQueue().isEmpty()) {
