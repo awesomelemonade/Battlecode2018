@@ -38,19 +38,30 @@ public class BFS {
 		if(outOfBounds(source)) {
 			return;
 		}
-		queue.add(source);
-		data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT);
+		if((data[source.getX()][source.getY()] >>> STEP_SHIFT) != SOURCE_STEP) {
+			queue.add(source);
+			data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT);
+		}
 	}
 	public void reset() {
 		this.step = SOURCE_STEP + 1;
 		queue.clear();
-		for (int i=0;i<getWidth();++i) {
-			for (int j=0;j<getHeight();++j) {
+		for (int i = 0;i < getWidth(); ++i) {
+			for (int j = 0;j < getHeight(); ++j) {
 				if (((data[i][j] >>> STEP_SHIFT) & STEP_BITMASK) == SOURCE_STEP) {
 					queue.add(new Vector(i, j));
 				} else {
 					data[i][j] = 0;
 				}
+			}
+		}
+	}
+	public void resetHard() {
+		this.step = SOURCE_STEP + 1;
+		queue.clear();
+		for (int i = 0; i < this.getWidth(); ++i) {
+			for (int j = 0; j < this.getHeight(); ++j) {
+				data[i][j] = 0;
 			}
 		}
 	}
