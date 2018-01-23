@@ -48,17 +48,11 @@ public class EarthPlayer {
 			benchmark.push();
 			if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
 				RoundInfo.update();
-				for (UnitExecutor executor: executors) {
-					if(executor != null) {
-						benchmark.push();
-						executor.update();
-						double deltaTime = benchmark.pop() / 1000000.0;
-						if (deltaTime > 10) {
-							System.out.println("Update: " + executor.getClass().getSimpleName() + " - " + deltaTime + "ms");
-						}
-					}
+				if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 3000) {
+					moveManager.updateBFS();
+				} else {
+					System.out.println("Skipping BFS Update");
 				}
-				moveManager.update();
 				moveManager.move(unit -> {
 					if(executors[unit.getType().ordinal()] != null) {
 						executors[unit.getType().ordinal()].execute(unit);

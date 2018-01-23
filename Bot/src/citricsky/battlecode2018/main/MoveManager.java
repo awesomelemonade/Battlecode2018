@@ -43,7 +43,7 @@ public class MoveManager {
 					vector -> Util.PASSABLE_PREDICATE.test(planet.getMapLocation(vector)));
 		}
 	}
-	public void update() {
+	public void updateBFS() {
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i].resetHard();
 			processed[i] = false;

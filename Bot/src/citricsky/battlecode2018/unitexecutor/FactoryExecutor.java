@@ -14,11 +14,6 @@ public class FactoryExecutor implements UnitExecutor {
 		this.moveManager = moveManager;
 	}
 	
-	@Override
-	public void update() {
-		
-	}
-	
 	public UnitType getProduceType() {
 		if (RoundInfo.getUnitCount(UnitType.WORKER) == 0) {
 			return UnitType.WORKER;

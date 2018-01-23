@@ -14,10 +14,6 @@ public class RocketExecutor implements UnitExecutor {
 		this.moveManager = moveManager;
 	}
 	@Override
-	public void update() {
-		
-	}
-	@Override
 	public void execute(Unit unit) {
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
 			if (unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity() ||

@@ -5,11 +5,6 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 
 public class RangerExecutor implements UnitExecutor {
-	@Override
-	public void update() {
-		
-	}
-	
 	private static int getPriorityIndex(Unit unit) {
 		UnitType unitType = unit.getType();
 		if (unitType.equals(UnitType.FACTORY) || unitType.equals(UnitType.WORKER)) {

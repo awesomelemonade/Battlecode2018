@@ -5,10 +5,6 @@ import citricsky.battlecode2018.library.Unit;
 
 public class HealerExecutor implements UnitExecutor {
 	@Override
-	public void update() {
-		
-	}
-	@Override
 	public void execute(Unit unit) {
 		Unit[] friendlyUnits = unit.senseNearbyUnitsByTeam(30, GameController.INSTANCE.getTeam());
 		if(unit.isHealReady()) {

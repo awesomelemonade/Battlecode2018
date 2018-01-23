@@ -16,10 +16,6 @@ public class WorkerExecutor implements UnitExecutor {
 	public WorkerExecutor(MoveManager moveManager) {
 		this.moveManager = moveManager;
 	}
-	@Override
-	public void update() {
-		
-	}
 	private static Unit getBuildTarget(MapLocation location) {
 		Unit bestTarget = null;
 		double highestHealth = -Double.MAX_VALUE;
