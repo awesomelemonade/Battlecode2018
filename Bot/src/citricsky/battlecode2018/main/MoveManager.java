@@ -28,7 +28,7 @@ public class MoveManager {
 	public static final int BFS_WORKER = 2;
 	public static final int BFS_KNIGHT_ATTACK = 3;
 	public static final int BFS_RANGER_ATTACK = 4;
-	public static final int BFS_HEALER_HEAL = 5; //TODO
+	public static final int BFS_HEALER_HEAL = 5;
 	public static final int BFS_LOAD_ROCKET = 6;
 	public static final int BFS_PROTECT = 7;
 	public static final int BFS_EXPLORE = 8;
@@ -62,8 +62,12 @@ public class MoveManager {
 		for (Unit unit: RoundInfo.getMyUnits()) {
 			if (unit.getLocation().isOnMap()) {
 				Vector position = unit.getLocation().getMapLocation().getPosition();
-				if (unit.isStructure() && unit.getHealth() < unit.getMaxHealth()) {
-					bfsArray[BFS_WORKER].addSource(position);
+				if (unit.getHealth() < unit.getMaxHealth()) {
+					if (unit.isStructure()) {
+						bfsArray[BFS_WORKER].addSource(position);
+					} else {
+						bfsArray[BFS_HEALER_HEAL].addSource(position);
+					}
 				}
 				if ((unit.getType() == UnitType.FACTORY && GameController.INSTANCE.getPlanet() == Planet.EARTH) ||
 						(unit.getType() == UnitType.ROCKET && GameController.INSTANCE.getPlanet() == Planet.MARS)) {
@@ -170,6 +174,9 @@ public class MoveManager {
 		}
 		if (unit.getType() == UnitType.RANGER) {
 			bfsAttackIndex = BFS_RANGER_ATTACK;
+		}
+		if (unit.getType() == UnitType.HEALER) {
+			bfsAttackIndex = BFS_HEALER_HEAL;
 		}
 		if (bfsAttackIndex == -1) {
 			bfsAttackIndex = BFS_FIND_ENEMY;
