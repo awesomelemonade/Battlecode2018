@@ -139,14 +139,28 @@ public class MoveManager {
 			while (!queue.isEmpty()) {
 				Unit unit = queue.poll();
 				if ((!unit.isStructure()) && unit.isMoveReady()) {
-					Vector position = unit.getLocation().getMapLocation().getPosition();
+					MapLocation location = unit.getLocation().getMapLocation();
 					int bfsIndex = bfsIndices.get(unit.getId());
-					int directions = getBFSDirection(bfsIndex, position);
-					for(Direction direction: Direction.COMPASS) {
-						if(((directions >>> direction.ordinal()) & 1) == 1) {
-							if(unit.canMove(direction)) {
-								unit.move(direction);
-								break;
+					
+					int step = getBFSStep(bfsIndex, location.getPosition());
+					if (step == BFS.SOURCE_STEP) {
+						for (Direction direction: Direction.COMPASS) {
+							MapLocation offset = location.getOffsetLocation(direction);
+							if (Util.PASSABLE_PREDICATE.test(offset) && getBFSStep(bfsIndex, offset.getPosition()) == BFS.SOURCE_STEP) {
+								if (unit.canMove(direction)) {
+									unit.move(direction);
+									break;
+								}
+							}
+						}
+					}else {
+						int directions = getBFSDirection(bfsIndex, location.getPosition());
+						for (Direction direction: Direction.COMPASS) {
+							if(((directions >>> direction.ordinal()) & 1) == 1) {
+								if(unit.canMove(direction)) {
+									unit.move(direction);
+									break;
+								}
 							}
 						}
 					}

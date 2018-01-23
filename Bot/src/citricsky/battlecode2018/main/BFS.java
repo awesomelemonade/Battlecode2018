@@ -19,7 +19,7 @@ public class BFS {
 	private static final int STEP_SHIFT = 16;
 	private static final int DIRECTION_BITMASK = 0b11111111;
 	private static final int STEP_BITMASK = 0b1111111111111111;
-	private static final int SOURCE_STEP = 0b1;
+	public static final int SOURCE_STEP = 0b1;
 	private int[][] data;
 	
 	private Deque<Vector> queue;
