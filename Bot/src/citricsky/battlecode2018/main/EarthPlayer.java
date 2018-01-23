@@ -3,6 +3,8 @@ package citricsky.battlecode2018.main;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.unitexecutor.FactoryExecutor;
+import citricsky.battlecode2018.unitexecutor.HealerExecutor;
+import citricsky.battlecode2018.unitexecutor.KnightExecutor;
 import citricsky.battlecode2018.unitexecutor.RangerExecutor;
 import citricsky.battlecode2018.unitexecutor.RocketExecutor;
 import citricsky.battlecode2018.unitexecutor.UnitExecutor;
@@ -37,8 +39,8 @@ public class EarthPlayer {
 		executors[UnitType.FACTORY.ordinal()] = new FactoryExecutor(moveManager);
 		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager);
 		executors[UnitType.RANGER.ordinal()] = new RangerExecutor();
-		executors[UnitType.KNIGHT.ordinal()] = null;
-		executors[UnitType.HEALER.ordinal()] = null;
+		executors[UnitType.KNIGHT.ordinal()] = new KnightExecutor();
+		executors[UnitType.HEALER.ordinal()] = new HealerExecutor();
 		executors[UnitType.MAGE.ordinal()] = null;
 		executors[UnitType.WORKER.ordinal()] = new WorkerExecutor(moveManager);
 		

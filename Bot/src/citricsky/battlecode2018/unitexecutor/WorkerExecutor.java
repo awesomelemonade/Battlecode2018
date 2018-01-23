@@ -7,6 +7,7 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.MoveManager;
+import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.util.Constants;
 
 public class WorkerExecutor implements UnitExecutor {
@@ -64,7 +65,15 @@ public class WorkerExecutor implements UnitExecutor {
 		return bestTarget;
 	}
 	private boolean shouldReplicate() {
-		return GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST;
+		return GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST && 
+				RoundInfo.getRoundNumber() > 3;
+	}
+	public UnitType getBlueprintType() {
+		if(RoundInfo.getRoundNumber() < 500 || RoundInfo.getUnitCount(UnitType.FACTORY) < 2) {
+			return UnitType.FACTORY;
+		}else {
+			return UnitType.ROCKET;
+		}
 	}
 	@Override
 	public void execute(Unit unit) {
@@ -101,17 +110,18 @@ public class WorkerExecutor implements UnitExecutor {
 				return;
 			}
 		}
+		//try blueprint
+		for (Direction direction: Direction.COMPASS) {
+			UnitType type = getBlueprintType();
+			if (unit.canBlueprint(type, direction)) {
+				unit.blueprint(type, direction);
+				return;
+			}
+		}
 		//try harvest
 		for (Direction direction: Direction.values()) {
 			if (unit.canHarvest(direction)) {
 				unit.harvest(direction);
-				return;
-			}
-		}
-		//try blueprint
-		for (Direction direction: Direction.COMPASS) {
-			if (unit.canBlueprint(UnitType.FACTORY, direction)) {
-				unit.blueprint(UnitType.FACTORY, direction);
 				return;
 			}
 		}

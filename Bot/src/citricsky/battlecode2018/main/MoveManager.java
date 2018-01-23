@@ -26,8 +26,9 @@ public class MoveManager {
 	public static final int BFS_WORKER = 2;
 	public static final int BFS_KNIGHT_ATTACK = 3;
 	public static final int BFS_RANGER_ATTACK = 4;
-	public static final int BFS_LOAD_ROCKET = 5;
-	public static final int BFS_EXPLORE = 6;
+	public static final int BFS_HEALER_HEAL = 5; //TODO
+	public static final int BFS_LOAD_ROCKET = 6;
+	public static final int BFS_EXPLORE = 7;
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
@@ -35,7 +36,7 @@ public class MoveManager {
 	public MoveManager() {
 		this.planet = GameController.INSTANCE.getPlanet();
 		//Initialize bfsArray
-		this.bfsArray = new BFS[7];
+		this.bfsArray = new BFS[8];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
@@ -141,7 +142,7 @@ public class MoveManager {
 	}
 	public int getBFSIndex(Unit unit, Vector position) {
 		if (unit.getHealth() < unit.getMaxHealth() / 2) {
-			if (getBFSStep(BFS_FIND_HEAL, position) != 0) {
+			if (getBFSStep(BFS_FIND_HEAL, position) != Integer.MAX_VALUE) {
 				return BFS_FIND_HEAL;
 			}
 		}
