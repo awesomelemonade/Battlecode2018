@@ -65,5 +65,4 @@ public class MarsPlayer {
 			gc.yield();
 		}
 	}
-	}
 }
