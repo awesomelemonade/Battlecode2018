@@ -15,7 +15,7 @@ public class EarthPlayer {
 	public static void execute() {
 		Benchmark benchmark = new Benchmark();
 		GameController gc = GameController.INSTANCE;
-		UnitType[] researchOrder = new UnitType[]
+		/*UnitType[] researchOrder = new UnitType[]
 				{UnitType.WORKER, //finishes at Round 25
 				 UnitType.KNIGHT, //finishes at Round 50
 				 UnitType.KNIGHT, //finishes at Round 125
@@ -29,7 +29,11 @@ public class EarthPlayer {
 				 UnitType.MAGE, //finishes at Round 675
 				 UnitType.MAGE, //finishes at Round 750
 				 UnitType.MAGE, //finishes at Round 850
-				 }; 
+				 }; */
+		UnitType[] researchOrder = new UnitType[] {
+				UnitType.WORKER, UnitType.ROCKET, UnitType.RANGER, UnitType.HEALER,
+				UnitType.HEALER, UnitType.HEALER, UnitType.RANGER, UnitType.RANGER
+		};
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
 		}
