@@ -4,6 +4,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.PriorityQueue;
+import java.util.function.Consumer;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
@@ -94,7 +95,7 @@ public class MoveManager {
 			bfsArray[index].addSource(position.add(direction.getOffsetVector()));
 		}
 	}
-	public void move() {
+	public void move(Consumer<Unit> executor) {
 		Unit[] units = GameController.INSTANCE.getMyUnitsByFilter(
 				unit -> unit.getLocation().isOnMap() && (!unit.isStructure()));
 		Map<Integer, Integer> priorities = new HashMap<Integer, Integer>();
@@ -118,17 +119,20 @@ public class MoveManager {
 		}
 		while (!queue.isEmpty()) {
 			Unit unit = queue.poll();
-			Vector position = unit.getLocation().getMapLocation().getPosition();
-			int bfsIndex = bfsIndices.get(unit.getId());
-			int directions = getBFSDirection(bfsIndex, position);
-			for(Direction direction: Direction.COMPASS) {
-				if(((directions >>> direction.ordinal()) & 1) == 1) {
-					if(unit.canMove(direction)) {
-						unit.move(direction);
-						break;
+			if (unit.isMoveReady()) {
+				Vector position = unit.getLocation().getMapLocation().getPosition();
+				int bfsIndex = bfsIndices.get(unit.getId());
+				int directions = getBFSDirection(bfsIndex, position);
+				for(Direction direction: Direction.COMPASS) {
+					if(((directions >>> direction.ordinal()) & 1) == 1) {
+						if(unit.canMove(direction)) {
+							unit.move(direction);
+							break;
+						}
 					}
 				}
 			}
+			executor.accept(unit);
 		}
 	}
 	public int getBFSIndex(Unit unit, Vector position) {
@@ -141,7 +145,7 @@ public class MoveManager {
 			return BFS_WORKER;
 		}
 		int loadRocketStep = getBFSStep(BFS_LOAD_ROCKET, position);
-		if (loadRocketStep != 0 && (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 700)) {
+		if (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 700) {
 			return BFS_LOAD_ROCKET;
 		}
 		int bfsAttackIndex = -1;
@@ -155,12 +159,12 @@ public class MoveManager {
 			bfsAttackIndex = BFS_FIND_ENEMY;
 		}
 		int attackStep = getBFSStep(bfsAttackIndex, position);
-		if (attackStep != 0 && attackStep < 10) {
+		if (attackStep < 10) {
 			return bfsAttackIndex;
 		}else {
 			if (bfsAttackIndex != BFS_FIND_ENEMY) {
 				int findStep = getBFSStep(BFS_FIND_ENEMY, position);
-				if (findStep != 0) {
+				if (findStep != Integer.MAX_VALUE) {
 					return BFS_FIND_ENEMY;
 				}
 			}

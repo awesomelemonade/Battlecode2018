@@ -72,16 +72,33 @@ public class BFS {
 		return data[0].length;
 	}
 	public int getDirectionFromSource(int x, int y) {
+		if(outOfBounds(x, y)) {
+			return 0;
+		}
 		return (data[x][y] >>> FROM_SHIFT) & DIRECTION_BITMASK;
 	}
 	public int getDirectionToSource(int x, int y) {
+		if(outOfBounds(x, y)) {
+			return 0;
+		}
 		return (data[x][y] >>> TO_SHIFT) & DIRECTION_BITMASK;
 	}
 	public int getStep(int x, int y) {
-		return (data[x][y] >>> STEP_SHIFT) & STEP_BITMASK;
+		if(outOfBounds(x, y)) {
+			return Integer.MAX_VALUE;
+		}
+		int step = (data[x][y] >>> STEP_SHIFT) & STEP_BITMASK;
+		if(step == 0) {
+			return Integer.MAX_VALUE;
+		} else {
+			return step;
+		}
 	}
 	public boolean outOfBounds(Vector vector) {
-		return vector.getX() < 0 || vector.getY() < 0 || vector.getX() >= data.length || vector.getY() >= data[0].length;
+		return outOfBounds(vector.getX(), vector.getY());
+	}
+	public boolean outOfBounds(int x, int y) {
+		return x < 0 || y < 0 || x >= data.length || y >= data[0].length;
 	}
 	public void step() {
 		Benchmark benchmark = new Benchmark();

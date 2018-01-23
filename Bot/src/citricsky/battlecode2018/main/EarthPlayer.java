@@ -1,7 +1,6 @@
 package citricsky.battlecode2018.main;
 
 import citricsky.battlecode2018.library.GameController;
-import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.unitexecutor.FactoryExecutor;
 import citricsky.battlecode2018.unitexecutor.RangerExecutor;
@@ -58,11 +57,7 @@ public class EarthPlayer {
 					}
 				}
 				moveManager.update();
-				for (Unit unit: RoundInfo.getMyUnits()) {
-					if(executors[unit.getType().ordinal()] != null) {
-						executors[unit.getType().ordinal()].execute(unit);
-					}
-				}
+				moveManager.move(unit -> executors[unit.getType().ordinal()].execute(unit));
 			} else {
 				System.out.println("Skipping Round: " + gc.getRoundNumber() + " - " + gc.getTimeLeft() + "ms");
 			}

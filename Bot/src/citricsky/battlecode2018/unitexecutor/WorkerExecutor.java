@@ -3,6 +3,7 @@ package citricsky.battlecode2018.unitexecutor;
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.util.Constants;
@@ -41,6 +42,18 @@ public class WorkerExecutor implements UnitExecutor {
 		//try build
 		//try repair
 		//try harvest
+		for (Direction direction: Direction.values()) {
+			if (unit.canHarvest(direction)) {
+				unit.harvest(direction);
+				return;
+			}
+		}
 		//try blueprint
+		for (Direction direction: Direction.COMPASS) {
+			if (unit.canBlueprint(UnitType.FACTORY, direction)) {
+				unit.blueprint(UnitType.FACTORY, direction);
+				return;
+			}
+		}
 	}
 }
