@@ -67,7 +67,8 @@ public class WorkerExecutor implements UnitExecutor {
 	}
 	private boolean shouldReplicate() {
 		return GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST && RoundInfo.getRoundNumber() > 3 && 
-				RoundInfo.getUnitCount(UnitType.WORKER) * 2 + 6 < RoundInfo.getUnitCount(UnitType.FACTORY);
+				RoundInfo.getUnitCount(UnitType.WORKER) * 2 + 6 < RoundInfo.getUnitCount(UnitType.FACTORY) &&
+				(RoundInfo.getUnitCount(UnitType.FACTORY) == 0);
 	}
 	public UnitType getBlueprintType() {
 		if(RoundInfo.getRoundNumber() < 500 || RoundInfo.getUnitCount(UnitType.FACTORY) < 2) {
@@ -84,7 +85,7 @@ public class WorkerExecutor implements UnitExecutor {
 			for (Direction direction: Direction.COMPASS) {
 				if (unit.canReplicate(direction)) {
 					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-					int bfsStep = moveManager.getBFSStep(MoveManager.BFS_WORKER, position);
+					int bfsStep = moveManager.getBFSStep(MoveManager.BFS_WORKER, position) - 1;
 					if (bfsStep < closestTask) {
 						closestTask = bfsStep;
 						bestReplicateDirection = direction;

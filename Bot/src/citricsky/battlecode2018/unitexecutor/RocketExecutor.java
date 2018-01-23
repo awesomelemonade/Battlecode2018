@@ -53,7 +53,7 @@ public class RocketExecutor implements UnitExecutor {
 				for (Direction direction: Direction.COMPASS) {
 					if (unit.canUnload(direction)) {
 						Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-						int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position);
+						int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position) - 1;
 						if (bfsStep < closestEnemy) {
 							closestEnemy = bfsStep;
 							bestUnloadDirection = direction;

@@ -5,6 +5,7 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.MoveManager;
+import citricsky.battlecode2018.main.RoundInfo;
 
 public class FactoryExecutor implements UnitExecutor {
 	private MoveManager moveManager;
@@ -18,10 +19,17 @@ public class FactoryExecutor implements UnitExecutor {
 		
 	}
 	
+	public UnitType getProduceType() {
+		if (RoundInfo.getUnitCount(UnitType.WORKER) == 0) {
+			return UnitType.WORKER;
+		}
+		return UnitType.RANGER;
+	}
+	
 	@Override
 	public void execute(Unit unit) {
-		if (unit.canProduceRobot(UnitType.RANGER)) { //more logic here
-			unit.produceRobot(UnitType.RANGER);
+		if (unit.canProduceRobot(getProduceType())) { //more logic here
+			unit.produceRobot(getProduceType());
 		}
 		if (unit.getGarrisonUnitIds().length > 0) {
 			Direction bestUnloadDirection = null;
@@ -29,7 +37,7 @@ public class FactoryExecutor implements UnitExecutor {
 			for (Direction direction: Direction.COMPASS) {
 				if (unit.canUnload(direction)) {
 					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-					int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position);
+					int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position) - 1;
 					if (bfsStep < closestEnemy) {
 						closestEnemy = bfsStep;
 						bestUnloadDirection = direction;
