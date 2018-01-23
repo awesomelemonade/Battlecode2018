@@ -39,9 +39,10 @@ public class EarthPlayer {
 		}
 		UnitExecutor[] executors = new UnitExecutor[UnitType.values().length];
 		MoveManager moveManager = new MoveManager();
+		PlanetCommunication communication = new PlanetCommunication();
 		
 		executors[UnitType.FACTORY.ordinal()] = new FactoryExecutor(moveManager);
-		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager);
+		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager, communication);
 		executors[UnitType.RANGER.ordinal()] = new RangerExecutor();
 		executors[UnitType.KNIGHT.ordinal()] = new KnightExecutor();
 		executors[UnitType.HEALER.ordinal()] = new HealerExecutor();
@@ -52,6 +53,7 @@ public class EarthPlayer {
 			benchmark.push();
 			if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
 				RoundInfo.update();
+				communication.update();
 				if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 3000) {
 					moveManager.updateBFS();
 				} else {

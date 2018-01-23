@@ -16,9 +16,10 @@ public class MarsPlayer {
 		GameController gc = GameController.INSTANCE;
 		UnitExecutor[] executors = new UnitExecutor[UnitType.values().length];
 		MoveManager moveManager = new MoveManager();
+		PlanetCommunication communication = new PlanetCommunication();
 		
 		executors[UnitType.FACTORY.ordinal()] = null;
-		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager);
+		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager, communication);
 		executors[UnitType.RANGER.ordinal()] = new RangerExecutor();
 		executors[UnitType.KNIGHT.ordinal()] = new KnightExecutor();
 		executors[UnitType.HEALER.ordinal()] = new HealerExecutor();
@@ -29,6 +30,7 @@ public class MarsPlayer {
 			benchmark.push();
 			if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
 				RoundInfo.update();
+				communication.update();
 				if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 3000) {
 					moveManager.updateBFS();
 				} else {

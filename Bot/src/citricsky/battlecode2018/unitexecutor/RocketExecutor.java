@@ -8,11 +8,16 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.MoveManager;
+import citricsky.battlecode2018.main.PlanetCommunication;
 
 public class RocketExecutor implements UnitExecutor {
 	private MoveManager moveManager;
-	public RocketExecutor(MoveManager moveManager) {
+	private PlanetCommunication	planetCommunication;
+	private int communicationIndex;
+	public RocketExecutor(MoveManager moveManager, PlanetCommunication planetCommunication) {
 		this.moveManager = moveManager;
+		this.planetCommunication = planetCommunication;
+		this.communicationIndex = 0;
 	}
 	@Override
 	public void execute(Unit unit) {
@@ -20,6 +25,15 @@ public class RocketExecutor implements UnitExecutor {
 			if (unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity() ||
 					((double)unit.getHealth()) / ((double)unit.getMaxHealth()) < 0.5 || 
 						GameController.INSTANCE.getRoundNumber() > 740) {
+				Vector candidate = planetCommunication.getLanding(communicationIndex);
+				if (candidate != null) {
+					MapLocation destination = Planet.MARS.getMapLocation(candidate);
+					if (unit.canLaunchRocket(destination)) {
+						unit.launchRocket(destination);
+						communicationIndex++;
+						return;
+					}
+				}
 				int offsetX = (int)(Math.random() * Planet.MARS.getWidth());
 				int offsetY = (int)(Math.random() * Planet.MARS.getHeight());
 				for(int x = 0; x < Planet.MARS.getWidth(); x++) {
@@ -34,7 +48,6 @@ public class RocketExecutor implements UnitExecutor {
 						}
 					}
 				}
-			
 			} else {
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
 					if (target.isStructure()) continue;
