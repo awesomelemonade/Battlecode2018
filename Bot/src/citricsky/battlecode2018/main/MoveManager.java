@@ -21,8 +21,6 @@ public class MoveManager {
 			-7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5, 6, 6, 7 };
 	private static final int[] RANGER_OFFSET_Y = new int[] { 0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 1, 0, -1,
 			-2, -3, -4, -5, -5, -6, -6, -7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1 };
-	private static final int[] PROTECT_OFFSET_X = new int[] {0, 1, 2, 2, 2, 1, 0, -1, -2, -2, -2, -1};
-	private static final int[] PROTECT_OFFSET_Y = new int[] {2, 2, 1, 0, -1, -2, -2, -2, -1, 0, 1, 2};
 	public static final int BFS_FIND_ENEMY = 0;
 	public static final int BFS_FIND_HEAL = 1;
 	public static final int BFS_WORKER = 2;
@@ -30,8 +28,7 @@ public class MoveManager {
 	public static final int BFS_RANGER_ATTACK = 4;
 	public static final int BFS_HEALER_HEAL = 5;
 	public static final int BFS_LOAD_ROCKET = 6;
-	public static final int BFS_PROTECT = 7;
-	public static final int BFS_EXPLORE = 8;
+	public static final int BFS_EXPLORE = 7;
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
@@ -39,7 +36,7 @@ public class MoveManager {
 	public MoveManager() {
 		this.planet = GameController.INSTANCE.getPlanet();
 		//Initialize bfsArray
-		this.bfsArray = new BFS[9];
+		this.bfsArray = new BFS[8];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
@@ -69,21 +66,12 @@ public class MoveManager {
 						bfsArray[BFS_HEALER_HEAL].addSource(position);
 					}
 				}
-				if ((unit.getType() == UnitType.FACTORY && GameController.INSTANCE.getPlanet() == Planet.EARTH) ||
-						(unit.getType() == UnitType.ROCKET && GameController.INSTANCE.getPlanet() == Planet.MARS)) {
-					bfsArray[BFS_EXPLORE].addSource(position);
-				}
 				if (unit.getType() == UnitType.ROCKET && unit.isStructureBuilt() &&
 						unit.getGarrisonUnitIds().length < unit.getStructureMaxCapacity()) {
 					bfsArray[BFS_LOAD_ROCKET].addSource(position);
 				}
 				if (unit.getType() == UnitType.HEALER) {
 					bfsArray[BFS_FIND_HEAL].addSource(position); //simplicity sake, you could probably precompute offsets later
-				}
-				if (unit.getType() == UnitType.WORKER) {
-					for (int i = 0; i < PROTECT_OFFSET_X.length; ++i) {
-						bfsArray[BFS_PROTECT].addSource(position.add(PROTECT_OFFSET_X[i], PROTECT_OFFSET_Y[i]));
-					}
 				}
 			}
 		}
@@ -96,6 +84,7 @@ public class MoveManager {
 						bfsArray[BFS_WORKER].addSource(location.getPosition());
 					}
 				} else {
+					bfsArray[BFS_EXPLORE].addSource(location.getPosition());
 					if (planet.getStartingMap().getInitialKarboniteAt(location) > 0) {
 						bfsArray[BFS_WORKER].addSource(location.getPosition());
 					}
@@ -128,10 +117,10 @@ public class MoveManager {
 				} else {
 					int bfsIndex = getBFSIndex(unit, position);
 					bfsIndices.put(unit.getId(), bfsIndex);
-					if(bfsIndex != BFS_EXPLORE) {
-						priorities.put(unit.getId(), -bfsArray[bfsIndex].getStep(position.getX(), position.getY()));
-					}else {
+					if (bfsIndex == BFS_EXPLORE) {
 						priorities.put(unit.getId(), Integer.MIN_VALUE);
+					} else {
+						priorities.put(unit.getId(), -bfsArray[bfsIndex].getStep(position.getX(), position.getY()));
 					}
 				}
 				queue.add(unit);
@@ -141,7 +130,6 @@ public class MoveManager {
 				if ((!unit.isStructure()) && unit.isMoveReady()) {
 					MapLocation location = unit.getLocation().getMapLocation();
 					int bfsIndex = bfsIndices.get(unit.getId());
-					
 					int step = getBFSStep(bfsIndex, location.getPosition());
 					if (step == BFS.SOURCE_STEP) {
 						for (Direction direction: Direction.COMPASS) {
@@ -208,21 +196,13 @@ public class MoveManager {
 				}
 			}
 		}
-		int protectStep = getBFSStep(BFS_PROTECT, position);
-		if (protectStep != Integer.MAX_VALUE) {
-			return BFS_PROTECT;
-		}
 		return BFS_EXPLORE;
 	}
 	public int getBFSDirection(int bfsIndex, Vector position) {
 		if (!processed[bfsIndex]) {
 			processBFS(bfsIndex);
 		}
-		int directions = bfsArray[bfsIndex].getDirectionToSource(position.getX(), position.getY());
-		if(bfsIndex == BFS_EXPLORE) {
-			directions = ((directions << 4) & 0b11110000) | ((directions >>> 4) & 0b1111);
-		}
-		return directions;
+		return bfsArray[bfsIndex].getDirectionToSource(position.getX(), position.getY());
 	}
 	public int getBFSStep(int bfsIndex, Vector position) {
 		if (!processed[bfsIndex]) {
@@ -234,6 +214,5 @@ public class MoveManager {
 		while (!bfsArray[index].getQueue().isEmpty()) {
 			bfsArray[index].step();
 		}
-		//set the sources to have directions to other empty sources TODO
 	}
 }
