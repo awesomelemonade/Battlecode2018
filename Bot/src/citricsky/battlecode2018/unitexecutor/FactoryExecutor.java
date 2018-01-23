@@ -39,7 +39,7 @@ public class FactoryExecutor implements UnitExecutor {
 				}
 			}
 			if (bestUnloadDirection != null) {
-				unit.canUnload(bestUnloadDirection);
+				unit.unload(bestUnloadDirection);
 			}
 		}
 	}

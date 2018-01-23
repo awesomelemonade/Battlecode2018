@@ -85,6 +85,7 @@ public class MoveManager {
 						bfsArray[BFS_WORKER].addSource(location.getPosition());
 					}
 				}
+				//If location can be blueprint a factory... make sure you check the karbonite count before putting in the BFS TODO
 			}
 		}
 	}
