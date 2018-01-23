@@ -23,12 +23,13 @@ public class MoveManager {
 			-2, -3, -4, -5, -5, -6, -6, -7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1 };
 	public static final int BFS_FIND_ENEMY = 0;
 	public static final int BFS_FIND_HEAL = 1;
-	public static final int BFS_WORKER = 2;
-	public static final int BFS_KNIGHT_ATTACK = 3;
-	public static final int BFS_RANGER_ATTACK = 4;
-	public static final int BFS_HEALER_HEAL = 5;
-	public static final int BFS_LOAD_ROCKET = 6;
-	public static final int BFS_EXPLORE = 7;
+	public static final int BFS_WORKER_TASK = 2;
+	public static final int BFS_WORKER_HARVEST = 3;
+	public static final int BFS_KNIGHT_ATTACK = 4;
+	public static final int BFS_RANGER_ATTACK = 5;
+	public static final int BFS_HEALER_HEAL = 6;
+	public static final int BFS_LOAD_ROCKET = 7;
+	public static final int BFS_EXPLORE = 8;
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
@@ -36,7 +37,7 @@ public class MoveManager {
 	public MoveManager() {
 		this.planet = GameController.INSTANCE.getPlanet();
 		//Initialize bfsArray
-		this.bfsArray = new BFS[8];
+		this.bfsArray = new BFS[9];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
@@ -61,7 +62,7 @@ public class MoveManager {
 				Vector position = unit.getLocation().getMapLocation().getPosition();
 				if (unit.getHealth() < unit.getMaxHealth()) {
 					if (unit.isStructure()) {
-						bfsArray[BFS_WORKER].addSource(position);
+						bfsArray[BFS_WORKER_TASK].addSource(position);
 					} else {
 						bfsArray[BFS_HEALER_HEAL].addSource(position);
 					}
@@ -81,12 +82,12 @@ public class MoveManager {
 				MapLocation location = planet.getMapLocation(i, j);
 				if (GameController.INSTANCE.canSenseLocation(location)) {
 					if (location.getKarboniteCount() > 0) {
-						bfsArray[BFS_WORKER].addSource(location.getPosition());
+						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
 					}
 				} else {
 					bfsArray[BFS_EXPLORE].addSource(location.getPosition());
 					if (planet.getStartingMap().getInitialKarboniteAt(location) > 0) {
-						bfsArray[BFS_WORKER].addSource(location.getPosition());
+						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
 					}
 				}
 				//If location can be blueprint a factory... make sure you check the karbonite count before putting in the BFS TODO
@@ -131,7 +132,12 @@ public class MoveManager {
 					MapLocation location = unit.getLocation().getMapLocation();
 					int bfsIndex = bfsIndices.get(unit.getId());
 					int step = getBFSStep(bfsIndex, location.getPosition());
-					if (step == BFS.SOURCE_STEP) {
+					if (step == Integer.MAX_VALUE) {
+						Direction random = Direction.randomDirection();
+						if (unit.canMove(random)) {
+							unit.move(random);
+						}
+					} else if (step == BFS.SOURCE_STEP) {
 						for (Direction direction: Direction.COMPASS) {
 							MapLocation offset = location.getOffsetLocation(direction);
 							if (Util.PASSABLE_PREDICATE.test(offset) && getBFSStep(bfsIndex, offset.getPosition()) == BFS.SOURCE_STEP) {
@@ -164,7 +170,12 @@ public class MoveManager {
 			}
 		}
 		if (unit.getType() == UnitType.WORKER) {
-			return BFS_WORKER;
+			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
+			if (workerTaskStep == Integer.MAX_VALUE) {
+				return BFS_WORKER_HARVEST;
+			}else {
+				return BFS_WORKER_TASK;
+			}
 		}
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
 			int loadRocketStep = getBFSStep(BFS_LOAD_ROCKET, position);
