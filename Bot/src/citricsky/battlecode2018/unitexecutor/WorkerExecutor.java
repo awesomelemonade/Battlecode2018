@@ -2,6 +2,7 @@ package citricsky.battlecode2018.unitexecutor;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
+import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
@@ -16,6 +17,51 @@ public class WorkerExecutor implements UnitExecutor {
 	@Override
 	public void update() {
 		
+	}
+	private static Unit getBuildTarget(MapLocation location) {
+		Unit bestTarget = null;
+		double highestHealth = -Double.MAX_VALUE;
+		
+		for(Direction direction : Direction.COMPASS) {
+			MapLocation offset = location.getOffsetLocation(direction);
+			if(GameController.INSTANCE.canSenseLocation(offset)) {
+				if(offset.hasUnitAtLocation()) {
+					Unit unit = offset.getUnit();
+					if(unit.isStructure() && (!unit.isStructureBuilt()) &&
+							unit.getTeam() == GameController.INSTANCE.getTeam()) {
+						double health = ((double)unit.getHealth())/((double)unit.getMaxHealth());
+						if(health > highestHealth) {
+							highestHealth = health;
+							bestTarget = unit;
+						}
+					}
+				}
+			}
+		}
+		return bestTarget;
+	}
+	private static Unit getRepairTarget(MapLocation location) {
+		Unit bestTarget = null;
+		double lowestHealth = Double.MAX_VALUE;
+		
+		for(Direction direction : Direction.COMPASS) {
+			MapLocation offset = location.getOffsetLocation(direction);
+			if(GameController.INSTANCE.canSenseLocation(offset)) {
+				if(offset.hasUnitAtLocation()) {
+					Unit unit = offset.getUnit();
+					if(unit.isStructure() && unit.isStructureBuilt() &&
+							unit.getTeam() == GameController.INSTANCE.getTeam() && 
+							unit.getHealth() < unit.getMaxHealth()) {
+						double health = ((double)unit.getHealth())/((double)unit.getMaxHealth());
+						if(health < lowestHealth) {
+							lowestHealth = health;
+							bestTarget = unit;
+						}
+					}
+				}
+			}
+		}
+		return bestTarget;
 	}
 	private boolean shouldReplicate() {
 		return GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST;
@@ -40,7 +86,21 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 		}
 		//try build
+		Unit buildTarget = getBuildTarget(unit.getLocation().getMapLocation());
+		if(buildTarget != null) {
+			if (unit.canBuild(buildTarget)) {
+				unit.build(buildTarget);
+				return;
+			}
+		}
 		//try repair
+		Unit repairTarget = getRepairTarget(unit.getLocation().getMapLocation());
+		if (repairTarget != null) {
+			if (unit.canRepair(repairTarget)) {
+				unit.repair(repairTarget);
+				return;
+			}
+		}
 		//try harvest
 		for (Direction direction: Direction.values()) {
 			if (unit.canHarvest(direction)) {

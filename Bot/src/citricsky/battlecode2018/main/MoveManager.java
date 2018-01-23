@@ -97,7 +97,7 @@ public class MoveManager {
 	}
 	public void move(Consumer<Unit> executor) {
 		Unit[] units = GameController.INSTANCE.getMyUnitsByFilter(
-				unit -> unit.getLocation().isOnMap() && (!unit.isStructure()));
+				unit -> unit.getLocation().isOnMap());
 		Map<Integer, Integer> priorities = new HashMap<Integer, Integer>();
 		Map<Integer, Integer> bfsIndices = new HashMap<Integer, Integer>();
 		PriorityQueue<Unit> queue = new PriorityQueue<Unit>(units.length, new Comparator<Unit>() {
@@ -108,18 +108,22 @@ public class MoveManager {
 		});
 		for (Unit unit: units) {
 			Vector position = unit.getLocation().getMapLocation().getPosition();
-			int bfsIndex = getBFSIndex(unit, position);
-			bfsIndices.put(unit.getId(), bfsIndex);
-			if(bfsIndex != BFS_EXPLORE) {
-				priorities.put(unit.getId(), -bfsArray[bfsIndex].getStep(position.getX(), position.getY()));
-			}else {
+			if (unit.isStructure()) {
 				priorities.put(unit.getId(), Integer.MIN_VALUE);
+			} else {
+				int bfsIndex = getBFSIndex(unit, position);
+				bfsIndices.put(unit.getId(), bfsIndex);
+				if(bfsIndex != BFS_EXPLORE) {
+					priorities.put(unit.getId(), -bfsArray[bfsIndex].getStep(position.getX(), position.getY()));
+				}else {
+					priorities.put(unit.getId(), Integer.MIN_VALUE);
+				}
 			}
 			queue.add(unit);
 		}
 		while (!queue.isEmpty()) {
 			Unit unit = queue.poll();
-			if (unit.isMoveReady()) {
+			if ((!unit.isStructure()) && unit.isMoveReady()) {
 				Vector position = unit.getLocation().getMapLocation().getPosition();
 				int bfsIndex = bfsIndices.get(unit.getId());
 				int directions = getBFSDirection(bfsIndex, position);
