@@ -24,11 +24,13 @@ public class HealerExecutor implements UnitExecutor {
 				}
 			}
 		}
-		if(unit.isAbilityUnlocked() && unit.getAbilityHeat() < 10) {
-			for(Unit friendlyUnit : friendlyUnits) {
-				if((!friendlyUnit.isStructure()) && friendlyUnit.getAbilityHeat() > 60) {
-					unit.overcharge(friendlyUnit);
-					break;
+		if (unit.isAbilityUnlocked() && unit.isOverchargeReady()) {
+			for (Unit friendlyUnit : friendlyUnits) {
+				if ((!friendlyUnit.isStructure()) && friendlyUnit.getAbilityHeat() > 60) {
+					if (unit.canOvercharge(friendlyUnit)) {
+						unit.overcharge(friendlyUnit);
+						break;
+					}
 				}
 			}
 		}
