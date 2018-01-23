@@ -5,6 +5,7 @@ import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.MoveManager;
 
@@ -37,6 +38,8 @@ public class RocketExecutor implements UnitExecutor {
 			} else {
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
 					if (target.isStructure()) continue;
+					if (target.getType().equals(UnitType.WORKER) && GameController.INSTANCE.getRoundNumber() > 600 &&
+							GameController.INSTANCE.getRoundNumber() < 739) continue;
 					if (unit.canLoad(target)) {
 						unit.load(target);
 					}
