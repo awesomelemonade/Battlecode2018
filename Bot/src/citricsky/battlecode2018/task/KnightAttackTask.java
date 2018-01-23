@@ -83,7 +83,7 @@ public class KnightAttackTask implements PathfinderTask {
 			Unit bestTarget = null;
 			int priorityIndex = 0;
 			int bestDistanceSquared = Integer.MAX_VALUE;
-			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getTeam())) {
+			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam())) {
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
 						.getDistanceSquared(location.getPosition());
 				int unitPriority = getPriorityIndex(enemyUnit);
