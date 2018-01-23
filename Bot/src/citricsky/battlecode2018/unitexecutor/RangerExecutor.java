@@ -1,8 +1,10 @@
 package citricsky.battlecode2018.unitexecutor;
 
 import citricsky.battlecode2018.library.GameController;
+import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.main.RoundInfo;
 
 public class RangerExecutor implements UnitExecutor {
 	private static int getPriorityIndex(Unit unit) {
@@ -45,6 +47,25 @@ public class RangerExecutor implements UnitExecutor {
 			if (bestTarget != null) {
 				if (unit.canAttack(bestTarget)) {
 					unit.attack(bestTarget);
+				}
+			}
+		}
+		if(unit.isAbilityUnlocked() && unit.isBeginSnipeReady() && unit.getAbilityHeat() < 10) {
+			if(unit.isAttackReady() && unit.isMoveReady()) {
+				int furthestDistance = Integer.MIN_VALUE;
+				Unit targetEnemy = null;
+				for(Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
+					int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
+							.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
+					if(distanceSquared > furthestDistance) {
+						targetEnemy = enemyUnit;
+					}
+				}
+				if(targetEnemy != null) {
+					MapLocation targetLocation = targetEnemy.getLocation().getMapLocation();
+					if(unit.canBeginSnipe(targetLocation)) {
+						unit.beginSnipe(targetLocation);
+					}
 				}
 			}
 		}
