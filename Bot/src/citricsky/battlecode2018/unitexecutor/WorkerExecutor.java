@@ -9,6 +9,7 @@ import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.util.Constants;
+import citricsky.battlecode2018.util.Util;
 
 public class WorkerExecutor implements UnitExecutor {
 	private MoveManager moveManager;
@@ -111,12 +112,22 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 		}
 		//try blueprint
+		Direction blueprintDirection = null;
+		int bestBuild = -1;
+		UnitType blueprintType = getBlueprintType();
 		for (Direction direction: Direction.COMPASS) {
-			UnitType type = getBlueprintType();
-			if (unit.canBlueprint(type, direction)) {
-				unit.blueprint(type, direction);
-				return;
+			MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
+			if (unit.canBlueprint(blueprintType, direction)) {
+				int buildArray = Util.getBuildArray(Util.calcBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE)));
+				if (buildArray > bestBuild) {
+					bestBuild = buildArray;
+					blueprintDirection = direction;
+				}
 			}
+		}
+		if (blueprintDirection != null) {
+			unit.blueprint(blueprintType, blueprintDirection);
+			return;
 		}
 		//try harvest
 		for (Direction direction: Direction.values()) {
