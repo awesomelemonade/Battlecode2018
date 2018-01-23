@@ -21,6 +21,8 @@ public class MoveManager {
 			-7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5, 6, 6, 7 };
 	private static final int[] RANGER_OFFSET_Y = new int[] { 0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 1, 0, -1,
 			-2, -3, -4, -5, -5, -6, -6, -7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1 };
+	private static final int[] PROTECT_OFFSET_X = new int[] {0, 1, 2, 2, 2, 1, 0, -1, -2, -2, -2, -1};
+	private static final int[] PROTECT_OFFSET_Y = new int[] {2, 2, 1, 0, -1, -2, -2, -2, -1, 0, 1, 2};
 	public static final int BFS_FIND_ENEMY = 0;
 	public static final int BFS_FIND_HEAL = 1;
 	public static final int BFS_WORKER = 2;
@@ -28,7 +30,8 @@ public class MoveManager {
 	public static final int BFS_RANGER_ATTACK = 4;
 	public static final int BFS_HEALER_HEAL = 5; //TODO
 	public static final int BFS_LOAD_ROCKET = 6;
-	public static final int BFS_EXPLORE = 7;
+	public static final int BFS_PROTECT = 7;
+	public static final int BFS_EXPLORE = 8;
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
@@ -36,7 +39,7 @@ public class MoveManager {
 	public MoveManager() {
 		this.planet = GameController.INSTANCE.getPlanet();
 		//Initialize bfsArray
-		this.bfsArray = new BFS[8];
+		this.bfsArray = new BFS[9];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
@@ -62,7 +65,8 @@ public class MoveManager {
 				if (unit.isStructure() && unit.getHealth() < unit.getMaxHealth()) {
 					bfsArray[BFS_WORKER].addSource(position);
 				}
-				if (unit.getType() == UnitType.FACTORY) {
+				if ((unit.getType() == UnitType.FACTORY && GameController.INSTANCE.getPlanet() == Planet.EARTH) ||
+						(unit.getType() == UnitType.ROCKET && GameController.INSTANCE.getPlanet() == Planet.MARS)) {
 					bfsArray[BFS_EXPLORE].addSource(position);
 				}
 				if (unit.getType() == UnitType.ROCKET && unit.isStructureBuilt() &&
@@ -71,6 +75,11 @@ public class MoveManager {
 				}
 				if (unit.getType() == UnitType.HEALER) {
 					bfsArray[BFS_FIND_HEAL].addSource(position); //simplicity sake, you could probably precompute offsets later
+				}
+				if (unit.getType() == UnitType.WORKER) {
+					for (int i = 0; i < PROTECT_OFFSET_X.length; ++i) {
+						bfsArray[BFS_PROTECT].addSource(position.add(PROTECT_OFFSET_X[i], PROTECT_OFFSET_Y[i]));
+					}
 				}
 			}
 		}
@@ -175,6 +184,10 @@ public class MoveManager {
 					return BFS_FIND_ENEMY;
 				}
 			}
+		}
+		int protectStep = getBFSStep(BFS_PROTECT, position);
+		if (protectStep != Integer.MAX_VALUE) {
+			return BFS_PROTECT;
 		}
 		return BFS_EXPLORE;
 	}
