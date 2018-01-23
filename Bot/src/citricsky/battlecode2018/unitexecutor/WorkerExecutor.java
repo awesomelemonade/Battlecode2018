@@ -65,8 +65,8 @@ public class WorkerExecutor implements UnitExecutor {
 		return bestTarget;
 	}
 	private boolean shouldReplicate() {
-		return GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST && 
-				RoundInfo.getRoundNumber() > 3;
+		return GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST && RoundInfo.getRoundNumber() > 3 && 
+				RoundInfo.getUnitCount(UnitType.WORKER) * 2 + 6 < RoundInfo.getUnitCount(UnitType.FACTORY);
 	}
 	public UnitType getBlueprintType() {
 		if(RoundInfo.getRoundNumber() < 500 || RoundInfo.getUnitCount(UnitType.FACTORY) < 2) {
