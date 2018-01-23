@@ -99,45 +99,47 @@ public class MoveManager {
 	public void move(Consumer<Unit> executor) {
 		Unit[] units = GameController.INSTANCE.getMyUnitsByFilter(
 				unit -> unit.getLocation().isOnMap());
-		Map<Integer, Integer> priorities = new HashMap<Integer, Integer>();
-		Map<Integer, Integer> bfsIndices = new HashMap<Integer, Integer>();
-		PriorityQueue<Unit> queue = new PriorityQueue<Unit>(units.length, new Comparator<Unit>() {
-			@Override
-			public int compare(Unit a, Unit b) {
-				return Integer.compare(priorities.get(a.getId()), priorities.get(b.getId()));
-			}
-		});
-		for (Unit unit: units) {
-			Vector position = unit.getLocation().getMapLocation().getPosition();
-			if (unit.isStructure()) {
-				priorities.put(unit.getId(), Integer.MIN_VALUE);
-			} else {
-				int bfsIndex = getBFSIndex(unit, position);
-				bfsIndices.put(unit.getId(), bfsIndex);
-				if(bfsIndex != BFS_EXPLORE) {
-					priorities.put(unit.getId(), -bfsArray[bfsIndex].getStep(position.getX(), position.getY()));
-				}else {
-					priorities.put(unit.getId(), Integer.MIN_VALUE);
+		if (units.length > 0) {
+			Map<Integer, Integer> priorities = new HashMap<Integer, Integer>();
+			Map<Integer, Integer> bfsIndices = new HashMap<Integer, Integer>();
+			PriorityQueue<Unit> queue = new PriorityQueue<Unit>(units.length, new Comparator<Unit>() {
+				@Override
+				public int compare(Unit a, Unit b) {
+					return Integer.compare(priorities.get(a.getId()), priorities.get(b.getId()));
 				}
-			}
-			queue.add(unit);
-		}
-		while (!queue.isEmpty()) {
-			Unit unit = queue.poll();
-			if ((!unit.isStructure()) && unit.isMoveReady()) {
+			});
+			for (Unit unit: units) {
 				Vector position = unit.getLocation().getMapLocation().getPosition();
-				int bfsIndex = bfsIndices.get(unit.getId());
-				int directions = getBFSDirection(bfsIndex, position);
-				for(Direction direction: Direction.COMPASS) {
-					if(((directions >>> direction.ordinal()) & 1) == 1) {
-						if(unit.canMove(direction)) {
-							unit.move(direction);
-							break;
+				if (unit.isStructure()) {
+					priorities.put(unit.getId(), Integer.MIN_VALUE);
+				} else {
+					int bfsIndex = getBFSIndex(unit, position);
+					bfsIndices.put(unit.getId(), bfsIndex);
+					if(bfsIndex != BFS_EXPLORE) {
+						priorities.put(unit.getId(), -bfsArray[bfsIndex].getStep(position.getX(), position.getY()));
+					}else {
+						priorities.put(unit.getId(), Integer.MIN_VALUE);
+					}
+				}
+				queue.add(unit);
+			}
+			while (!queue.isEmpty()) {
+				Unit unit = queue.poll();
+				if ((!unit.isStructure()) && unit.isMoveReady()) {
+					Vector position = unit.getLocation().getMapLocation().getPosition();
+					int bfsIndex = bfsIndices.get(unit.getId());
+					int directions = getBFSDirection(bfsIndex, position);
+					for(Direction direction: Direction.COMPASS) {
+						if(((directions >>> direction.ordinal()) & 1) == 1) {
+							if(unit.canMove(direction)) {
+								unit.move(direction);
+								break;
+							}
 						}
 					}
 				}
+				executor.accept(unit);
 			}
-			executor.accept(unit);
 		}
 	}
 	public int getBFSIndex(Unit unit, Vector position) {
