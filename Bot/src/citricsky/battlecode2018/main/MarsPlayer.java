@@ -16,35 +16,51 @@ public class MarsPlayer {
 		GameController gc = GameController.INSTANCE;
 		UnitExecutor[] executors = new UnitExecutor[UnitType.values().length];
 		MoveManager moveManager = new MoveManager();
+		PlanetCommunication communication = new PlanetCommunication();
 		
 		executors[UnitType.FACTORY.ordinal()] = null;
-		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager);
+		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager, communication);
 		executors[UnitType.RANGER.ordinal()] = new RangerExecutor();
 		executors[UnitType.KNIGHT.ordinal()] = new KnightExecutor();
 		executors[UnitType.HEALER.ordinal()] = new HealerExecutor();
 		executors[UnitType.MAGE.ordinal()] = null;
 		executors[UnitType.WORKER.ordinal()] = new WorkerExecutor(moveManager);
-		
+
 		while (true) {
-			benchmark.push();
-			if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
-				RoundInfo.update();
-				if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 3000) {
-					moveManager.updateBFS();
-				} else {
-					System.out.println("Skipping BFS Update");
-				}
-				moveManager.move(unit -> {
-					if(executors[unit.getType().ordinal()] != null) {
-						executors[unit.getType().ordinal()].execute(unit);
+			try {
+				benchmark.push();
+				if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
+					RoundInfo.update();
+					communication.update();
+					if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 3000) {
+						try {
+							moveManager.updateBFS();
+						} catch (Exception ex) {
+							System.out.println("BFS Exception: "+ex.getMessage());
+						}
+					} else {
+						System.out.println("Skipping BFS Update");
 					}
-				});
-			} else {
-				System.out.println("Skipping Round: " + gc.getRoundNumber() + " - " + gc.getTimeLeft() + "ms");
-			}
-			double deltaTime = benchmark.pop() / 1000000.0;
-			if(deltaTime > 20) {
-				System.out.println("Round Time: " + gc.getRoundNumber() + " - " + deltaTime + "/" + gc.getTimeLeft() + "ms");
+					moveManager.move(unit -> {
+						try {
+							if(executors[unit.getType().ordinal()] != null) {
+								executors[unit.getType().ordinal()].execute(unit);
+							}
+						} catch (Exception ex) {
+							System.out.println("Execution Exception: "+ ex.getMessage());
+							ex.printStackTrace();
+						}
+					});
+				} else {
+					System.out.println("Skipping Round: " + gc.getRoundNumber() + " - " + gc.getTimeLeft() + "ms");
+				}
+				double deltaTime = benchmark.pop() / 1000000.0;
+				if(deltaTime > 20) {
+					System.out.println("Round Time: " + gc.getRoundNumber() + " - " + deltaTime + "/" + gc.getTimeLeft() + "ms");
+				}
+			} catch (Exception ex) {
+				System.out.println("Mystery Exception: "+ex.getMessage());
+				ex.printStackTrace();
 			}
 			gc.yield();
 		}

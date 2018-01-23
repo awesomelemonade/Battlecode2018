@@ -83,7 +83,7 @@ public class WorkerExecutor implements UnitExecutor {
 			for (Direction direction: Direction.COMPASS) {
 				if (unit.canReplicate(direction)) {
 					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-					int bfsStep = Math.min(moveManager.getBFSStep(MoveManager.BFS_WORKER_HARVEST, position), 
+					int bfsStep = Math.min(moveManager.getBFSStep(MoveManager.BFS_WORKER_HARVEST, position) + 3, 
 							moveManager.getBFSStep(MoveManager.BFS_WORKER_TASK, position)) - 1;
 					if (bfsStep < closestTask) {
 						closestTask = bfsStep;
@@ -113,7 +113,9 @@ public class WorkerExecutor implements UnitExecutor {
 		}
 		//try blueprint
 		UnitType blueprintType = getBlueprintType();
-		if (blueprintType == UnitType.ROCKET || RoundInfo.getUnitCount(UnitType.FACTORY) < 6) {
+		if (blueprintType == UnitType.ROCKET ||
+				(RoundInfo.getUnitCount(UnitType.FACTORY) <
+						(RoundInfo.getRoundNumber() < 50 ? 1 : (RoundInfo.getRoundNumber() < 100 ? 3 : 5)))) {
 			Direction blueprintDirection = null;
 			int bestBuild = -1;
 			for (Direction direction: Direction.COMPASS) {
