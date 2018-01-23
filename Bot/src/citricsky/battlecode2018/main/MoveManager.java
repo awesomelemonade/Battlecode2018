@@ -164,17 +164,18 @@ public class MoveManager {
 		}
 	}
 	public int getBFSIndex(Unit unit, Vector position) {
-		if (unit.getHealth() < unit.getMaxHealth() / 2) {
+		if (unit.getHealth() < unit.getMaxHealth() / 2 && unit.getType() != UnitType.HEALER) {
 			if (getBFSStep(BFS_FIND_HEAL, position) != Integer.MAX_VALUE) {
 				return BFS_FIND_HEAL;
 			}
 		}
 		if (unit.getType() == UnitType.WORKER) {
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
-			if (workerTaskStep == Integer.MAX_VALUE) {
-				return BFS_WORKER_HARVEST;
-			}else {
+			int workerHarvestStep = getBFSStep(BFS_WORKER_HARVEST, position);
+			if (workerTaskStep - 1 <= workerHarvestStep) {
 				return BFS_WORKER_TASK;
+			} else {
+				return BFS_WORKER_HARVEST;
 			}
 		}
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
