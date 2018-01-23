@@ -71,7 +71,10 @@ public class WorkerExecutor implements UnitExecutor {
 				(RoundInfo.getUnitCount(UnitType.FACTORY) == 0);
 	}
 	public UnitType getBlueprintType() {
-		if(RoundInfo.getRoundNumber() < 500 || RoundInfo.getUnitCount(UnitType.FACTORY) < 2) {
+		if (RoundInfo.getMyUnits().length > 60) {
+			return UnitType.ROCKET;
+		}
+		if (RoundInfo.getRoundNumber() < 500 || RoundInfo.getUnitCount(UnitType.FACTORY) < 2) {
 			return UnitType.FACTORY;
 		}else {
 			return UnitType.ROCKET;
@@ -113,22 +116,24 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 		}
 		//try blueprint
-		Direction blueprintDirection = null;
-		int bestBuild = -1;
-		UnitType blueprintType = getBlueprintType();
-		for (Direction direction: Direction.COMPASS) {
-			MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
-			if (unit.canBlueprint(blueprintType, direction)) {
-				int buildArray = Util.getBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE));
-				if (buildArray > bestBuild) {
-					bestBuild = buildArray;
-					blueprintDirection = direction;
+		if (RoundInfo.getUnitCount(UnitType.FACTORY) < 6) {
+			Direction blueprintDirection = null;
+			int bestBuild = -1;
+			UnitType blueprintType = getBlueprintType();
+			for (Direction direction: Direction.COMPASS) {
+				MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
+				if (unit.canBlueprint(blueprintType, direction)) {
+					int buildArray = Util.getBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE));
+					if (buildArray > bestBuild) {
+						bestBuild = buildArray;
+						blueprintDirection = direction;
+					}
 				}
 			}
-		}
-		if (blueprintDirection != null) {
-			unit.blueprint(blueprintType, blueprintDirection);
-			return;
+			if (blueprintDirection != null) {
+				unit.blueprint(blueprintType, blueprintDirection);
+				return;
+			}
 		}
 		//try harvest
 		for (Direction direction: Direction.values()) {

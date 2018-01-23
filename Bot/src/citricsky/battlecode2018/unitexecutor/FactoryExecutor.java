@@ -23,6 +23,9 @@ public class FactoryExecutor implements UnitExecutor {
 		if (RoundInfo.getUnitCount(UnitType.WORKER) == 0) {
 			return UnitType.WORKER;
 		}
+		if (RoundInfo.getUnitCount(UnitType.HEALER) + 1 < RoundInfo.getMyUnits().length / 6) {
+			return UnitType.HEALER;
+		}
 		return UnitType.RANGER;
 	}
 	
