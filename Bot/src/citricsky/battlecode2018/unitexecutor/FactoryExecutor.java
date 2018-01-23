@@ -37,7 +37,7 @@ public class FactoryExecutor implements UnitExecutor {
 					if (unit.canUnload(direction)) {
 						Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
 						int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position) - 1;
-						if (bfsStep < closestEnemy) {
+						if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
 							closestEnemy = bfsStep;
 							bestUnloadDirection = direction;
 						}
