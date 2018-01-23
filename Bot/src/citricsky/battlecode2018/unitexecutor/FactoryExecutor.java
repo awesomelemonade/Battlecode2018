@@ -29,21 +29,23 @@ public class FactoryExecutor implements UnitExecutor {
 		if (unit.canProduceRobot(getProduceType())) { //more logic here
 			unit.produceRobot(getProduceType());
 		}
-		if (unit.getGarrisonUnitIds().length > 0) {
-			Direction bestUnloadDirection = null;
-			int closestEnemy = Integer.MAX_VALUE;
-			for (Direction direction: Direction.COMPASS) {
-				if (unit.canUnload(direction)) {
-					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-					int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position) - 1;
-					if (bfsStep < closestEnemy) {
-						closestEnemy = bfsStep;
-						bestUnloadDirection = direction;
+		if (RoundInfo.getMyUnits().length < 70) {
+			if (unit.getGarrisonUnitIds().length > 0) {
+				Direction bestUnloadDirection = null;
+				int closestEnemy = Integer.MAX_VALUE;
+				for (Direction direction: Direction.COMPASS) {
+					if (unit.canUnload(direction)) {
+						Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
+						int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position) - 1;
+						if (bfsStep < closestEnemy) {
+							closestEnemy = bfsStep;
+							bestUnloadDirection = direction;
+						}
 					}
 				}
-			}
-			if (bestUnloadDirection != null) {
-				unit.unload(bestUnloadDirection);
+				if (bestUnloadDirection != null) {
+					unit.unload(bestUnloadDirection);
+				}
 			}
 		}
 	}
