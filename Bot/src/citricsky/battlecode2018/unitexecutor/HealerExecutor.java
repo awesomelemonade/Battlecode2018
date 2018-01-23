@@ -8,14 +8,14 @@ public class HealerExecutor implements UnitExecutor {
 	public void execute(Unit unit) {
 		Unit[] friendlyUnits = unit.senseNearbyUnitsByTeam(30, GameController.INSTANCE.getTeam());
 		if(unit.isHealReady()) {
-			int leastHealth = Integer.MIN_VALUE;
+			double leastHealthPercentage = 1.1;
 			Unit bestTarget = null;
 			for (Unit friendlyUnit : friendlyUnits) {
-				int health = friendlyUnit.getHealth();
-				if (health == friendlyUnit.getMaxHealth()) continue;
-				if (health > leastHealth) {
-					leastHealth = health;
+				double healthPercentage = friendlyUnit.getHealth() / friendlyUnit.getMaxHealth();
+				if (healthPercentage == 1) continue;
+				if (healthPercentage < leastHealthPercentage) {
 					bestTarget = friendlyUnit;
+					leastHealthPercentage = healthPercentage;
 				}
 			}
 			if (bestTarget != null) {
@@ -25,12 +25,19 @@ public class HealerExecutor implements UnitExecutor {
 			}
 		}
 		if (unit.isAbilityUnlocked() && unit.isOverchargeReady()) {
+			double leastAbilityPercentage = 1.1;
+			Unit bestTarget = null;
 			for (Unit friendlyUnit : friendlyUnits) {
-				if ((!friendlyUnit.isStructure()) && friendlyUnit.getAbilityHeat() > 60) {
-					if (unit.canOvercharge(friendlyUnit)) {
-						unit.overcharge(friendlyUnit);
-						break;
-					}
+				if(friendlyUnit.isStructure()) continue;
+				double abilityPercentage = friendlyUnit.getAbilityHeat()/friendlyUnit.getAbilityCooldown();
+				if(abilityPercentage < leastAbilityPercentage) {
+					bestTarget = friendlyUnit;
+					leastAbilityPercentage = abilityPercentage;
+				}
+			}
+			if(leastAbilityPercentage < 0.6) {
+				if(!bestTarget.isStructure() && unit.canOvercharge(bestTarget)) {
+					unit.overcharge(bestTarget);
 				}
 			}
 		}
