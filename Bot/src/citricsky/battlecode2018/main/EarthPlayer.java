@@ -52,7 +52,7 @@ public class EarthPlayer {
 				if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000) {
 					RoundInfo.update();
 					communication.update();
-					if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 3000) {
+					if ((benchmark.peek() / 1000000 < gc.getTimeLeft() - 3000) || (RoundInfo.getRoundNumber() % 5 == 0)) {
 						try {
 							moveManager.updateBFS();
 						} catch (Exception ex) {
