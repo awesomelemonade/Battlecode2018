@@ -80,6 +80,9 @@ public class MoveManager {
 		for (int i = 0; i < planet.getWidth(); ++i) {
 			for (int j=0; j < planet.getHeight(); ++j) {
 				MapLocation location = planet.getMapLocation(i, j);
+				if (getBFSStep(BFS_FIND_ENEMY, location.getPosition()) < 12) {
+					continue;
+				}
 				if (GameController.INSTANCE.canSenseLocation(location)) {
 					if (location.getKarboniteCount() > 0) {
 						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
