@@ -21,6 +21,9 @@ public class RangerExecutor implements UnitExecutor {
 	
 	@Override
 	public void execute(Unit unit) {
+		if (unit.isRangerSniping()) {
+			return;
+		}
 		if (unit.isAttackReady()) {
 			int bestDistanceSquared = Integer.MAX_VALUE;
 			Unit bestTarget = null;
@@ -50,7 +53,7 @@ public class RangerExecutor implements UnitExecutor {
 				}
 			}
 		}
-		if(unit.isAbilityUnlocked() && unit.isBeginSnipeReady() && unit.getAbilityHeat() < 10) {
+		if(unit.isAbilityUnlocked() && unit.isBeginSnipeReady()) {
 			if(unit.isAttackReady() && unit.isMoveReady()) {
 				int furthestDistance = Integer.MIN_VALUE;
 				Unit targetEnemy = null;
@@ -59,6 +62,7 @@ public class RangerExecutor implements UnitExecutor {
 							.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
 					if(distanceSquared > furthestDistance) {
 						targetEnemy = enemyUnit;
+						furthestDistance = distanceSquared;
 					}
 				}
 				if(targetEnemy != null) {

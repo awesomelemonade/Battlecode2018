@@ -130,6 +130,9 @@ public class MoveManager {
 				try {
 					Unit unit = queue.poll();
 					if ((!unit.isStructure()) && unit.isMoveReady()) {
+						if (unit.getType() == UnitType.RANGER && unit.isRangerSniping()) {
+							continue;
+						}
 						MapLocation location = unit.getLocation().getMapLocation();
 						int bfsIndex = bfsIndices.get(unit.getId());
 						int step = getBFSStep(bfsIndex, location.getPosition());
