@@ -15,25 +15,22 @@ public class EarthPlayer {
 	public static void execute() {
 		Benchmark benchmark = new Benchmark();
 		GameController gc = GameController.INSTANCE;
-		/*UnitType[] researchOrder = new UnitType[]
+		UnitType[] researchOrder = new UnitType[]
 				{UnitType.WORKER, //finishes at Round 25
-				 UnitType.KNIGHT, //finishes at Round 50
-				 UnitType.KNIGHT, //finishes at Round 125
-				 UnitType.KNIGHT, //finishes at Round 225
-				 UnitType.RANGER, //finishes at Round 250
-				 UnitType.ROCKET, //finishes at Round 350
-				 UnitType.HEALER, //finishes at Round 375
-				 UnitType.HEALER, //finishes at Round 475
-				 UnitType.WORKER, //finishes at Round 550
-				 UnitType.HEALER, //finishes at Round 650
-				 UnitType.MAGE, //finishes at Round 675
-				 UnitType.MAGE, //finishes at Round 750
-				 UnitType.MAGE, //finishes at Round 850
-				 }; */
-		UnitType[] researchOrder = new UnitType[] {
-				UnitType.WORKER, UnitType.ROCKET, UnitType.RANGER, UnitType.HEALER,
+				 UnitType.HEALER, //finishes at Round 50
+				 UnitType.RANGER, //finishes at Round 75
+				 UnitType.HEALER, //finishes at Round 175
+				 UnitType.ROCKET, //finishes at Round 225
+				 UnitType.RANGER, //finishes at Round 325
+				 UnitType.RANGER, //finishes at Round 525
+				 UnitType.ROCKET, //finishes at Round 625
+				 UnitType.ROCKET, //finishes at Round 725
+				 UnitType.HEALER, //finishes at Round 825
+				 }; 
+		/*UnitType[] researchOrder = new UnitType[] {
+				UnitType.WORKER, UnitType.HEALER, UnitType.RANGER, UnitType.HEALER,
 				UnitType.HEALER, UnitType.HEALER, UnitType.RANGER, UnitType.RANGER
-		};
+		};*/
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
 		}
