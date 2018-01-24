@@ -6,20 +6,17 @@ import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.Vector;
-import citricsky.battlecode2018.util.Benchmark;
 
 public class BFS {
 	private Predicate<Vector> passable;
-	//Least significant bit = Stores whether it has been visited
-	//2nd-9th least significant bits = stores direction from source
-	//10th-17th least significant bits = stores direction to source
-	//18th-32nd bits = max = 32768 = step number
-	private static final int FROM_SHIFT = 0;
-	private static final int TO_SHIFT = 8;
+	
+	private static final int DIRECTION_SHIFT = 0;
+	private static final int DIRECTION_BITMASK = 0b1111;
 	private static final int STEP_SHIFT = 16;
-	private static final int DIRECTION_BITMASK = 0b11111111;
-	private static final int STEP_BITMASK = 0b1111111111111111;
+	private static final int STEP_BITMASK = 0b111111111111; //12 bits = 4096, max = 50 * 50 = 2500
+	
 	public static final int SOURCE_STEP = 0b1;
+	
 	private int[][] data;
 	
 	private Deque<Vector> queue;
@@ -30,7 +27,7 @@ public class BFS {
 		this.passable = passable;
 		this.queue = new ArrayDeque<Vector>();
 		this.step = SOURCE_STEP + 1;
-		for(Vector source: sources) {
+		for (Vector source: sources) {
 			addSource(source);
 		}
 	}
@@ -40,7 +37,9 @@ public class BFS {
 		}
 		if((data[source.getX()][source.getY()] >>> STEP_SHIFT) != SOURCE_STEP) {
 			queue.add(source);
-			data[source.getX()][source.getY()] = (SOURCE_STEP << STEP_SHIFT);
+			data[source.getX()][source.getY()] =
+					((Direction.CENTER.ordinal() & DIRECTION_BITMASK) << DIRECTION_SHIFT) |
+					((SOURCE_STEP & STEP_BITMASK) << STEP_SHIFT);
 		}
 	}
 	public void reset() {
@@ -71,24 +70,18 @@ public class BFS {
 	public int getHeight() {
 		return data[0].length;
 	}
-	public int getDirectionFromSource(int x, int y) {
-		if(outOfBounds(x, y)) {
-			return 0;
+	public Direction getDirectionToSource(int x, int y) {
+		if (getStep(x, y) == Integer.MAX_VALUE) {
+			return null;
 		}
-		return (data[x][y] >>> FROM_SHIFT) & DIRECTION_BITMASK;
-	}
-	public int getDirectionToSource(int x, int y) {
-		if(outOfBounds(x, y)) {
-			return 0;
-		}
-		return (data[x][y] >>> TO_SHIFT) & DIRECTION_BITMASK;
+		return Direction.values()[(data[x][y] >>> DIRECTION_SHIFT) & DIRECTION_BITMASK];
 	}
 	public int getStep(int x, int y) {
-		if(outOfBounds(x, y)) {
+		if (outOfBounds(x, y)) {
 			return Integer.MAX_VALUE;
 		}
 		int step = (data[x][y] >>> STEP_SHIFT) & STEP_BITMASK;
-		if(step == 0) {
+		if (step == 0) {
 			return Integer.MAX_VALUE;
 		} else {
 			return step;
@@ -101,34 +94,21 @@ public class BFS {
 		return x < 0 || y < 0 || x >= data.length || y >= data[0].length;
 	}
 	public void step() {
-		Benchmark benchmark = new Benchmark();
-		benchmark.push();
 		for(int i = 0, size = queue.size(); i < size; ++i) {
 			Vector vector = queue.poll();
 			for(Direction direction: Direction.COMPASS) {
 				Vector candidate = vector.add(direction.getOffsetVector());
 				if((!outOfBounds(candidate)) && passable.test(candidate)) {
-					int currentStep = (data[candidate.getX()][candidate.getY()] >>> STEP_SHIFT) & STEP_BITMASK;
-					if(currentStep == 0) { //check whether step has been set
-						data[candidate.getX()][candidate.getY()] |= (step << STEP_SHIFT);
+					if (data[candidate.getX()][candidate.getY()] == 0) {
+						data[candidate.getX()][candidate.getY()] =
+								((direction.getOpposite().ordinal() & DIRECTION_BITMASK) << DIRECTION_SHIFT) |
+								((step & STEP_BITMASK) << STEP_SHIFT);
 						queue.add(candidate);
-					}
-					if(currentStep == 0 || currentStep == step) {
-						if(((data[vector.getX()][vector.getY()] >>> STEP_SHIFT) & STEP_BITMASK) == SOURCE_STEP) { //checks whether vector is source
-							data[candidate.getX()][candidate.getY()] |= (1 << (direction.ordinal() + FROM_SHIFT)); 
-						}else {
-							data[candidate.getX()][candidate.getY()] |= (data[vector.getX()][vector.getY()] & (DIRECTION_BITMASK << FROM_SHIFT));
-						}
-						data[candidate.getX()][candidate.getY()] |= (1 << (direction.getOpposite().ordinal() + TO_SHIFT)); //direction to source
 					}
 				}
 			}
 		}
 		step++;
-		double deltaTime = benchmark.pop() / 1000000.0;
-		if (deltaTime > 10) {
-			System.out.println("Step: " + deltaTime + "ms");
-		}
 	}
 	public Deque<Vector> getQueue(){
 		return queue;

@@ -167,14 +167,9 @@ public class MoveManager {
 								}
 							}
 						} else {
-							int directions = getBFSDirection(bfsIndex, location.getPosition());
-							for (Direction direction: Direction.COMPASS) {
-								if(((directions >>> direction.ordinal()) & 1) == 1) {
-									if(unit.canMove(direction)) {
-										unit.move(direction);
-										break;
-									}
-								}
+							Direction direction = getBFSDirection(bfsIndex, location.getPosition());
+							if (unit.canMove(direction)) {
+								unit.move(direction);
 							}
 						}
 					}
@@ -233,7 +228,7 @@ public class MoveManager {
 		}
 		return BFS_EXPLORE;
 	}
-	public int getBFSDirection(int bfsIndex, Vector position) {
+	public Direction getBFSDirection(int bfsIndex, Vector position) {
 		if (!processed[bfsIndex]) {
 			processBFS(bfsIndex);
 		}
