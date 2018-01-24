@@ -16,7 +16,11 @@ public class FactoryExecutor implements UnitExecutor {
 	
 	public UnitType getProduceType() {
 		if (RoundInfo.getRoundNumber() > 650) {
-			return UnitType.WORKER;
+			if (RoundInfo.getUnitCount(UnitType.WORKER) < 10) {
+				return UnitType.WORKER;
+			}else {
+				return null;
+			}
 		}
 		if (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 6 < RoundInfo.getUnitCount(UnitType.FACTORY)) {
 			return UnitType.WORKER;
@@ -30,7 +34,7 @@ public class FactoryExecutor implements UnitExecutor {
 	@Override
 	public void execute(Unit unit) {
 		UnitType produceType = getProduceType();
-		if (unit.canProduceRobot(produceType)) {
+		if (produceType != null && unit.canProduceRobot(produceType)) {
 			unit.produceRobot(produceType);
 		}
 		if (RoundInfo.getUnitCountOnMap() < 70 || RoundInfo.getRoundNumber() > 500) {
