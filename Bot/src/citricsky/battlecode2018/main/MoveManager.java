@@ -40,6 +40,7 @@ public class MoveManager {
 	private boolean[] processed;
 	private Planet planet;
 	private int[][] karbonite;
+	private boolean[][] explored;
 	
 	public MoveManager() {
 		this.planet = GameController.INSTANCE.getPlanet();
@@ -97,18 +98,19 @@ public class MoveManager {
 				}
 			}
 		}
-		//change so it only updates on harvest, rather than every turn
 		for (int i = 0; i < planet.getWidth(); ++i) {
 			for (int j = 0; j < planet.getHeight(); ++j) {
 				MapLocation location = planet.getMapLocation(i, j);
-				if (getBFSStep(BFS_FIND_ENEMY, location.getPosition()) < 12) {
-					continue;
-				}
+				boolean nearEnemy = getBFSStep(BFS_FIND_ENEMY, location.getPosition()) < 12;
 				if (GameController.INSTANCE.canSenseLocation(location)) {
+					explored[i][j] = true;
 					karbonite[i][j] = location.getKarboniteCount();
 				}
-				if (karbonite[i][j] > 0) {
+				if (karbonite[i][j] > 0 && (!nearEnemy)) {
 					bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
+				}
+				if (!explored[i][j] && (!nearEnemy)) {
+					bfsArray[BFS_EXPLORE].addSource(location.getPosition());
 				}
 			}
 		}
