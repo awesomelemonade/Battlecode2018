@@ -38,7 +38,8 @@ public class FactoryExecutor implements UnitExecutor {
 			unit.produceRobot(produceType);
 		}
 		if (RoundInfo.getUnitCountOnMap() < 70 || RoundInfo.getRoundNumber() > 500) {
-			if (unit.getGarrisonUnitIds().length > 0) {
+			int garrisonSize = unit.getGarrisonUnitIds().length;
+			for (int i = 0; i < garrisonSize; ++i) {
 				Direction bestUnloadDirection = null;
 				int closestEnemy = Integer.MAX_VALUE;
 				for (Direction direction: Direction.COMPASS) {
@@ -51,7 +52,9 @@ public class FactoryExecutor implements UnitExecutor {
 						}
 					}
 				}
-				if (bestUnloadDirection != null) {
+				if (bestUnloadDirection == null) {
+					break;
+				} else {
 					unit.unload(bestUnloadDirection);
 				}
 			}
