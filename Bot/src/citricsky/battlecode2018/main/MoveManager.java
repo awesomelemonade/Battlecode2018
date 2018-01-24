@@ -39,15 +39,24 @@ public class MoveManager {
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
+	private int[][] karbonite;
 	
 	public MoveManager() {
 		this.planet = GameController.INSTANCE.getPlanet();
+		this.karbonite = new int[planet.getWidth()][planet.getHeight()];
 		//Initialize bfsArray
 		this.bfsArray = new BFS[9];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
 					vector -> Util.PASSABLE_PREDICATE.test(planet.getMapLocation(vector)));
+		}
+		if (planet == Planet.EARTH) {
+			for (int i = 0; i < planet.getWidth(); ++i) {
+				for (int j = 0; j < planet.getHeight(); ++j) {
+					karbonite[i][j] = planet.getStartingMap().getInitialKarboniteAt(planet.getMapLocation(i, j));
+				}
+			}
 		}
 	}
 	public void updateBFS() {
@@ -90,22 +99,17 @@ public class MoveManager {
 		}
 		//change so it only updates on harvest, rather than every turn
 		for (int i = 0; i < planet.getWidth(); ++i) {
-			for (int j=0; j < planet.getHeight(); ++j) {
+			for (int j = 0; j < planet.getHeight(); ++j) {
 				MapLocation location = planet.getMapLocation(i, j);
 				if (getBFSStep(BFS_FIND_ENEMY, location.getPosition()) < 12) {
 					continue;
 				}
 				if (GameController.INSTANCE.canSenseLocation(location)) {
-					if (location.getKarboniteCount() > 0) {
-						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
-					}
-				} else {
-					bfsArray[BFS_EXPLORE].addSource(location.getPosition());
-					if (planet.getStartingMap().getInitialKarboniteAt(location) > 0) {
-						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
-					}
+					karbonite[i][j] = location.getKarboniteCount();
 				}
-				//If location can be blueprint a factory... make sure you check the karbonite count before putting in the BFS TODO
+				if (karbonite[i][j] > 0) {
+					bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
+				}
 			}
 		}
 	}
