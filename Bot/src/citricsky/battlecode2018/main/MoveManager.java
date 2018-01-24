@@ -21,6 +21,12 @@ public class MoveManager {
 			-7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5, 6, 6, 7 };
 	private static final int[] RANGER_OFFSET_Y = new int[] { 0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 1, 0, -1,
 			-2, -3, -4, -5, -5, -6, -6, -7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1 };
+	private static final int[] HEALER_OFFSET_X = new int[] {
+			0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1
+	};
+	private static final int[] HEALER_OFFSET_Y = new int[] {
+			5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5
+	};
 	public static final int BFS_FIND_ENEMY = 0;
 	public static final int BFS_FIND_HEAL = 1;
 	public static final int BFS_WORKER_TASK = 2;
@@ -64,7 +70,13 @@ public class MoveManager {
 					if (unit.isStructure()) {
 						addSource(BFS_WORKER_TASK, position, Direction.COMPASS);
 					} else {
-						bfsArray[BFS_HEALER_HEAL].addSource(position);
+						for (int i = 0; i < HEALER_OFFSET_X.length; ++i) {
+							Vector offset = position.add(HEALER_OFFSET_X[i], HEALER_OFFSET_Y[i]);
+							if (getBFSStep(BFS_FIND_ENEMY, offset) < 12) {
+								continue;
+							}
+							bfsArray[BFS_HEALER_HEAL].addSource(offset);
+						}
 					}
 				}
 				if (unit.getType() == UnitType.ROCKET && unit.isStructureBuilt() &&
@@ -154,7 +166,7 @@ public class MoveManager {
 									}
 								}
 							}
-						}else {
+						} else {
 							int directions = getBFSDirection(bfsIndex, location.getPosition());
 							for (Direction direction: Direction.COMPASS) {
 								if(((directions >>> direction.ordinal()) & 1) == 1) {
