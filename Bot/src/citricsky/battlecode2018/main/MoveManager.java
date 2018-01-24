@@ -203,7 +203,7 @@ public class MoveManager {
 		}
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
 			int loadRocketStep = getBFSStep(BFS_LOAD_ROCKET, position);
-			if (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 700) {
+			if (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 600) {
 				return BFS_LOAD_ROCKET;
 			}
 		}
