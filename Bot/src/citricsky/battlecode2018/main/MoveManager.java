@@ -171,14 +171,9 @@ public class MoveManager {
 								}
 							}
 						} else {
-							int directions = getBFSDirection(bfsIndex, location.getPosition());
-							for (Direction direction: Direction.COMPASS) {
-								if(((directions >>> direction.ordinal()) & 1) == 1) {
-									if(unit.canMove(direction)) {
-										unit.move(direction);
-										break;
-									}
-								}
+							Direction direction = getBFSDirection(bfsIndex, location.getPosition());
+							if (unit.canMove(direction)) {
+								unit.move(direction);
 							}
 						}
 					}
@@ -207,7 +202,7 @@ public class MoveManager {
 		}
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
 			int loadRocketStep = getBFSStep(BFS_LOAD_ROCKET, position);
-			if (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 700) {
+			if (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 600) {
 				return BFS_LOAD_ROCKET;
 			}
 		}
@@ -237,7 +232,7 @@ public class MoveManager {
 		}
 		return BFS_EXPLORE;
 	}
-	public int getBFSDirection(int bfsIndex, Vector position) {
+	public Direction getBFSDirection(int bfsIndex, Vector position) {
 		if (!processed[bfsIndex]) {
 			processBFS(bfsIndex);
 		}

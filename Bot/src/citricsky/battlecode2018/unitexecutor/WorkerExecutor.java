@@ -121,7 +121,10 @@ public class WorkerExecutor implements UnitExecutor {
 			for (Direction direction: Direction.COMPASS) {
 				MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
 				if (unit.canBlueprint(blueprintType, direction)) {
-					int buildArray = Util.getBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE));
+					if (isNextToStructure(location)) {
+						continue;
+					}
+					int buildArray = Util.getBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate()));
 					if (buildArray > bestBuild) {
 						bestBuild = buildArray;
 						blueprintDirection = direction;
@@ -140,5 +143,18 @@ public class WorkerExecutor implements UnitExecutor {
 				return;
 			}
 		}
+	}
+	private boolean isNextToStructure(MapLocation location) {
+		for (Direction dir: Direction.COMPASS) {
+			MapLocation offset = location.getOffsetLocation(dir);
+			if (offset.hasUnitAtLocation()) {
+				if (offset.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
+					if (offset.getUnit().isStructure()) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 }
