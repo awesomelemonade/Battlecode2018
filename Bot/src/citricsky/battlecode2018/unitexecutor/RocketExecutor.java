@@ -83,17 +83,7 @@ public class RocketExecutor implements UnitExecutor {
 				for (Direction direction: Direction.COMPASS) {
 					if (unit.canUnload(direction)) {
 						Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-						int bfsIndex = -1;
-						UnitType type = RoundInfo.getUnitType(garrison[i]);
-						if (type == UnitType.WORKER) {
-							bfsIndex = MoveManager.BFS_WORKER_HARVEST;
-						} else if (type == UnitType.RANGER) {
-							bfsIndex = MoveManager.BFS_RANGER_ATTACK;
-						} else if (type == UnitType.HEALER) {
-							bfsIndex = MoveManager.BFS_HEALER_HEAL;
-						} else if (type == UnitType.KNIGHT) {
-							bfsIndex = MoveManager.BFS_KNIGHT_ATTACK;
-						}
+						int bfsIndex = moveManager.getBFSIndex(RoundInfo.getUnitType(garrison[i]), Planet.MARS, position, 1.0);
 						int bfsStep = moveManager.getBFSStep(bfsIndex, position) - 1;
 						if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
 							closestEnemy = bfsStep;

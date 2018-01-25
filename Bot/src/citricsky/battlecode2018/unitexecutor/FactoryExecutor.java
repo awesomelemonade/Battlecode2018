@@ -2,6 +2,7 @@ package citricsky.battlecode2018.unitexecutor;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
+import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
@@ -53,17 +54,7 @@ public class FactoryExecutor implements UnitExecutor {
 			for (Direction direction: Direction.COMPASS) {
 				if (unit.canUnload(direction)) {
 					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-					int bfsIndex = -1;
-					UnitType type = RoundInfo.getUnitType(garrison[i]);
-					if (type == UnitType.WORKER) {
-						bfsIndex = MoveManager.BFS_WORKER_TASK;
-					} else if (type == UnitType.RANGER) {
-						bfsIndex = MoveManager.BFS_RANGER_ATTACK;
-					} else if (type == UnitType.HEALER) {
-						bfsIndex = MoveManager.BFS_HEALER_HEAL;
-					} else if (type == UnitType.KNIGHT) {
-						bfsIndex = MoveManager.BFS_KNIGHT_ATTACK;
-					}
+					int bfsIndex = moveManager.getBFSIndex(RoundInfo.getUnitType(garrison[i]), Planet.EARTH, position, 1.0);
 					int bfsStep = moveManager.getBFSStep(bfsIndex, position) - 1;
 					if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
 						closestEnemy = bfsStep;

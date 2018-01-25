@@ -145,7 +145,7 @@ public class MoveManager {
 				if (unit.getType().isStructure()) {
 					priorities.put(unit.getId(), Integer.MIN_VALUE);
 				} else {
-					int bfsIndex = getBFSIndex(unit, position);
+					int bfsIndex = getBFSIndex(unit);
 					bfsIndices.put(unit.getId(), bfsIndex);
 					if (bfsIndex == BFS_EXPLORE) {
 						priorities.put(unit.getId(), Integer.MIN_VALUE);
@@ -195,13 +195,17 @@ public class MoveManager {
 			}
 		}
 	}
-	public int getBFSIndex(Unit unit, Vector position) {
-		if (unit.getHealth() < unit.getMaxHealth() / 2 && unit.getType() != UnitType.HEALER) {
+	public int getBFSIndex(Unit unit) {
+		return getBFSIndex(unit.getType(), unit.getLocation().getMapLocation().getPlanet(),
+				unit.getLocation().getMapLocation().getPosition(), ((double)unit.getHealth()) / ((double)unit.getMaxHealth()));
+	}
+	public int getBFSIndex(UnitType type, Planet planet, Vector position, double percentHealth) {
+		if (percentHealth <= 0.5 && type != UnitType.HEALER) {
 			if (getBFSStep(BFS_FIND_HEAL, position) != Integer.MAX_VALUE) {
 				return BFS_FIND_HEAL;
 			}
 		}
-		if (unit.getType() == UnitType.WORKER) {
+		if (type == UnitType.WORKER) {
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
 			int workerHarvestStep = getBFSStep(BFS_WORKER_HARVEST, position);
 			if (workerTaskStep - 3 <= workerHarvestStep) {
@@ -210,20 +214,20 @@ public class MoveManager {
 				return BFS_WORKER_HARVEST;
 			}
 		}
-		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
+		if (planet == Planet.EARTH) {
 			int loadRocketStep = getBFSStep(BFS_LOAD_ROCKET, position);
 			if (loadRocketStep < 10 || RoundInfo.getRoundNumber() > 600) {
 				return BFS_LOAD_ROCKET;
 			}
 		}
 		int bfsAttackIndex = -1;
-		if (unit.getType() == UnitType.KNIGHT) {
+		if (type == UnitType.KNIGHT) {
 			bfsAttackIndex = BFS_KNIGHT_ATTACK;
 		}
-		if (unit.getType() == UnitType.RANGER) {
+		if (type == UnitType.RANGER) {
 			bfsAttackIndex = BFS_RANGER_ATTACK;
 		}
-		if (unit.getType() == UnitType.HEALER) {
+		if (type == UnitType.HEALER) {
 			bfsAttackIndex = BFS_HEALER_HEAL;
 		}
 		if (bfsAttackIndex == -1) {

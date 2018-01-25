@@ -83,8 +83,8 @@ public class WorkerExecutor implements UnitExecutor {
 			for (Direction direction: Direction.COMPASS) {
 				if (unit.canReplicate(direction)) {
 					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-					int bfsStep = Math.min(moveManager.getBFSStep(MoveManager.BFS_WORKER_HARVEST, position) + 3, 
-							moveManager.getBFSStep(MoveManager.BFS_WORKER_TASK, position)) - 1;
+					int bfsIndex = moveManager.getBFSIndex(UnitType.WORKER, unit.getLocation().getMapLocation().getPlanet(), position, 1.0);
+					int bfsStep = moveManager.getBFSStep(bfsIndex, position);
 					if (bfsStep < closestTask) {
 						closestTask = bfsStep;
 						bestReplicateDirection = direction;
