@@ -108,7 +108,9 @@ public class MoveManager {
 				MapLocation location = planet.getMapLocation(i, j);
 				boolean nearEnemy = getBFSStep(BFS_FIND_COMBAT_ENEMY, location.getPosition()) < 12;
 				if (GameController.INSTANCE.canSenseLocation(location)) {
-					explored[i][j] = true;
+					if (!nearEnemy) {
+						explored[i][j] = true;
+					}
 					karbonite[i][j] = location.getKarboniteCount();
 				}
 				if (karbonite[i][j] > 0 && (!nearEnemy)) {
