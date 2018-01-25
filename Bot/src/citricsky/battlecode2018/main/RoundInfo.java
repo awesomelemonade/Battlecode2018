@@ -13,17 +13,16 @@ public class RoundInfo {
 	private static int[] unitCounts;
 	private static int unitCountOnMap;
 	private static int combatUnitsCount;
-	private static Map<Integer, Unit> unitsById;
+	private static Map<Integer, UnitType> unitTypes;
 	private static Unit[] myUnits;
 	private static Unit[] enemiesOnMap;
 	static {
 		unitCounts = new int[UnitType.values().length];
-		unitsById = new HashMap<Integer, Unit>();
+		unitTypes = new HashMap<Integer, UnitType>();
 	}
 	public static void update() {
 		unitCountOnMap = 0;
 		combatUnitsCount = 0;
-		unitsById.clear();
 		roundNumber = GameController.INSTANCE.getRoundNumber();
 		Unit[] allUnits = GameController.INSTANCE.getAllUnits();
 		myUnits = new Unit[allUnits.length];
@@ -31,7 +30,9 @@ public class RoundInfo {
 		int myUnitsCount = 0;
 		int enemiesOnMapCount = 0;
 		for (Unit unit: allUnits) {
-			unitsById.put(unit.getId(), unit);
+			if (!unitTypes.containsKey(unit.getId())) {
+				unitTypes.put(unit.getId(), unit.getType());
+			}
 			if (unit.getTeam() == GameController.INSTANCE.getTeam()) {
 				myUnits[myUnitsCount++] = unit;
 			} else {
@@ -55,8 +56,8 @@ public class RoundInfo {
 			}
 		}
 	}
-	public static Unit getUnit(int id) {
-		return unitsById.get(id);
+	public static UnitType getUnitType(int id) {
+		return unitTypes.get(id);
 	}
 	public static int getUnitCountOnMap() {
 		return unitCountOnMap;

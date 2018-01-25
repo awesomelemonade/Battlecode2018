@@ -59,7 +59,7 @@ public class RocketExecutor implements UnitExecutor {
 				int[] garrisoned = unit.getGarrisonUnitIds();
 				boolean hasWorker = false;
 				for (int id: garrisoned) {
-					if (RoundInfo.getUnit(id).getType() == UnitType.WORKER) {
+					if (RoundInfo.getUnitType(id) == UnitType.WORKER) {
 						hasWorker = true;
 						break;
 					}
@@ -76,14 +76,25 @@ public class RocketExecutor implements UnitExecutor {
 				}
 			}
 		} else {
-			int garrisonSize = unit.getGarrisonUnitIds().length;
-			for (int i = 0; i < garrisonSize; ++i) {
+			int[] garrison = unit.getGarrisonUnitIds();
+			for (int i = 0; i < garrison.length; ++i) {
 				Direction bestUnloadDirection = null;
 				int closestEnemy = Integer.MAX_VALUE;
 				for (Direction direction: Direction.COMPASS) {
 					if (unit.canUnload(direction)) {
 						Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-						int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ALL_ENEMY, position) - 1;
+						int bfsIndex = -1;
+						UnitType type = RoundInfo.getUnitType(garrison[i]);
+						if (type == UnitType.WORKER) {
+							bfsIndex = MoveManager.BFS_WORKER_HARVEST;
+						} else if (type == UnitType.RANGER) {
+							bfsIndex = MoveManager.BFS_RANGER_ATTACK;
+						} else if (type == UnitType.HEALER) {
+							bfsIndex = MoveManager.BFS_HEALER_HEAL;
+						} else if (type == UnitType.KNIGHT) {
+							bfsIndex = MoveManager.BFS_KNIGHT_ATTACK;
+						}
+						int bfsStep = moveManager.getBFSStep(bfsIndex, position) - 1;
 						if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
 							closestEnemy = bfsStep;
 							bestUnloadDirection = direction;
