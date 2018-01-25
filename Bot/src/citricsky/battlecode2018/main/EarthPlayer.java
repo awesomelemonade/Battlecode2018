@@ -57,6 +57,7 @@ public class EarthPlayer {
 							moveManager.updateBFS();
 						} catch (Exception ex) {
 							System.out.println("BFS Exception: "+ex.getMessage());
+							ex.printStackTrace();
 						}
 					} else {
 						System.out.println("Skipping BFS Update");
