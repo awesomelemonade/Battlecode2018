@@ -32,7 +32,7 @@ public class FactoryExecutor implements UnitExecutor {
 	@Override
 	public void execute(Unit unit) {
 		UnitType produceType = getProduceType();
-		if (produceType != null && unit.canProduceRobot(produceType)) {
+		if (produceType != null && (produceType == UnitType.WORKER || RoundInfo.getCombatUnitsCount() < 50) && unit.canProduceRobot(produceType)) {
 			unit.produceRobot(produceType);
 		}
 		int garrisonSize = unit.getGarrisonUnitIds().length;
