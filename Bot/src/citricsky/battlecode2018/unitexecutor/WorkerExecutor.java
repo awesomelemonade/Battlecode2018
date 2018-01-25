@@ -69,7 +69,7 @@ public class WorkerExecutor implements UnitExecutor {
 		if (RoundInfo.getMyUnits().length > 60) {
 			return UnitType.ROCKET;
 		}
-		if (RoundInfo.getRoundNumber() < 250 || (RoundInfo.getUnitCount(UnitType.FACTORY) < 3 && RoundInfo.getRoundNumber() < 650)) {
+		if (RoundInfo.getRoundNumber() < 100 || RoundInfo.getUnitCount(UnitType.FACTORY) < 3 || RoundInfo.getMyUnits().length < 20) {
 			return UnitType.FACTORY;
 		}else {
 			return UnitType.ROCKET;

@@ -44,26 +44,24 @@ public class FactoryExecutor implements UnitExecutor {
 		if (produceType != null && unit.canProduceRobot(produceType)) {
 			unit.produceRobot(produceType);
 		}
-		if (RoundInfo.getUnitCountOnMap() < 70 || RoundInfo.getRoundNumber() > 500) {
-			int garrisonSize = unit.getGarrisonUnitIds().length;
-			for (int i = 0; i < garrisonSize; ++i) {
-				Direction bestUnloadDirection = null;
-				int closestEnemy = Integer.MAX_VALUE;
-				for (Direction direction: Direction.COMPASS) {
-					if (unit.canUnload(direction)) {
-						Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-						int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position) - 1;
-						if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
-							closestEnemy = bfsStep;
-							bestUnloadDirection = direction;
-						}
+		int garrisonSize = unit.getGarrisonUnitIds().length;
+		for (int i = 0; i < garrisonSize; ++i) {
+			Direction bestUnloadDirection = null;
+			int closestEnemy = Integer.MAX_VALUE;
+			for (Direction direction: Direction.COMPASS) {
+				if (unit.canUnload(direction)) {
+					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
+					int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position) - 1;
+					if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
+						closestEnemy = bfsStep;
+						bestUnloadDirection = direction;
 					}
 				}
-				if (bestUnloadDirection == null) {
-					break;
-				} else {
-					unit.unload(bestUnloadDirection);
-				}
+			}
+			if (bestUnloadDirection == null) {
+				break;
+			} else {
+				unit.unload(bestUnloadDirection);
 			}
 		}
 	}
