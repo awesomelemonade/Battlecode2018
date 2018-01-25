@@ -32,10 +32,10 @@ public class RoundInfo {
 		for (Unit unit: allUnits) {
 			unitsById.put(unit.getId(), unit);
 			if (unit.getTeam() == GameController.INSTANCE.getTeam()) {
-				myUnits[++myUnitsCount] = unit;
+				myUnits[myUnitsCount++] = unit;
 			} else {
 				if (unit.getLocation().isOnMap()) {
-					enemiesOnMap[++enemiesOnMapCount] = unit;
+					enemiesOnMap[enemiesOnMapCount++] = unit;
 				}
 			}
 		}
