@@ -8,24 +8,31 @@ import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.main.RoundInfo;
 
 public class FactoryExecutor implements UnitExecutor {
+	private static final UnitType[] COMBAT_UNIT_TYPES = new UnitType[] {UnitType.KNIGHT, UnitType.RANGER, UnitType.MAGE};
 	private MoveManager moveManager;
 	
 	public FactoryExecutor(MoveManager moveManager) {
 		this.moveManager = moveManager;
 	}
 	
+	public int getCombatUnitsCount() {
+		int total = 0;
+		for (UnitType type: COMBAT_UNIT_TYPES) {
+			total += RoundInfo.getUnitCount(type);
+		}
+		return total;
+	}
+	
 	public UnitType getProduceType() {
 		if (RoundInfo.getRoundNumber() > 650) {
 			if (RoundInfo.getUnitCount(UnitType.WORKER) < 10) {
 				return UnitType.WORKER;
-			}else {
-				return null;
 			}
 		}
 		if (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 6 < RoundInfo.getUnitCount(UnitType.FACTORY)) {
 			return UnitType.WORKER;
 		}
-		if (RoundInfo.getUnitCount(UnitType.HEALER) + 1 < RoundInfo.getMyUnits().length / 4) {
+		if (RoundInfo.getUnitCount(UnitType.HEALER) + 1 < getCombatUnitsCount() / 4) {
 			return UnitType.HEALER;
 		}
 		return UnitType.RANGER;
