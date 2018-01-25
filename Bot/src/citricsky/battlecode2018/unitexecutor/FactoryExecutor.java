@@ -1,7 +1,6 @@
 package citricsky.battlecode2018.unitexecutor;
 
 import citricsky.battlecode2018.library.Direction;
-import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
@@ -17,24 +16,7 @@ public class FactoryExecutor implements UnitExecutor {
 	}
 	
 	public boolean nearEnemy(MapLocation location, int moveDistance) {
-		for (int x = -moveDistance; x <= moveDistance; ++x) {
-			for (int y = -moveDistance; y <= moveDistance; ++y) {
-				Vector candidate = location.getPosition().add(x, y);
-				if (!outOfBounds(candidate.getX(), candidate.getY(), location.getPlanet().getWidth(), location.getPlanet().getHeight())) {
-					MapLocation offset = location.getPlanet().getMapLocation(candidate);
-					if (offset.hasUnitAtLocation()) {
-						if (offset.getUnit().getTeam() == GameController.INSTANCE.getEnemyTeam()) {
-							return true;
-						}
-					}
-				}
-			}
-		}
-		return false;
-	}
-
-	public boolean outOfBounds(int x, int y, int width, int height) {
-		return x < 0 || y < 0 || x >= width || y >= height;
+		return moveManager.getBFSStep(MoveManager.BFS_FIND_ALL_ENEMY, location.getPosition()) < 10;
 	}
 	
 	public UnitType getProduceType(MapLocation location) {
