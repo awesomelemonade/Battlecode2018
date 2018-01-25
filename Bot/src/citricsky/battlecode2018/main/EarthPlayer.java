@@ -54,7 +54,12 @@ public class EarthPlayer {
 					communication.update();
 					if ((benchmark.peek() / 1000000 < gc.getTimeLeft() - 3000) || (RoundInfo.getRoundNumber() % 5 == 0)) {
 						try {
+							benchmark.push();
 							moveManager.updateBFS();
+							double deltaTime = benchmark.pop() / 1000000.0;
+							if(deltaTime > 20) {
+								System.out.println("BFS Time: " + deltaTime + "ms");
+							}
 						} catch (Exception ex) {
 							System.out.println("BFS Exception: "+ex.getMessage());
 							ex.printStackTrace();
@@ -65,7 +70,12 @@ public class EarthPlayer {
 					moveManager.move(unit -> {
 						try {
 							if(executors[unit.getType().ordinal()] != null) {
+								benchmark.push();
 								executors[unit.getType().ordinal()].execute(unit);
+								double deltaTime = benchmark.pop() / 1000000.0;
+								if(deltaTime > 20) {
+									System.out.println("Execution Time: " + deltaTime + "ms");
+								}
 							}
 						} catch (Exception ex) {
 							System.out.println("Execution Exception: "+ ex.getMessage());
