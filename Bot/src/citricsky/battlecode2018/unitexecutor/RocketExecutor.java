@@ -9,6 +9,7 @@ import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.main.PlanetCommunication;
+import citricsky.battlecode2018.main.RoundInfo;
 
 public class RocketExecutor implements UnitExecutor {
 	private MoveManager moveManager;
@@ -49,10 +50,18 @@ public class RocketExecutor implements UnitExecutor {
 					}
 				}
 			} else {
+				int[] garrisoned = unit.getGarrisonUnitIds();
+				boolean hasWorker = false;
+				for (int id: garrisoned) {
+					if (RoundInfo.getUnit(id).getType() == UnitType.WORKER) {
+						hasWorker = true;
+						break;
+					}
+				}
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
 					if (target.getType().isStructure()) continue;
-					if (target.getType().equals(UnitType.WORKER) && GameController.INSTANCE.getRoundNumber() > 600 &&
-							GameController.INSTANCE.getRoundNumber() < 739) continue;
+					if (target.getType().equals(UnitType.WORKER) && (GameController.INSTANCE.getRoundNumber() > 600 &&
+							GameController.INSTANCE.getRoundNumber() < 739 || hasWorker)) continue;
 					if (unit.canLoad(target)) {
 						unit.load(target);
 					}
