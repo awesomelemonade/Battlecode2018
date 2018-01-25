@@ -8,7 +8,6 @@ import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.main.RoundInfo;
 
 public class FactoryExecutor implements UnitExecutor {
-	private static final UnitType[] COMBAT_UNIT_TYPES = new UnitType[] {UnitType.KNIGHT, UnitType.RANGER, UnitType.MAGE};
 	private MoveManager moveManager;
 	
 	public FactoryExecutor(MoveManager moveManager) {
@@ -17,8 +16,10 @@ public class FactoryExecutor implements UnitExecutor {
 	
 	public int getCombatUnitsCount() {
 		int total = 0;
-		for (UnitType type: COMBAT_UNIT_TYPES) {
-			total += RoundInfo.getUnitCount(type);
+		for (UnitType type: UnitType.values()) {
+			if (type.isCombatType()) {
+				total += RoundInfo.getUnitCount(type);
+			}
 		}
 		return total;
 	}
@@ -51,7 +52,7 @@ public class FactoryExecutor implements UnitExecutor {
 			for (Direction direction: Direction.COMPASS) {
 				if (unit.canUnload(direction)) {
 					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-					int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position) - 1;
+					int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ALL_ENEMY, position) - 1;
 					if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
 						closestEnemy = bfsStep;
 						bestUnloadDirection = direction;

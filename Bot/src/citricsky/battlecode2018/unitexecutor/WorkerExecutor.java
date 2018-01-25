@@ -25,7 +25,7 @@ public class WorkerExecutor implements UnitExecutor {
 			if(GameController.INSTANCE.canSenseLocation(offset)) {
 				if(offset.hasUnitAtLocation()) {
 					Unit unit = offset.getUnit();
-					if(unit.isStructure() && (!unit.isStructureBuilt()) &&
+					if(unit.getType().isStructure() && (!unit.isStructureBuilt()) &&
 							unit.getTeam() == GameController.INSTANCE.getTeam()) {
 						double health = ((double)unit.getHealth())/((double)unit.getMaxHealth());
 						if(health > highestHealth) {
@@ -47,7 +47,7 @@ public class WorkerExecutor implements UnitExecutor {
 			if(GameController.INSTANCE.canSenseLocation(offset)) {
 				if(offset.hasUnitAtLocation()) {
 					Unit unit = offset.getUnit();
-					if(unit.isStructure() && unit.isStructureBuilt() &&
+					if(unit.getType().isStructure() && unit.isStructureBuilt() &&
 							unit.getTeam() == GameController.INSTANCE.getTeam() && 
 							unit.getHealth() < unit.getMaxHealth()) {
 						double health = ((double)unit.getHealth())/((double)unit.getMaxHealth());
@@ -149,7 +149,7 @@ public class WorkerExecutor implements UnitExecutor {
 			MapLocation offset = location.getOffsetLocation(dir);
 			if (offset.hasUnitAtLocation()) {
 				if (offset.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
-					if (offset.getUnit().isStructure()) {
+					if (offset.getUnit().getType().isStructure()) {
 						return true;
 					}
 				}

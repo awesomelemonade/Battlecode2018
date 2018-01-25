@@ -43,7 +43,12 @@ public enum UnitType {
 	public int getBaseVisionRange() {
 		return baseVisionRange;
 	}
-	
+	public boolean isStructure() {
+		return UnitType.isStructure(this);
+	}
+	public boolean isCombatType() {
+		return UnitType.isCombatType(this);
+	}
 
 	protected static UnitType valueOf(bc.UnitType bcUnitType) {
 		switch(bcUnitType) {
@@ -64,5 +69,13 @@ public enum UnitType {
 			default:
 				return null;
 		}
+	}
+	
+	public static boolean isStructure(UnitType type) {
+		return type == UnitType.ROCKET || type == UnitType.FACTORY;
+	}
+	
+	public static boolean isCombatType(UnitType type) {
+		return type == UnitType.KNIGHT || type == UnitType.RANGER || type == UnitType.HEALER || type == UnitType.MAGE;
 	}
 }

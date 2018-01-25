@@ -28,7 +28,7 @@ public class HealerExecutor implements UnitExecutor {
 			double leastAbilityPercentage = 1.1;
 			Unit bestTarget = null;
 			for (Unit friendlyUnit : friendlyUnits) {
-				if(friendlyUnit.isStructure()) continue;
+				if(friendlyUnit.getType().isStructure()) continue;
 				double abilityPercentage = friendlyUnit.getAbilityHeat()/friendlyUnit.getAbilityCooldown();
 				if(abilityPercentage < leastAbilityPercentage) {
 					bestTarget = friendlyUnit;
@@ -36,7 +36,7 @@ public class HealerExecutor implements UnitExecutor {
 				}
 			}
 			if(leastAbilityPercentage < 0.6) {
-				if(!bestTarget.isStructure() && unit.canOvercharge(bestTarget)) {
+				if(!bestTarget.getType().isStructure() && unit.canOvercharge(bestTarget)) {
 					unit.overcharge(bestTarget);
 				}
 			}

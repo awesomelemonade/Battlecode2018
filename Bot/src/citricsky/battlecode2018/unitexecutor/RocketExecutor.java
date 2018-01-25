@@ -50,7 +50,7 @@ public class RocketExecutor implements UnitExecutor {
 				}
 			} else {
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
-					if (target.isStructure()) continue;
+					if (target.getType().isStructure()) continue;
 					if (target.getType().equals(UnitType.WORKER) && GameController.INSTANCE.getRoundNumber() > 600 &&
 							GameController.INSTANCE.getRoundNumber() < 739) continue;
 					if (unit.canLoad(target)) {
@@ -66,7 +66,7 @@ public class RocketExecutor implements UnitExecutor {
 				for (Direction direction: Direction.COMPASS) {
 					if (unit.canUnload(direction)) {
 						Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-						int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ENEMY, position) - 1;
+						int bfsStep = moveManager.getBFSStep(MoveManager.BFS_FIND_ALL_ENEMY, position) - 1;
 						if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
 							closestEnemy = bfsStep;
 							bestUnloadDirection = direction;

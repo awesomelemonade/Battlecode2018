@@ -352,10 +352,6 @@ public class Unit {
 	public UnitType getType() {
 		return type;
 	}
-
-	public boolean isStructure() {
-		return getType() == UnitType.FACTORY || getType() == UnitType.ROCKET;
-	}
 	
 	public Team getTeam() {
 		return team;

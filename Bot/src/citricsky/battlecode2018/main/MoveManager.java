@@ -27,15 +27,16 @@ public class MoveManager {
 	private static final int[] HEALER_OFFSET_Y = new int[] {
 			5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5
 	};
-	public static final int BFS_FIND_ENEMY = 0;
-	public static final int BFS_FIND_HEAL = 1;
-	public static final int BFS_WORKER_TASK = 2;
-	public static final int BFS_WORKER_HARVEST = 3;
-	public static final int BFS_KNIGHT_ATTACK = 4;
-	public static final int BFS_RANGER_ATTACK = 5;
-	public static final int BFS_HEALER_HEAL = 6;
-	public static final int BFS_LOAD_ROCKET = 7;
-	public static final int BFS_EXPLORE = 8;
+	public static final int BFS_FIND_COMBAT_ENEMY = 0;
+	public static final int BFS_FIND_ALL_ENEMY = 1;
+	public static final int BFS_FIND_HEAL = 2;
+	public static final int BFS_WORKER_TASK = 3;
+	public static final int BFS_WORKER_HARVEST = 4;
+	public static final int BFS_KNIGHT_ATTACK = 5;
+	public static final int BFS_RANGER_ATTACK = 6;
+	public static final int BFS_HEALER_HEAL = 7;
+	public static final int BFS_LOAD_ROCKET = 8;
+	public static final int BFS_EXPLORE = 9;
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
@@ -67,7 +68,10 @@ public class MoveManager {
 		}
 		for (Unit unit: RoundInfo.getEnemiesOnMap()) {
 			Vector position = unit.getLocation().getMapLocation().getPosition();
-			bfsArray[BFS_FIND_ENEMY].addSource(position);
+			if (unit.getType().isCombatType()) {
+				bfsArray[BFS_FIND_COMBAT_ENEMY].addSource(position);
+			}
+			bfsArray[BFS_FIND_ALL_ENEMY].addSource(position);
 			addSource(BFS_KNIGHT_ATTACK, position, Direction.COMPASS);
 			for (int i = 0; i < RANGER_OFFSET_X.length; ++i) {
 				bfsArray[BFS_RANGER_ATTACK].addSource(position.add(RANGER_OFFSET_X[i], RANGER_OFFSET_Y[i]));
@@ -76,13 +80,14 @@ public class MoveManager {
 		for (Unit unit: RoundInfo.getMyUnits()) {
 			if (unit.getLocation().isOnMap()) {
 				Vector position = unit.getLocation().getMapLocation().getPosition();
+				boolean nearEnemy = getBFSStep(BFS_FIND_COMBAT_ENEMY, position) < 12;
 				if (unit.getHealth() < unit.getMaxHealth()) {
-					if (unit.isStructure()) {
+					if (!nearEnemy && unit.getType().isStructure()) {
 						addSource(BFS_WORKER_TASK, position, Direction.COMPASS);
 					} else {
 						for (int i = 0; i < HEALER_OFFSET_X.length; ++i) {
 							Vector offset = position.add(HEALER_OFFSET_X[i], HEALER_OFFSET_Y[i]);
-							if (getBFSStep(BFS_FIND_ENEMY, offset) < 12) {
+							if (getBFSStep(BFS_FIND_COMBAT_ENEMY, offset) < 12) {
 								continue;
 							}
 							bfsArray[BFS_HEALER_HEAL].addSource(offset);
@@ -101,7 +106,7 @@ public class MoveManager {
 		for (int i = 0; i < planet.getWidth(); ++i) {
 			for (int j = 0; j < planet.getHeight(); ++j) {
 				MapLocation location = planet.getMapLocation(i, j);
-				boolean nearEnemy = getBFSStep(BFS_FIND_ENEMY, location.getPosition()) < 12;
+				boolean nearEnemy = getBFSStep(BFS_FIND_COMBAT_ENEMY, location.getPosition()) < 12;
 				if (GameController.INSTANCE.canSenseLocation(location)) {
 					explored[i][j] = true;
 					karbonite[i][j] = location.getKarboniteCount();
@@ -134,7 +139,7 @@ public class MoveManager {
 			});
 			for (Unit unit: units) {
 				Vector position = unit.getLocation().getMapLocation().getPosition();
-				if (unit.isStructure()) {
+				if (unit.getType().isStructure()) {
 					priorities.put(unit.getId(), Integer.MIN_VALUE);
 				} else {
 					int bfsIndex = getBFSIndex(unit, position);
@@ -150,7 +155,7 @@ public class MoveManager {
 			while (!queue.isEmpty()) {
 				try {
 					Unit unit = queue.poll();
-					if ((!unit.isStructure()) && unit.isMoveReady()) {
+					if ((!unit.getType().isStructure()) && unit.isMoveReady()) {
 						if (unit.getType() == UnitType.RANGER && unit.isRangerSniping()) {
 							continue;
 						}
@@ -219,16 +224,16 @@ public class MoveManager {
 			bfsAttackIndex = BFS_HEALER_HEAL;
 		}
 		if (bfsAttackIndex == -1) {
-			bfsAttackIndex = BFS_FIND_ENEMY;
+			bfsAttackIndex = BFS_FIND_ALL_ENEMY;
 		}
 		int attackStep = getBFSStep(bfsAttackIndex, position);
 		if (attackStep < 10) {
 			return bfsAttackIndex;
 		}else {
-			if (bfsAttackIndex != BFS_FIND_ENEMY) {
-				int findStep = getBFSStep(BFS_FIND_ENEMY, position);
+			if (bfsAttackIndex != BFS_FIND_ALL_ENEMY) {
+				int findStep = getBFSStep(BFS_FIND_ALL_ENEMY, position);
 				if (findStep != Integer.MAX_VALUE) {
-					return BFS_FIND_ENEMY;
+					return BFS_FIND_ALL_ENEMY;
 				}
 			}
 		}

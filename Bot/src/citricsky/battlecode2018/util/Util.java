@@ -14,7 +14,7 @@ public class Util {
 		}
 		if (location.hasUnitAtLocation()) {
 			if (location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
-				if (location.getUnit().isStructure()) {
+				if (location.getUnit().getType().isStructure()) {
 					return false;
 				}
 			}
