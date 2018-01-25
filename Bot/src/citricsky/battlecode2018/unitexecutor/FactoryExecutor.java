@@ -14,16 +14,6 @@ public class FactoryExecutor implements UnitExecutor {
 		this.moveManager = moveManager;
 	}
 	
-	public int getCombatUnitsCount() {
-		int total = 0;
-		for (UnitType type: UnitType.values()) {
-			if (type.isCombatType()) {
-				total += RoundInfo.getUnitCount(type);
-			}
-		}
-		return total;
-	}
-	
 	public UnitType getProduceType() {
 		if (RoundInfo.getRoundNumber() > 650) {
 			if (RoundInfo.getUnitCount(UnitType.WORKER) < 10) {
@@ -33,7 +23,7 @@ public class FactoryExecutor implements UnitExecutor {
 		if (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 6 < RoundInfo.getUnitCount(UnitType.FACTORY)) {
 			return UnitType.WORKER;
 		}
-		if (RoundInfo.getUnitCount(UnitType.HEALER) + 1 < getCombatUnitsCount() / 4) {
+		if (RoundInfo.getUnitCount(UnitType.HEALER) + 1 < RoundInfo.getCombatUnitsCount() / 4) {
 			return UnitType.HEALER;
 		}
 		return UnitType.RANGER;

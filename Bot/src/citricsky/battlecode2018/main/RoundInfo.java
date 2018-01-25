@@ -10,6 +10,7 @@ public class RoundInfo {
 	private static Unit[] enemiesOnMap;
 	private static int[] unitCounts;
 	private static int unitCountOnMap;
+	private static int combatUnitsCount;
 	static {
 		unitCounts = new int[UnitType.values().length];
 	}
@@ -28,11 +29,17 @@ public class RoundInfo {
 			unitCounts[unit.getType().ordinal()]++;
 			if (unit.getLocation().isOnMap()) {
 				unitCountOnMap++;
+				if (unit.getType().isCombatType()) {
+					combatUnitsCount++;
+				}
 			}
 		}
 	}
 	public static int getUnitCountOnMap() {
 		return unitCountOnMap;
+	}
+	public static int getCombatUnitsCount() {
+		return combatUnitsCount;
 	}
 	public static Unit[] getMyUnits() {
 		return myUnits;
