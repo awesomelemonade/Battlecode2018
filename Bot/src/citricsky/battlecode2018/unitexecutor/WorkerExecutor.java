@@ -77,24 +77,6 @@ public class WorkerExecutor implements UnitExecutor {
 	}
 	@Override
 	public void execute(Unit unit) {
-		if (shouldReplicate()) {
-			Direction bestReplicateDirection = null;
-			int closestTask = Integer.MAX_VALUE;
-			for (Direction direction: Direction.COMPASS) {
-				if (unit.canReplicate(direction)) {
-					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-					int bfsIndex = moveManager.getBFSIndex(UnitType.WORKER, unit.getLocation().getMapLocation().getPlanet(), position, 1.0);
-					int bfsStep = moveManager.getBFSStep(bfsIndex, position);
-					if (bfsStep < closestTask) {
-						closestTask = bfsStep;
-						bestReplicateDirection = direction;
-					}
-				}
-			}
-			if (bestReplicateDirection != null) {
-				unit.replicate(bestReplicateDirection);
-			}
-		}
 		//try build
 		Unit buildTarget = getBuildTarget(unit.getLocation().getMapLocation());
 		if(buildTarget != null) {
@@ -141,6 +123,24 @@ public class WorkerExecutor implements UnitExecutor {
 			if (unit.canHarvest(direction)) {
 				unit.harvest(direction);
 				return;
+			}
+		}
+		if (shouldReplicate()) {
+			Direction bestReplicateDirection = null;
+			int closestTask = Integer.MAX_VALUE;
+			for (Direction direction: Direction.COMPASS) {
+				if (unit.canReplicate(direction)) {
+					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
+					int bfsIndex = moveManager.getBFSIndex(UnitType.WORKER, unit.getLocation().getMapLocation().getPlanet(), position, 1.0);
+					int bfsStep = moveManager.getBFSStep(bfsIndex, position);
+					if (bfsStep < closestTask) {
+						closestTask = bfsStep;
+						bestReplicateDirection = direction;
+					}
+				}
+			}
+			if (bestReplicateDirection != null) {
+				unit.replicate(bestReplicateDirection);
 			}
 		}
 	}
