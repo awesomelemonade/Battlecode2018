@@ -47,7 +47,7 @@ public class MoveManager {
 		this.planet = GameController.INSTANCE.getPlanet();
 		this.karbonite = new int[planet.getWidth()][planet.getHeight()];
 		//Initialize bfsArray
-		this.bfsArray = new BFS[9];
+		this.bfsArray = new BFS[10];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
