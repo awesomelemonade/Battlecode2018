@@ -22,6 +22,7 @@ public class RoundInfo {
 	}
 	public static void update() {
 		unitCountOnMap = 0;
+		combatUnitsCount = 0;
 		unitsById.clear();
 		roundNumber = GameController.INSTANCE.getRoundNumber();
 		Unit[] allUnits = GameController.INSTANCE.getAllUnits();

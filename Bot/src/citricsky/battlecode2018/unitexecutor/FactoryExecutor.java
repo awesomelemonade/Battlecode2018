@@ -39,6 +39,9 @@ public class FactoryExecutor implements UnitExecutor {
 	
 	@Override
 	public void execute(Unit unit) {
+		if (!unit.isStructureBuilt()) {
+			return;
+		}
 		UnitType produceType = getProduceType(unit.getLocation().getMapLocation());
 		if (produceType != null && (produceType == UnitType.WORKER || RoundInfo.getCombatUnitsCount() < 50) && unit.canProduceRobot(produceType)) {
 			unit.produceRobot(produceType);

@@ -22,6 +22,9 @@ public class RocketExecutor implements UnitExecutor {
 	}
 	@Override
 	public void execute(Unit unit) {
+		if (!unit.isStructureBuilt()) {
+			return;
+		}
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
 			if (unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity() ||
 					((double)unit.getHealth()) / ((double)unit.getMaxHealth()) < 0.5 || 
@@ -30,6 +33,7 @@ public class RocketExecutor implements UnitExecutor {
 				if (candidate != null) {
 					MapLocation destination = Planet.MARS.getMapLocation(candidate);
 					if (unit.canLaunchRocket(destination)) {
+						System.out.println("Launching Rocket: " + destination);
 						unit.launchRocket(destination);
 						communicationIndex++;
 						return;
@@ -43,12 +47,14 @@ public class RocketExecutor implements UnitExecutor {
 								(x + offsetX) % Planet.MARS.getWidth(), (y + offsetY) % Planet.MARS.getHeight());
 						if(destination.isPassableTerrain()) {
 							if (unit.canLaunchRocket(destination)) {
+								System.out.println("Launching Random Rocket: " + destination);
 								unit.launchRocket(destination);
 								return;
 							}
 						}
 					}
 				}
+				System.out.println("Unable to launch rocket");
 			} else {
 				int[] garrisoned = unit.getGarrisonUnitIds();
 				boolean hasWorker = false;
@@ -60,9 +66,11 @@ public class RocketExecutor implements UnitExecutor {
 				}
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
 					if (target.getType().isStructure()) continue;
-					if (target.getType().equals(UnitType.WORKER) && (GameController.INSTANCE.getRoundNumber() > 600 &&
-							GameController.INSTANCE.getRoundNumber() < 739 || hasWorker)) continue;
+					if (target.getType() == UnitType.WORKER && hasWorker && GameController.INSTANCE.getRoundNumber() < 739) continue;
 					if (unit.canLoad(target)) {
+						if (target.getType() == UnitType.WORKER) {
+							hasWorker = true;
+						}
 						unit.load(target);
 					}
 				}

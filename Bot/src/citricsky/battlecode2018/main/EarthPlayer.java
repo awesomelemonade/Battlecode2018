@@ -57,7 +57,7 @@ public class EarthPlayer {
 							benchmark.push();
 							moveManager.updateBFS();
 							double deltaTime = benchmark.pop() / 1000000.0;
-							if(deltaTime > 20) {
+							if(deltaTime > 10) {
 								System.out.println("BFS Time: " + deltaTime + "ms");
 							}
 						} catch (Exception ex) {
@@ -73,8 +73,8 @@ public class EarthPlayer {
 								benchmark.push();
 								executors[unit.getType().ordinal()].execute(unit);
 								double deltaTime = benchmark.pop() / 1000000.0;
-								if(deltaTime > 20) {
-									System.out.println("Execution Time: " + deltaTime + "ms");
+								if(deltaTime > 5) {
+									System.out.println("Execution Time: " + unit.getType() + " - " + deltaTime + "ms");
 								}
 							}
 						} catch (Exception ex) {
