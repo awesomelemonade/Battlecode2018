@@ -13,6 +13,7 @@ import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.util.Benchmark;
 import citricsky.battlecode2018.util.Util;
 
 public class MoveManager {
@@ -259,8 +260,20 @@ public class MoveManager {
 		return bfsArray[bfsIndex].getStep(position.getX(), position.getY());
 	}
 	public void processBFS(int index) {
+		Benchmark benchmark = new Benchmark();
+		benchmark.push();
+		double deltaTime;
 		while (!bfsArray[index].getQueue().isEmpty()) {
+			benchmark.push();
 			bfsArray[index].step();
+			deltaTime = benchmark.pop() / 1000000.0;
+			if (deltaTime > 20) {
+				System.out.println("\t\tBFS Step: " + index + " - " + bfsArray[index].getCurrentStep() + " - " + deltaTime + "ms");
+			}
+		}
+		deltaTime = benchmark.pop() / 1000000.0;
+		if (deltaTime > 20) {
+			System.out.println("\t\tProcess BFS: " + index + " - " + bfsArray[index].getCurrentStep() + " - " + deltaTime + "ms");
 		}
 	}
 }
