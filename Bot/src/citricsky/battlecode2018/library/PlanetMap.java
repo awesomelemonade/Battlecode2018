@@ -2,21 +2,35 @@ package citricsky.battlecode2018.library;
 
 public class PlanetMap {
 	private bc.PlanetMap bcPlanetMap;
+	private Planet planet;
+	private boolean[][] passableTerrain;
+	private int width;
+	private int height;
 	
 	public PlanetMap(bc.PlanetMap bcPlanetMap) {
 		this.bcPlanetMap = bcPlanetMap;
+		this.planet = Planet.valueOf(bcPlanetMap.getPlanet());
+		this.width = (int)bcPlanetMap.getWidth();
+		this.height = (int)bcPlanetMap.getHeight();
+		this.passableTerrain = new boolean[width][height];
+		for (int i = 0; i < width; ++i) {
+			for (int j = 0; j < height; ++j) {
+				this.passableTerrain[i][j] = bcPlanetMap.isPassableTerrainAt(
+						planet.getMapLocation(i, j).getBcMapLocation()) > 0;
+			}
+		}
 	}
 	
 	public int getWidth() {
-		return (int)bcPlanetMap.getWidth();
+		return width;
 	}
 	
 	public int getHeight() {
-		return (int)bcPlanetMap.getHeight();
+		return height;
 	}
 	
 	public Planet getPlanet() {
-		return Planet.valueOf(bcPlanetMap.getPlanet());
+		return planet;
 	}
 	
 	public Unit[] getInitialUnits() {
@@ -27,12 +41,11 @@ public class PlanetMap {
 		return (int)bcPlanetMap.initialKarboniteAt(location.getBcMapLocation());
 	}
 	
-	public boolean isPassableTerrainAt(MapLocation location) {
-		if(location.getPosition().getX() < 0 || location.getPosition().getX() >= this.getWidth() ||
-				location.getPosition().getY() < 0 || location.getPosition().getY() >= this.getHeight()) {
+	public boolean isPassableTerrainAt(int x, int y) {
+		if (x < 0 || x >= width || y < 0 || y >= height) {
 			return false;
 		}
-		return bcPlanetMap.isPassableTerrainAt(location.getBcMapLocation())>0;
+		return passableTerrain[x][y];
 	}
 	
 	public boolean isOnMap(MapLocation location) {

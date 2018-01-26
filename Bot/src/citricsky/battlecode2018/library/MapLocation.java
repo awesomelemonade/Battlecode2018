@@ -29,7 +29,7 @@ public class MapLocation {
 	}
 	
 	public boolean isPassableTerrain() {
-		return planet.getStartingMap().isPassableTerrainAt(this);
+		return planet.getStartingMap().isPassableTerrainAt(position.getX(), position.getY());
 	}
 	
 	public boolean isOnMap() {
