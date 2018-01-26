@@ -36,7 +36,7 @@ public class KnightExecutor implements UnitExecutor {
 				}
 			}
 		}
-		if(unit.isAbilityUnlocked() && unit.getAbilityHeat() < 10){
+		if(unit.isAbilityUnlocked() && unit.isJavelinReady()){
 			Unit targetEnemy = null;
 			int priorityIndex = Integer.MIN_VALUE;
 			int bestDistanceSquared = Integer.MAX_VALUE;
