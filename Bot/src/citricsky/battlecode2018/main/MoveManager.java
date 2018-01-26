@@ -263,7 +263,7 @@ public class MoveManager {
 		Benchmark benchmark = new Benchmark();
 		benchmark.push();
 		double deltaTime;
-		while (!bfsArray[index].getQueue().isEmpty()) {
+		while (bfsArray[index].getQueueSize() > 0) {
 			benchmark.push();
 			bfsArray[index].step();
 			deltaTime = benchmark.pop() / 1000000.0;
