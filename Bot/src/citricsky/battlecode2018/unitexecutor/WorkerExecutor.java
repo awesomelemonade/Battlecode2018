@@ -103,6 +103,7 @@ public class WorkerExecutor implements UnitExecutor {
 							(RoundInfo.getRoundNumber() < 50 ? 1 : (RoundInfo.getRoundNumber() < 100 ? 3 : 5)))) &&
 					blueprintType.getBaseCost() <= GameController.INSTANCE.getCurrentKarbonite()) {
 				Direction blueprintDirection = null;
+				Vector position = null;
 				int bestBuild = -1;
 				for (Direction direction: Direction.COMPASS) {
 					MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
@@ -113,6 +114,7 @@ public class WorkerExecutor implements UnitExecutor {
 						int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
 						int buildArray = Util.getBuildArray(neighbors);
 						if (buildArray > bestBuild) {
+							position = location.getPosition();
 							bestBuild = buildArray;
 							blueprintDirection = direction;
 						}
@@ -120,6 +122,7 @@ public class WorkerExecutor implements UnitExecutor {
 				}
 				if (blueprintDirection != null) {
 					unit.blueprint(blueprintType, blueprintDirection);
+					RoundInfo.addStructure(position.getX(), position.getY());
 					break workerAction;
 				}
 			}

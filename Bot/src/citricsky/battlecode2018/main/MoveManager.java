@@ -114,12 +114,18 @@ public class MoveManager {
 						explored[i][j] = true;
 					}
 					karbonite[i][j] = location.getKarboniteCount();
+				} else {
+					if (planet == Planet.MARS && (!nearEnemy)) {
+						bfsArray[BFS_EXPLORE].addSource(location.getPosition());
+					}
+				}
+				if (planet == Planet.EARTH) {
+					if (!explored[i][j] && (!nearEnemy)) {
+						bfsArray[BFS_EXPLORE].addSource(location.getPosition());
+					}
 				}
 				if (karbonite[i][j] > 0 && (!nearEnemy)) {
 					bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
-				}
-				if (!explored[i][j] && (!nearEnemy)) {
-					bfsArray[BFS_EXPLORE].addSource(location.getPosition());
 				}
 			}
 		}
@@ -227,6 +233,9 @@ public class MoveManager {
 		if (type == UnitType.WORKER) {
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
 			int workerHarvestStep = getBFSStep(BFS_WORKER_HARVEST, position);
+			if (workerTaskStep == Integer.MAX_VALUE && workerHarvestStep == Integer.MAX_VALUE) {
+				return BFS_EXPLORE;
+			}
 			if (workerTaskStep - 3 <= workerHarvestStep) {
 				return BFS_WORKER_TASK;
 			} else {

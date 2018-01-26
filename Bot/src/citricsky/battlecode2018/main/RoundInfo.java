@@ -71,6 +71,9 @@ public class RoundInfo {
 			}
 		}
 	}
+	public static void addStructure(int x, int y) {
+		structures[x][y] = true;
+	}
 	public static boolean hasStructure(int x, int y) {
 		if (Util.outOfBounds(x, y, planet.getWidth(), planet.getHeight())) {
 			return false;
