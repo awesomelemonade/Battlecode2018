@@ -87,7 +87,7 @@ public class MoveManager {
 		for (Unit unit: RoundInfo.getMyUnits()) {
 			if (unit.getLocation().isOnMap()) {
 				MapLocation location = unit.getLocation().getMapLocation();
-				boolean nearEnemy = getBFSStep(BFS_FIND_COMBAT_ENEMY, location.getPosition()) < 12;
+				boolean nearEnemy = nearEnemy(location.getPosition(), 12, false);
 				if (unit.getHealth() < unit.getMaxHealth()) {
 					if (!nearEnemy && unit.getType().isStructure()) {
 						addSource(BFS_WORKER_TASK, location, Direction.COMPASS);
@@ -115,7 +115,7 @@ public class MoveManager {
 		for (int i = 0; i < planet.getWidth(); ++i) {
 			for (int j = 0; j < planet.getHeight(); ++j) {
 				MapLocation location = planet.getMapLocation(i, j);
-				boolean nearEnemy = getBFSStep(BFS_FIND_COMBAT_ENEMY, location.getPosition()) < 12;
+				boolean nearEnemy = nearEnemy(location.getPosition(), 12, false);
 				if (GameController.INSTANCE.canSenseLocation(location)) {
 					explored[i][j] = !nearEnemy;
 					karbonite[i][j] = location.getKarboniteCount();
@@ -134,6 +134,14 @@ public class MoveManager {
 				}
 			}
 		}
+	}
+	public boolean nearEnemy(Vector position, int moveDistance, boolean all) {
+		for (Direction direction: Direction.COMPASS) {
+			if (getBFSStep(all?BFS_FIND_ALL_ENEMY:BFS_FIND_COMBAT_ENEMY, position.add(direction.getOffsetVector())) < moveDistance) {
+				return true;
+			}
+		}
+		return false;
 	}
 	public void addSource(int index, MapLocation location, Direction[] directions) {
 		for (Direction direction: directions) {

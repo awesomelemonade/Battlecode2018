@@ -16,17 +16,13 @@ public class FactoryExecutor implements UnitExecutor {
 		this.moveManager = moveManager;
 	}
 	
-	public boolean nearEnemy(MapLocation location, int moveDistance) {
-		return moveManager.getBFSStep(MoveManager.BFS_FIND_ALL_ENEMY, location.getPosition()) < 10;
-	}
-	
 	public UnitType getProduceType(MapLocation location) {
 		if (RoundInfo.getRoundNumber() > 650) {
 			if (RoundInfo.getUnitCount(UnitType.WORKER) < 10) {
 				return UnitType.WORKER;
 			}
 		}
-		if (nearEnemy(location, 10)) {
+		if (moveManager.nearEnemy(location.getPosition(), 10, true)) {
 			return UnitType.KNIGHT;
 		}
 		if (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 6 < RoundInfo.getUnitCount(UnitType.FACTORY)) {

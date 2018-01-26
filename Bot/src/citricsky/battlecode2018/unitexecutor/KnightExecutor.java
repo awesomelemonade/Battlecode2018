@@ -23,13 +23,14 @@ public class KnightExecutor implements UnitExecutor {
 	public void execute(Unit unit) {
 		if (unit.isAttackReady()) {
 			Unit targetEnemy = null;
-			int priorityIndex = 0;
+			int priorityIndex = Integer.MIN_VALUE;
 			for(Unit enemy : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getEnemyTeam())){
 				if(getPriorityIndex(enemy) > priorityIndex) {
 					targetEnemy = enemy;
 					priorityIndex = getPriorityIndex(enemy);
 				}
-			}if (targetEnemy != null) {
+			}
+			if (targetEnemy != null) {
 				if (unit.canAttack(targetEnemy)) {
 					unit.attack(targetEnemy);
 				}
@@ -37,7 +38,7 @@ public class KnightExecutor implements UnitExecutor {
 		}
 		if(unit.isAbilityUnlocked() && unit.getAbilityHeat() < 10){
 			Unit targetEnemy = null;
-			int priorityIndex = 0;
+			int priorityIndex = Integer.MIN_VALUE;
 			int bestDistanceSquared = Integer.MAX_VALUE;
 			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam())) {
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
@@ -62,6 +63,5 @@ public class KnightExecutor implements UnitExecutor {
 				}
 			}
 		}
-		
 	}
 }
