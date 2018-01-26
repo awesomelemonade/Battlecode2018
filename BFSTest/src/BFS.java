@@ -1,5 +1,3 @@
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.function.Predicate;
 
 public class BFS {
@@ -16,13 +14,13 @@ public class BFS {
 	
 	private int[][] data;
 	
-	private Deque<Vector> queue;
+	private VectorQueue queue;
 	private int step;
 	
 	public BFS(int width, int height, Predicate<Vector> passable, Vector... sources) {
 		this.data = new int[width][height];
 		this.passable = passable;
-		this.queue = new ArrayDeque<Vector>();
+		this.queue = new VectorQueue(width * height);
 		this.step = SOURCE_STEP + 1;
 		for (int i = 0; i < sources.length; ++i) {
 			addSource(sources[i], i);
@@ -98,7 +96,7 @@ public class BFS {
 		return x < 0 || y < 0 || x >= data.length || y >= data[0].length;
 	}
 	public void step() {
-		for(int i = 0, size = queue.size(); i < size; ++i) {
+		for(int i = 0, size = queue.getSize(); i < size; ++i) {
 			Vector vector = queue.poll();
 			int sourceId = (data[vector.getX()][vector.getY()] >>> SOURCE_SHIFT) & SOURCE_BITMASK;
 			for(Direction direction: Direction.COMPASS) {
@@ -116,8 +114,8 @@ public class BFS {
 		}
 		step++;
 	}
-	public Deque<Vector> getQueue(){
-		return queue;
+	public int getQueueSize(){
+		return queue.getSize();
 	}
 	public int getCurrentStep() {
 		return step;

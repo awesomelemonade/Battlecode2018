@@ -13,7 +13,7 @@ public class BFSMain {
 		};
 		BFS bfs = new BFS(map.length, map[0].length, vector -> map[vector.getX()][vector.getY()]==0);
 		bfs.addSource(new Vector(1, 1), 0);
-		while(bfs.getQueue().size()>0) {
+		while(bfs.getQueueSize()>0) {
 			bfs.step();
 		}
 		printBFS(bfs);

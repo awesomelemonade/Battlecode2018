@@ -1,7 +1,5 @@
 package citricsky.battlecode2018.main;
 
-import java.util.ArrayDeque;
-import java.util.Deque;
 import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
@@ -19,13 +17,13 @@ public class BFS {
 	
 	private int[][] data;
 	
-	private Deque<Vector> queue;
+	private VectorQueue queue;
 	private int step;
 	
 	public BFS(int width, int height, Predicate<Vector> passable, Vector... sources) {
 		this.data = new int[width][height];
 		this.passable = passable;
-		this.queue = new ArrayDeque<Vector>();
+		this.queue = new VectorQueue(width * height);
 		this.step = SOURCE_STEP + 1;
 		for (Vector source: sources) {
 			addSource(source);
@@ -94,7 +92,7 @@ public class BFS {
 		return x < 0 || y < 0 || x >= data.length || y >= data[0].length;
 	}
 	public void step() {
-		for(int i = 0, size = queue.size(); i < size; ++i) {
+		for(int i = 0, size = queue.getSize(); i < size; ++i) {
 			Vector vector = queue.poll();
 			for(Direction direction: Direction.COMPASS) {
 				Vector candidate = vector.add(direction.getOffsetVector());
@@ -110,8 +108,8 @@ public class BFS {
 		}
 		step++;
 	}
-	public Deque<Vector> getQueue(){
-		return queue;
+	public int getQueueSize(){
+		return queue.getSize();
 	}
 	public int getCurrentStep() {
 		return step;
