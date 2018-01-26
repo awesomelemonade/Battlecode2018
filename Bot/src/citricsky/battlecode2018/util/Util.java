@@ -3,10 +3,8 @@ package citricsky.battlecode2018.util;
 import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
-import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
-import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.main.RoundInfo;
 
@@ -15,13 +13,8 @@ public class Util {
 		if (outOfBounds(location)) {
 			return false;
 		}
-		Unit unit = RoundInfo.getUnit(location.getPosition().getX(), location.getPosition().getY());
-		if (unit != null) {
-			if (unit.getTeam() == GameController.INSTANCE.getTeam()) {
-				if (unit.getType().isStructure()) {
-					return false;
-				}
-			}
+		if (RoundInfo.hasStructure(location.getPosition().getX(), location.getPosition().getY())) {
+			return false;
 		}
 		return location.isPassableTerrain();
 	};

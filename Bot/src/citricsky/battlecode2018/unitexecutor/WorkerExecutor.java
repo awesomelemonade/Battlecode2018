@@ -22,14 +22,16 @@ public class WorkerExecutor implements UnitExecutor {
 		
 		for(Direction direction : Direction.COMPASS) {
 			MapLocation offset = location.getOffsetLocation(direction);
-			Unit unit = RoundInfo.getUnit(offset.getPosition().getX(), offset.getPosition().getY());
-			if (unit != null) {
-				if(unit.getType().isStructure() && (!unit.isStructureBuilt()) &&
-						unit.getTeam() == GameController.INSTANCE.getTeam()) {
-					double health = ((double)unit.getHealth())/((double)unit.getMaxHealth());
-					if(health > highestHealth) {
-						highestHealth = health;
-						bestTarget = unit;
+			if (GameController.INSTANCE.canSenseLocation(offset)) {
+				if (offset.hasUnitAtLocation()) {
+					Unit unit = offset.getUnit();
+					if(unit.getType().isStructure() && (!unit.isStructureBuilt()) &&
+							unit.getTeam() == GameController.INSTANCE.getTeam()) {
+						double health = ((double)unit.getHealth()) / ((double)unit.getMaxHealth());
+						if(health > highestHealth) {
+							highestHealth = health;
+							bestTarget = unit;
+						}
 					}
 				}
 			}
@@ -42,15 +44,17 @@ public class WorkerExecutor implements UnitExecutor {
 		
 		for(Direction direction : Direction.COMPASS) {
 			MapLocation offset = location.getOffsetLocation(direction);
-			Unit unit = RoundInfo.getUnit(offset.getPosition().getX(), offset.getPosition().getY());
-			if (unit != null) {
-				if(unit.getType().isStructure() && unit.isStructureBuilt() &&
-						unit.getTeam() == GameController.INSTANCE.getTeam() && 
-						unit.getHealth() < unit.getMaxHealth()) {
-					double health = ((double)unit.getHealth())/((double)unit.getMaxHealth());
-					if(health < lowestHealth) {
-						lowestHealth = health;
-						bestTarget = unit;
+			if (GameController.INSTANCE.canSenseLocation(offset)) {
+				if (offset.hasUnitAtLocation()) {
+					Unit unit = offset.getUnit();
+					if(unit.getType().isStructure() && unit.isStructureBuilt() &&
+							unit.getTeam() == GameController.INSTANCE.getTeam() && 
+							unit.getHealth() < unit.getMaxHealth()) {
+						double health = ((double)unit.getHealth()) / ((double)unit.getMaxHealth());
+						if(health < lowestHealth) {
+							lowestHealth = health;
+							bestTarget = unit;
+						}
 					}
 				}
 			}
@@ -99,7 +103,7 @@ public class WorkerExecutor implements UnitExecutor {
 							(RoundInfo.getRoundNumber() < 50 ? 1 : (RoundInfo.getRoundNumber() < 100 ? 3 : 5)))) &&
 					blueprintType.getBaseCost() <= GameController.INSTANCE.getCurrentKarbonite()) {
 				Direction blueprintDirection = null;
-				int bestBuild = Integer.MIN_VALUE;
+				int bestBuild = -1;
 				for (Direction direction: Direction.COMPASS) {
 					MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
 					if (unit.canBlueprint(blueprintType, direction)) {
@@ -108,7 +112,6 @@ public class WorkerExecutor implements UnitExecutor {
 						}
 						int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
 						int buildArray = Util.getBuildArray(neighbors);
-						System.out.println("Evaluating Structure: " + direction + " - " + Integer.toBinaryString(neighbors) + " - "+buildArray);
 						if (buildArray > bestBuild) {
 							bestBuild = buildArray;
 							blueprintDirection = direction;
@@ -116,7 +119,6 @@ public class WorkerExecutor implements UnitExecutor {
 					}
 				}
 				if (blueprintDirection != null) {
-					System.out.println("Blueprinting: " + blueprintType + " - " + blueprintDirection);
 					unit.blueprint(blueprintType, blueprintDirection);
 					break workerAction;
 				}
@@ -150,14 +152,9 @@ public class WorkerExecutor implements UnitExecutor {
 	}
 	private boolean isNextToStructure(MapLocation location) {
 		for (Direction dir: Direction.COMPASS) {
-			MapLocation offset = location.getOffsetLocation(dir);
-			Unit unit = RoundInfo.getUnit(offset.getPosition().getX(), offset.getPosition().getY());
-			if (unit != null) {
-				if (offset.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
-					if (offset.getUnit().getType().isStructure()) {
-						return true;
-					}
-				}
+			Vector offset = location.getPosition().add(dir.getOffsetVector());
+			if (RoundInfo.hasStructure(offset.getX(), offset.getY())) {
+				return true;
 			}
 		}
 		return false;

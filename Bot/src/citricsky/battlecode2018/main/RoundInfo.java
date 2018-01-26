@@ -5,10 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 import citricsky.battlecode2018.library.GameController;
+import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.util.Util;
 
 public class RoundInfo {
+	private static Planet planet;
 	private static int roundNumber;
 	private static int[] unitCounts;
 	private static int unitCountOnMap;
@@ -16,10 +19,12 @@ public class RoundInfo {
 	private static Map<Integer, UnitType> unitTypes;
 	private static Unit[] myUnits;
 	private static Unit[] enemiesOnMap;
-	private static Unit[][] units;
+	private static boolean[][] structures;
 	static {
 		unitCounts = new int[UnitType.values().length];
 		unitTypes = new HashMap<Integer, UnitType>();
+		planet = GameController.INSTANCE.getPlanet();
+		structures = new boolean[planet.getWidth()][planet.getHeight()];
 	}
 	public static void update() {
 		unitCountOnMap = 0;
@@ -30,20 +35,20 @@ public class RoundInfo {
 		enemiesOnMap = new Unit[allUnits.length];
 		int myUnitsCount = 0;
 		int enemiesOnMapCount = 0;
-		for (int i = 0; i < units.length; ++i) {
-			for (int j = 0; j < units[0].length; ++j) {
-				units[i][j] = null;
+		for (int i = 0; i < structures.length; ++i) {
+			for (int j = 0; j < structures[0].length; ++j) {
+				structures[i][j] = false;
 			}
 		}
 		for (Unit unit: allUnits) {
 			if (!unitTypes.containsKey(unit.getId())) {
 				unitTypes.put(unit.getId(), unit.getType());
 			}
-			if (unit.getLocation().isOnMap()) {
-				units[unit.getLocation().getMapLocation().getPosition().getX()]
-						[unit.getLocation().getMapLocation().getPosition().getY()] = unit;
-			}
 			if (unit.getTeam() == GameController.INSTANCE.getTeam()) {
+				if (unit.getLocation().isOnMap() && unit.getType().isStructure()) {
+					structures[unit.getLocation().getMapLocation().getPosition().getX()]
+							[unit.getLocation().getMapLocation().getPosition().getY()] = true;
+				}
 				myUnits[myUnitsCount++] = unit;
 			} else {
 				if (unit.getLocation().isOnMap()) {
@@ -66,8 +71,11 @@ public class RoundInfo {
 			}
 		}
 	}
-	public static Unit getUnit(int x, int y) {
-		return units[x][y];
+	public static boolean hasStructure(int x, int y) {
+		if (Util.outOfBounds(x, y, planet.getWidth(), planet.getHeight())) {
+			return false;
+		}
+		return structures[x][y];
 	}
 	public static UnitType getUnitType(int id) {
 		return unitTypes.get(id);
