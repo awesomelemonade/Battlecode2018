@@ -97,11 +97,12 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 			//try blueprint
 			UnitType blueprintType = getBlueprintType();
-			if (blueprintType == UnitType.ROCKET ||
+			if ((blueprintType == UnitType.ROCKET ||
 					(RoundInfo.getUnitCount(UnitType.FACTORY) <
-							(RoundInfo.getRoundNumber() < 50 ? 1 : (RoundInfo.getRoundNumber() < 100 ? 3 : 5)))) {
+							(RoundInfo.getRoundNumber() < 50 ? 1 : (RoundInfo.getRoundNumber() < 100 ? 3 : 5)))) &&
+					blueprintType.getBaseCost() <= GameController.INSTANCE.getCurrentKarbonite()) {
 				Direction blueprintDirection = null;
-				int bestBuild = -1;
+				int bestBuild = Integer.MIN_VALUE;
 				for (Direction direction: Direction.COMPASS) {
 					MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
 					if (unit.canBlueprint(blueprintType, direction)) {
@@ -110,7 +111,7 @@ public class WorkerExecutor implements UnitExecutor {
 						}
 						int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
 						int buildArray = Util.getBuildArray(neighbors);
-						System.out.println("Evaluating Factory: " + direction + " - " + neighbors + " - "+buildArray);
+						System.out.println("Evaluating Structure: " + direction + " - " + Integer.toBinaryString(neighbors) + " - "+buildArray);
 						if (buildArray > bestBuild) {
 							bestBuild = buildArray;
 							blueprintDirection = direction;
