@@ -108,7 +108,9 @@ public class WorkerExecutor implements UnitExecutor {
 						if (isNextToStructure(location)) {
 							continue;
 						}
-						int buildArray = Util.getBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate()));
+						int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
+						int buildArray = Util.getBuildArray(neighbors);
+						System.out.println("Evaluating Factory: " + direction + " - " + neighbors + " - "+buildArray);
 						if (buildArray > bestBuild) {
 							bestBuild = buildArray;
 							blueprintDirection = direction;
@@ -116,6 +118,7 @@ public class WorkerExecutor implements UnitExecutor {
 					}
 				}
 				if (blueprintDirection != null) {
+					System.out.println("Blueprinting: " + blueprintType + " - " + blueprintDirection);
 					unit.blueprint(blueprintType, blueprintDirection);
 					break workerAction;
 				}
