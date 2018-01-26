@@ -9,10 +9,13 @@ public class PlanetMap {
 	
 	public PlanetMap(bc.PlanetMap bcPlanetMap) {
 		this.bcPlanetMap = bcPlanetMap;
-		this.planet = Planet.valueOf(bcPlanetMap.getPlanet());
 		this.width = (int)bcPlanetMap.getWidth();
 		this.height = (int)bcPlanetMap.getHeight();
 		this.passableTerrain = new boolean[width][height];
+	}
+	
+	public void init() {
+		this.planet = Planet.valueOf(bcPlanetMap.getPlanet());
 		for (int i = 0; i < width; ++i) {
 			for (int j = 0; j < height; ++j) {
 				this.passableTerrain[i][j] = bcPlanetMap.isPassableTerrainAt(
