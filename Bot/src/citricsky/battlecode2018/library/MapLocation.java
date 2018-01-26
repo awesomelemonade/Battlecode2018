@@ -28,6 +28,10 @@ public class MapLocation {
 		return planet.getMapLocation(position.add(offset));
 	}
 	
+	public MapLocation getOffsetLocation(int x, int y) {
+		return planet.getMapLocation(x, y);
+	}
+	
 	public boolean isPassableTerrain() {
 		return planet.getStartingMap().isPassableTerrainAt(position.getX(), position.getY());
 	}

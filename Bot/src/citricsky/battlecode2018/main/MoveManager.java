@@ -69,39 +69,44 @@ public class MoveManager {
 			processed[i] = false;
 		}
 		for (Unit unit: RoundInfo.getEnemiesOnMap()) {
-			Vector position = unit.getLocation().getMapLocation().getPosition();
+			MapLocation location = unit.getLocation().getMapLocation();
 			if (unit.getType().isCombatType()) {
-				bfsArray[BFS_FIND_COMBAT_ENEMY].addSource(position);
+				bfsArray[BFS_FIND_COMBAT_ENEMY].addSource(location.getPosition());
 			}
-			bfsArray[BFS_FIND_ALL_ENEMY].addSource(position);
-			addSource(BFS_KNIGHT_ATTACK, position, Direction.COMPASS);
+			bfsArray[BFS_FIND_ALL_ENEMY].addSource(location.getPosition());
+			addSource(BFS_KNIGHT_ATTACK, location, Direction.COMPASS);
 			for (int i = 0; i < RANGER_OFFSET_X.length; ++i) {
-				bfsArray[BFS_RANGER_ATTACK].addSource(position.add(RANGER_OFFSET_X[i], RANGER_OFFSET_Y[i]));
+				MapLocation offset = location.getOffsetLocation(RANGER_OFFSET_X[i], RANGER_OFFSET_Y[i]);
+				if(Util.PASSABLE_PREDICATE.test(offset)){
+					bfsArray[BFS_RANGER_ATTACK].addSource(offset.getPosition());
+				}
 			}
 		}
 		for (Unit unit: RoundInfo.getMyUnits()) {
 			if (unit.getLocation().isOnMap()) {
-				Vector position = unit.getLocation().getMapLocation().getPosition();
-				boolean nearEnemy = getBFSStep(BFS_FIND_COMBAT_ENEMY, position) < 12;
+				MapLocation location = unit.getLocation().getMapLocation();
+				boolean nearEnemy = getBFSStep(BFS_FIND_COMBAT_ENEMY, location.getPosition()) < 12;
 				if (unit.getHealth() < unit.getMaxHealth()) {
 					if (!nearEnemy && unit.getType().isStructure()) {
-						addSource(BFS_WORKER_TASK, position, Direction.COMPASS);
+						addSource(BFS_WORKER_TASK, location, Direction.COMPASS);
 					} else {
 						for (int i = 0; i < HEALER_OFFSET_X.length; ++i) {
-							Vector offset = position.add(HEALER_OFFSET_X[i], HEALER_OFFSET_Y[i]);
-							if (getBFSStep(BFS_FIND_COMBAT_ENEMY, offset) < 12) {
-								continue;
+							MapLocation offset = location.getOffsetLocation(HEALER_OFFSET_X[i], HEALER_OFFSET_Y[i]);
+							if (Util.PASSABLE_PREDICATE.test(offset)) {
+								if (getBFSStep(BFS_FIND_COMBAT_ENEMY, offset.getPosition()) < 12) {
+									continue;
+								}
+								bfsArray[BFS_HEALER_HEAL].addSource(offset.getPosition());
 							}
-							bfsArray[BFS_HEALER_HEAL].addSource(offset);
 						}
 					}
 				}
 				if (unit.getType() == UnitType.ROCKET && unit.isStructureBuilt() &&
 						unit.getGarrisonUnitIds().length < unit.getStructureMaxCapacity()) {
-					bfsArray[BFS_LOAD_ROCKET].addSource(position);
+					bfsArray[BFS_LOAD_ROCKET].addSource(location.getPosition());
 				}
 				if (unit.getType() == UnitType.HEALER) {
-					bfsArray[BFS_FIND_HEAL].addSource(position); //simplicity sake, you could probably precompute offsets later
+					bfsArray[BFS_FIND_HEAL].addSource(location.getPosition()); //simplicity sake, you could probably precompute offsets later
 				}
 			}
 		}
@@ -130,9 +135,12 @@ public class MoveManager {
 			}
 		}
 	}
-	public void addSource(int index, Vector position, Direction[] directions) {
+	public void addSource(int index, MapLocation location, Direction[] directions) {
 		for (Direction direction: directions) {
-			bfsArray[index].addSource(position.add(direction.getOffsetVector()));
+			MapLocation offset = location.getOffsetLocation(direction);
+			if (Util.PASSABLE_PREDICATE.test(offset)) {
+				bfsArray[index].addSource(offset.getPosition());
+			}
 		}
 	}
 	public void move(Consumer<Unit> executor) {
