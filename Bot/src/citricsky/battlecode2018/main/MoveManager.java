@@ -234,7 +234,7 @@ public class MoveManager {
 			}
 		}
 		if (planet == Planet.EARTH) {
-			if (RoundInfo.getRoundNumber() > 600 || getBFSStep(BFS_LOAD_ROCKET, position) < 12) {
+			if (RoundInfo.getRoundNumber() > 700) {
 				return BFS_LOAD_ROCKET;
 			}
 		}
@@ -255,9 +255,12 @@ public class MoveManager {
 		if (attackStep < 10) {
 			return bfsAttackIndex;
 		}else {
-			if (planet == Planet.EARTH && RoundInfo.getRoundNumber() > 400
-					&& getBFSStep(BFS_LOAD_ROCKET, position) != Integer.MAX_VALUE) {
-				return BFS_LOAD_ROCKET;
+			if (planet == Planet.EARTH) {
+				int bfsStep = getBFSStep(BFS_LOAD_ROCKET, position);
+				if (bfsStep != Integer.MAX_VALUE && (RoundInfo.getRoundNumber() > 600 ||
+						RoundInfo.getRoundNumber() > 400 && bfsStep < 12)){
+					return BFS_LOAD_ROCKET;
+				}
 			}
 			if (bfsAttackIndex != BFS_FIND_ALL_ENEMY) {
 				int findStep = getBFSStep(BFS_FIND_ALL_ENEMY, position);
