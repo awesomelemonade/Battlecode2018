@@ -11,6 +11,9 @@ public enum Planet {
 
 	Planet(bc.Planet bcPlanet) {
 		this.bcPlanet = bcPlanet;
+	}
+	
+	public void init() {
 		this.startingMap = new PlanetMap(GameController.INSTANCE.getBcGameController().startingMap(bcPlanet));
 		this.mapLocations = new MapLocation[startingMap.getWidth()+BUFFER*2][startingMap.getHeight()+BUFFER*2];
 	}

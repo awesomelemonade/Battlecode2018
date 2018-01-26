@@ -12,6 +12,9 @@ public enum GameController {
 
 	public void init() {
 		this.bcGameController = new bc.GameController();
+		for (Planet planet: Planet.values()) {
+			planet.init();
+		}
 		this.planet = Planet.valueOf(bcGameController.planet());
 		this.team = Team.valueOf(bcGameController.team());
 		this.enemyTeam = this.team.getOpposite();
