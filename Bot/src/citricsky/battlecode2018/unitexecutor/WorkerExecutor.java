@@ -77,52 +77,55 @@ public class WorkerExecutor implements UnitExecutor {
 	}
 	@Override
 	public void execute(Unit unit) {
-		//try build
-		Unit buildTarget = getBuildTarget(unit.getLocation().getMapLocation());
-		if(buildTarget != null) {
-			if (unit.canBuild(buildTarget)) {
-				unit.build(buildTarget);
-				return;
-			}
-		}
-		//try repair
-		Unit repairTarget = getRepairTarget(unit.getLocation().getMapLocation());
-		if (repairTarget != null) {
-			if (unit.canRepair(repairTarget)) {
-				unit.repair(repairTarget);
-				return;
-			}
-		}
-		//try blueprint
-		UnitType blueprintType = getBlueprintType();
-		if (blueprintType == UnitType.ROCKET ||
-				(RoundInfo.getUnitCount(UnitType.FACTORY) <
-						(RoundInfo.getRoundNumber() < 50 ? 1 : (RoundInfo.getRoundNumber() < 100 ? 3 : 5)))) {
-			Direction blueprintDirection = null;
-			int bestBuild = -1;
-			for (Direction direction: Direction.COMPASS) {
-				MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
-				if (unit.canBlueprint(blueprintType, direction)) {
-					if (isNextToStructure(location)) {
-						continue;
-					}
-					int buildArray = Util.getBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate()));
-					if (buildArray > bestBuild) {
-						bestBuild = buildArray;
-						blueprintDirection = direction;
-					}
+		workerAction: 
+		if (!unit.hasWorkerActed()) {
+			//try build
+			Unit buildTarget = getBuildTarget(unit.getLocation().getMapLocation());
+			if(buildTarget != null) {
+				if (unit.canBuild(buildTarget)) {
+					unit.build(buildTarget);
+					break workerAction;
 				}
 			}
-			if (blueprintDirection != null) {
-				unit.blueprint(blueprintType, blueprintDirection);
-				return;
+			//try repair
+			Unit repairTarget = getRepairTarget(unit.getLocation().getMapLocation());
+			if (repairTarget != null) {
+				if (unit.canRepair(repairTarget)) {
+					unit.repair(repairTarget);
+					break workerAction;
+				}
 			}
-		}
-		//try harvest
-		for (Direction direction: Direction.values()) {
-			if (unit.canHarvest(direction)) {
-				unit.harvest(direction);
-				return;
+			//try blueprint
+			UnitType blueprintType = getBlueprintType();
+			if (blueprintType == UnitType.ROCKET ||
+					(RoundInfo.getUnitCount(UnitType.FACTORY) <
+							(RoundInfo.getRoundNumber() < 50 ? 1 : (RoundInfo.getRoundNumber() < 100 ? 3 : 5)))) {
+				Direction blueprintDirection = null;
+				int bestBuild = -1;
+				for (Direction direction: Direction.COMPASS) {
+					MapLocation location = unit.getLocation().getMapLocation().getOffsetLocation(direction);
+					if (unit.canBlueprint(blueprintType, direction)) {
+						if (isNextToStructure(location)) {
+							continue;
+						}
+						int buildArray = Util.getBuildArray(Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate()));
+						if (buildArray > bestBuild) {
+							bestBuild = buildArray;
+							blueprintDirection = direction;
+						}
+					}
+				}
+				if (blueprintDirection != null) {
+					unit.blueprint(blueprintType, blueprintDirection);
+					break workerAction;
+				}
+			}
+			//try harvest
+			for (Direction direction: Direction.values()) {
+				if (unit.canHarvest(direction)) {
+					unit.harvest(direction);
+					break workerAction;
+				}
 			}
 		}
 		if (shouldReplicate()) {
