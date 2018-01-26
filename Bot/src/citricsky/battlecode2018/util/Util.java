@@ -5,22 +5,38 @@ import java.util.function.Predicate;
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
+import citricsky.battlecode2018.library.Planet;
+import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.main.RoundInfo;
 
 public class Util {
 	public static final Predicate<MapLocation> PASSABLE_PREDICATE = location -> {
-		if (!location.isOnMap()) {
+		if (outOfBounds(location)) {
 			return false;
 		}
-		if (location.hasUnitAtLocation()) {
-			if (location.getUnit().getTeam() == GameController.INSTANCE.getTeam()) {
-				if (location.getUnit().getType().isStructure()) {
+		Unit unit = RoundInfo.getUnit(location.getPosition().getX(), location.getPosition().getY());
+		if (unit != null) {
+			if (unit.getTeam() == GameController.INSTANCE.getTeam()) {
+				if (unit.getType().isStructure()) {
 					return false;
 				}
 			}
 		}
 		return location.isPassableTerrain();
 	};
+	public static boolean outOfBounds(MapLocation location) {
+		return outOfBounds(location.getPosition(), location.getPlanet());
+	}
+	public static boolean outOfBounds(Vector vector, Planet planet) {
+		return outOfBounds(vector, planet.getWidth(), planet.getHeight());
+	}
+	public static boolean outOfBounds(Vector vector, int width, int height) {
+		return outOfBounds(vector.getX(), vector.getY(), width, height);
+	}
+	public static boolean outOfBounds(int x, int y, int width, int height) {
+		return x < 0 || y < 0 || x >= width || y >= height;
+	}
 	private static int[] buildArray;
 	public static void init() {
 		buildArray = new int[256];

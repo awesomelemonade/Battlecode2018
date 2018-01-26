@@ -4,6 +4,7 @@ import java.util.function.Predicate;
 
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.util.Util;
 
 public class BFS {
 	private Predicate<Vector> passable;
@@ -30,7 +31,7 @@ public class BFS {
 		}
 	}
 	public void addSource(Vector source) {
-		if(outOfBounds(source)) {
+		if(Util.outOfBounds(source, data.length, data[0].length)) {
 			return;
 		}
 		if((data[source.getX()][source.getY()] >>> STEP_SHIFT) != SOURCE_STEP) {
@@ -75,7 +76,7 @@ public class BFS {
 		return Direction.values()[(data[x][y] >>> DIRECTION_SHIFT) & DIRECTION_BITMASK];
 	}
 	public int getStep(int x, int y) {
-		if (outOfBounds(x, y)) {
+		if (Util.outOfBounds(x, y, data.length, data[0].length)) {
 			return Integer.MAX_VALUE;
 		}
 		int step = (data[x][y] >>> STEP_SHIFT) & STEP_BITMASK;
@@ -85,18 +86,12 @@ public class BFS {
 			return step;
 		}
 	}
-	public boolean outOfBounds(Vector vector) {
-		return outOfBounds(vector.getX(), vector.getY());
-	}
-	public boolean outOfBounds(int x, int y) {
-		return x < 0 || y < 0 || x >= data.length || y >= data[0].length;
-	}
 	public void step() {
 		for(int i = 0, size = queue.getSize(); i < size; ++i) {
 			Vector vector = queue.poll();
 			for(Direction direction: Direction.COMPASS) {
 				Vector candidate = vector.add(direction.getOffsetVector());
-				if((!outOfBounds(candidate)) && passable.test(candidate)) {
+				if((!Util.outOfBounds(candidate, data.length, data[0].length)) && passable.test(candidate)) {
 					if (data[candidate.getX()][candidate.getY()] == 0) {
 						data[candidate.getX()][candidate.getY()] =
 								((direction.getOpposite().ordinal() & DIRECTION_BITMASK) << DIRECTION_SHIFT) |
