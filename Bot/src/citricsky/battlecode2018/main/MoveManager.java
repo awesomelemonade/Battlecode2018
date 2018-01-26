@@ -151,7 +151,11 @@ public class MoveManager {
 					if (bfsIndex == BFS_EXPLORE) {
 						priorities.put(unit.getId(), Integer.MIN_VALUE);
 					} else {
-						priorities.put(unit.getId(), -bfsArray[bfsIndex].getStep(position.getX(), position.getY()));
+						int score = -bfsArray[bfsIndex].getStep(position.getX(), position.getY());
+						if (bfsIndex == BFS_WORKER_TASK && score == BFS.SOURCE_STEP) {
+							score = Integer.MAX_VALUE; // Workers building or repairing get priority in replication
+						}
+						priorities.put(unit.getId(), score);
 					}
 				}
 				queue.add(unit);
