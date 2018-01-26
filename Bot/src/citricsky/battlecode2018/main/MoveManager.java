@@ -76,9 +76,11 @@ public class MoveManager {
 			bfsArray[BFS_FIND_ALL_ENEMY].addSource(location.getPosition());
 			addSource(BFS_KNIGHT_ATTACK, location, Direction.COMPASS);
 			for (int i = 0; i < RANGER_OFFSET_X.length; ++i) {
-				MapLocation offset = location.getOffsetLocation(RANGER_OFFSET_X[i], RANGER_OFFSET_Y[i]);
-				if(Util.PASSABLE_PREDICATE.test(offset)){
-					bfsArray[BFS_RANGER_ATTACK].addSource(offset.getPosition());
+				Vector offset = location.getPosition().add(RANGER_OFFSET_X[i], RANGER_OFFSET_Y[i]);
+				if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
+					if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset))) {
+						bfsArray[BFS_RANGER_ATTACK].addSource(offset);
+					}
 				}
 			}
 		}
@@ -91,12 +93,12 @@ public class MoveManager {
 						addSource(BFS_WORKER_TASK, location, Direction.COMPASS);
 					} else {
 						for (int i = 0; i < HEALER_OFFSET_X.length; ++i) {
-							MapLocation offset = location.getOffsetLocation(HEALER_OFFSET_X[i], HEALER_OFFSET_Y[i]);
-							if (Util.PASSABLE_PREDICATE.test(offset)) {
-								if (getBFSStep(BFS_FIND_COMBAT_ENEMY, offset.getPosition()) < 12) {
-									continue;
+							Vector offset = location.getPosition().add(HEALER_OFFSET_X[i], HEALER_OFFSET_Y[i]);
+							if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
+								if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset)) &&
+										getBFSStep(BFS_FIND_COMBAT_ENEMY, offset) >= 12) {
+									bfsArray[BFS_HEALER_HEAL].addSource(offset);
 								}
-								bfsArray[BFS_HEALER_HEAL].addSource(offset.getPosition());
 							}
 						}
 					}
