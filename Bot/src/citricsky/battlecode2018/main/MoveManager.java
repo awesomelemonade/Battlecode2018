@@ -11,6 +11,7 @@ import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.unitexecutor.WorkerExecutor;
 import citricsky.battlecode2018.util.Benchmark;
 import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
@@ -320,15 +321,35 @@ public class MoveManager {
 			}
 		}
 		if (type == UnitType.WORKER) {
+			if (WorkerExecutor.getBlueprintType() != null) {
+				return BFS_WORKER_BLUEPRINT;
+			}
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
 			int workerHarvestStep = getBFSStep(BFS_WORKER_HARVEST, position);
 			if (workerTaskStep == Integer.MAX_VALUE && workerHarvestStep == Integer.MAX_VALUE) {
 				return BFS_WORKER_BLUEPRINT;
 			}
+			if (workerHarvestStep == Integer.MAX_VALUE) {
+				return BFS_WORKER_TASK;
+			}
+			if (workerTaskStep == Integer.MAX_VALUE) {
+				if (workerHarvestStep > 20) {
+					return BFS_WORKER_BLUEPRINT;
+				} else {
+					return BFS_WORKER_HARVEST;
+				}
+			}
+			if (workerTaskStep <= 3) {
+				return BFS_WORKER_TASK;
+			}
 			if (workerTaskStep - 3 <= workerHarvestStep) {
 				return BFS_WORKER_TASK;
 			} else {
-				return BFS_WORKER_HARVEST;
+				if (workerHarvestStep > 20) {
+					return BFS_WORKER_BLUEPRINT;
+				} else {
+					return BFS_WORKER_HARVEST;
+				}
 			}
 		}
 		if (planet == Planet.EARTH) {

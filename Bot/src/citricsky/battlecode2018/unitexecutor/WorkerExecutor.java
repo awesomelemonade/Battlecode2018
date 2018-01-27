@@ -72,13 +72,21 @@ public class WorkerExecutor implements UnitExecutor {
 		}
 		return false;
 	}
-	public UnitType getBlueprintType() {
+	public static UnitType getBlueprintType() {
+		UnitType target = getBlueprintTargetType();
+		if (target.getBaseCost() <= GameController.INSTANCE.getCurrentKarbonite()) {
+			return target;
+		} else {
+			return null;
+		}
+	}
+	public static UnitType getBlueprintTargetType() {
 		if (RoundInfo.getMyUnits().length > 60) {
 			return UnitType.ROCKET;
 		}
 		if ((RoundInfo.getRoundNumber() < 100 || RoundInfo.getUnitCount(UnitType.FACTORY) < 5) && RoundInfo.getRoundNumber() < 625) {
 			return UnitType.FACTORY;
-		}else {
+		} else {
 			return UnitType.ROCKET;
 		}
 	}
@@ -104,7 +112,7 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 			//try blueprint
 			UnitType blueprintType = getBlueprintType();
-			if (blueprintType != null && blueprintType.getBaseCost() <= GameController.INSTANCE.getCurrentKarbonite() &&
+			if (blueprintType != null &&
 					moveManager.getBFSStep(MoveManager.BFS_WORKER_BLUEPRINT, unit.getLocation().getMapLocation().getPosition()) == BFS.SOURCE_STEP) {
 				Direction blueprintDirection = null;
 				Vector position = null;
