@@ -56,7 +56,7 @@ public class MoveManager {
 		queue = new PriorityQueue<Unit>(7, new Comparator<Unit>() {
 			@Override
 			public int compare(Unit a, Unit b) {
-				return Integer.compare(priorities[a.getId()], priorities[b.getId()]);
+				return Integer.compare(priorities[b.getId()], priorities[a.getId()]);
 			}
 		});
 		this.planet = GameController.INSTANCE.getPlanet();
