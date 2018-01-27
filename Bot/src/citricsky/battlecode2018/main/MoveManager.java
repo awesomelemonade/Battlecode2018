@@ -171,12 +171,12 @@ public class MoveManager {
 					if (karbonite[i][j] > 0) {
 						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
 					} else {
-						if (Util.PASSABLE_PREDICATE.test(location)) { // cannot blueprint on unpassable tiles
-							if (!isNextToStructure(location)) {
-								int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
-								int buildArray = Util.getBuildArray(neighbors);
-								blueprint[i][j] = buildArray;
-							}
+						if (Util.PASSABLE_PREDICATE.test(location) && !isNextToStructure(location)) {
+							int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
+							int buildArray = Util.getBuildArray(neighbors);
+							blueprint[i][j] = buildArray;
+						} else {
+							blueprint[i][j] = -1;
 						}
 					}
 				}
