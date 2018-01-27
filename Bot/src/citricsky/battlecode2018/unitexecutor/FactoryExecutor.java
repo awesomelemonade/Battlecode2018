@@ -20,6 +20,8 @@ public class FactoryExecutor implements UnitExecutor {
 		if (RoundInfo.getRoundNumber() > 650) {
 			if (RoundInfo.getUnitCount(UnitType.WORKER) < 10) {
 				return UnitType.WORKER;
+			} else if (RoundInfo.getCombatUnitsCount() > 20) {
+				return null;
 			}
 		}
 		if (moveManager.nearEnemy(location.getPosition(), 10, true)) {
