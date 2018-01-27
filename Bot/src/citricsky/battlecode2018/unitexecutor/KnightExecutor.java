@@ -22,43 +22,43 @@ public class KnightExecutor implements UnitExecutor {
 	@Override
 	public void execute(Unit unit) {
 		if (unit.isAttackReady()) {
-			Unit targetEnemy = null;
+			Unit bestTarget = null;
 			int priorityIndex = Integer.MIN_VALUE;
-			double lowestHealthPercentage = 1.01;
-			for(Unit enemy : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getEnemyTeam())){
-				double healthPercentage = enemy.getHealth()/enemy.getMaxHealth();
-				if(getPriorityIndex(enemy) > priorityIndex) {
-					lowestHealthPercentage = healthPercentage;
-					targetEnemy = enemy;
-					priorityIndex = getPriorityIndex(enemy);
-				}
-				else if(getPriorityIndex(enemy) == priorityIndex) {
-					if(healthPercentage < lowestHealthPercentage) {
-						targetEnemy = enemy;
-						lowestHealthPercentage = healthPercentage;
+			int lowestHealth = Integer.MAX_VALUE;
+			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getEnemyTeam())){
+				if (unit.canAttack(enemyUnit)) {
+					int health = enemyUnit.getHealth();
+					int unitPriority = getPriorityIndex(enemyUnit);
+					if (unitPriority > priorityIndex) {
+						bestTarget = enemyUnit;
+						lowestHealth = health;
+						priorityIndex = unitPriority;
+					} else if (unitPriority == priorityIndex) {
+						if (health < lowestHealth) {
+							bestTarget = enemyUnit;
+							lowestHealth = health;
+						}
 					}
 				}
 			}
-			if (targetEnemy != null) {
-				if (unit.canAttack(targetEnemy)) {
-					unit.attack(targetEnemy);
-				}
+			if (bestTarget != null) {
+				unit.attack(bestTarget);
 			}
 		}
 		if(unit.isAbilityUnlocked() && unit.isJavelinReady()){
 			Unit targetEnemy = null;
 			int priorityIndex = Integer.MIN_VALUE;
-			double lowestHealthPercentage = 1.01;
+			int lowestHealth = Integer.MAX_VALUE;
 			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam())) {
-				float healthPercentage = enemyUnit.getHealth()/enemyUnit.getMaxHealth();
+				int health = enemyUnit.getHealth();
 				int unitPriority = getPriorityIndex(enemyUnit);
 				if (unitPriority > priorityIndex) {
-					lowestHealthPercentage = healthPercentage;
+					lowestHealth = health;
 					targetEnemy = enemyUnit;
 					priorityIndex = unitPriority;
 				} else if (unitPriority == priorityIndex) {
-					if (healthPercentage < lowestHealthPercentage) {
-						lowestHealthPercentage = healthPercentage;
+					if (health < lowestHealth) {
+						lowestHealth = health;
 						targetEnemy = enemyUnit;
 					}
 				}

@@ -25,31 +25,27 @@ public class RangerExecutor implements UnitExecutor {
 			return;
 		}
 		if (unit.isAttackReady()) {
-			double lowestHealthPercentage = 1.01;
 			Unit bestTarget = null;
-			int priorityIndex = 0;
+			int priorityIndex = Integer.MIN_VALUE;
+			int lowestHealth = Integer.MAX_VALUE;
 			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(50, GameController.INSTANCE.getEnemyTeam())) {
-				float healthPercentage = enemyUnit.getHealth()/enemyUnit.getMaxHealth();
-				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
-						.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
-				int unitPriority = getPriorityIndex(enemyUnit);
-				if (distanceSquared > unit.getRangerCannotAttackRange() && distanceSquared < unit.getAttackRange()) {
+				if (unit.canAttack(enemyUnit)) {
+					int health = enemyUnit.getHealth();
+					int unitPriority = getPriorityIndex(enemyUnit);
 					if (unitPriority > priorityIndex) {
-						lowestHealthPercentage = healthPercentage;
 						bestTarget = enemyUnit;
+						lowestHealth = health;
 						priorityIndex = unitPriority;
 					} else if (unitPriority == priorityIndex) {
-						if (healthPercentage < lowestHealthPercentage) {
-							lowestHealthPercentage = healthPercentage;
+						if (health < lowestHealth) {
 							bestTarget = enemyUnit;
+							lowestHealth = health;
 						}
 					}
 				}
 			}
 			if (bestTarget != null) {
-				if (unit.canAttack(bestTarget)) {
-					unit.attack(bestTarget);
-				}
+				unit.attack(bestTarget);
 			}
 		}
 		if(unit.isAbilityUnlocked() && unit.isBeginSnipeReady()) {
