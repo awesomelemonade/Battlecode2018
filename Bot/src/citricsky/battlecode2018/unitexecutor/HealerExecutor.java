@@ -23,7 +23,7 @@ public class HealerExecutor implements UnitExecutor {
 			for (Unit friendlyUnit : friendlyUnits) {
 				if (unit.canHeal(friendlyUnit)) {
 					double healthPercentage = ((double)friendlyUnit.getHealth()) / ((double)friendlyUnit.getMaxHealth());
-					if(priorityIndex < getPriorityIndex(friendlyUnit)) {
+					if(priorityIndex < getPriorityIndex(friendlyUnit) && healthPercentage < 1.0) {
 						leastHealthPercentage = healthPercentage;
 						bestTarget = friendlyUnit;
 					}
