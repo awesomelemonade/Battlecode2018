@@ -10,7 +10,6 @@ import citricsky.battlecode2018.main.BFS;
 import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.util.Constants;
-import citricsky.battlecode2018.util.Util;
 
 public class WorkerExecutor implements UnitExecutor {
 	private MoveManager moveManager;
@@ -64,11 +63,9 @@ public class WorkerExecutor implements UnitExecutor {
 	}
 	private boolean shouldReplicate() {
 		if (GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST) {
-			if (RoundInfo.getRoundNumber() > 750) {
+			if (RoundInfo.getRoundNumber() < 20) {
 				return true;
 			}
-			return (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 6 < RoundInfo.getUnitCount(UnitType.FACTORY) || 
-					(GameController.INSTANCE.getCurrentKarbonite() > 300 && RoundInfo.getUnitCount(UnitType.FACTORY) < 3));
 		}
 		return false;
 	}

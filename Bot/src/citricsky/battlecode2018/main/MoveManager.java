@@ -323,7 +323,7 @@ public class MoveManager {
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
 			int workerHarvestStep = getBFSStep(BFS_WORKER_HARVEST, position);
 			if (workerTaskStep == Integer.MAX_VALUE && workerHarvestStep == Integer.MAX_VALUE) {
-				return BFS_EXPLORE;
+				return BFS_WORKER_BLUEPRINT;
 			}
 			if (workerTaskStep - 3 <= workerHarvestStep) {
 				return BFS_WORKER_TASK;
