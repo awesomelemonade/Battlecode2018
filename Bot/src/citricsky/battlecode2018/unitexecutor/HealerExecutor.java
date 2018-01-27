@@ -8,11 +8,10 @@ public class HealerExecutor implements UnitExecutor {
 	public void execute(Unit unit) {
 		Unit[] friendlyUnits = unit.senseNearbyUnitsByTeam(30, GameController.INSTANCE.getTeam());
 		if(unit.isHealReady()) {
-			double leastHealthPercentage = 1.1;
+			double leastHealthPercentage = 1.0;
 			Unit bestTarget = null;
 			for (Unit friendlyUnit : friendlyUnits) {
-				double healthPercentage = friendlyUnit.getHealth() / friendlyUnit.getMaxHealth();
-				if (healthPercentage == 1) continue;
+				double healthPercentage = ((double)friendlyUnit.getHealth()) / ((double)friendlyUnit.getMaxHealth());
 				if (healthPercentage < leastHealthPercentage) {
 					bestTarget = friendlyUnit;
 					leastHealthPercentage = healthPercentage;
