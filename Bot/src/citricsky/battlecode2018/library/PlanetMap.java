@@ -6,6 +6,7 @@ public class PlanetMap {
 	private boolean[][] passableTerrain;
 	private int width;
 	private int height;
+	private Unit[] initialUnits;
 	
 	public PlanetMap(bc.PlanetMap bcPlanetMap) {
 		this.bcPlanetMap = bcPlanetMap;
@@ -22,6 +23,7 @@ public class PlanetMap {
 						planet.getMapLocation(i, j).getBcMapLocation()) > 0;
 			}
 		}
+		this.initialUnits = LibraryUtil.toArray(bcPlanetMap.getInitial_units());
 	}
 	
 	public int getWidth() {
@@ -37,7 +39,7 @@ public class PlanetMap {
 	}
 	
 	public Unit[] getInitialUnits() {
-		return LibraryUtil.toArray(bcPlanetMap.getInitial_units());
+		return initialUnits;
 	}
 	
 	public int getInitialKarboniteAt(MapLocation location) {

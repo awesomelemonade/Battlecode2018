@@ -78,18 +78,30 @@ public class MoveManager {
 			bfsArray[i].resetHard();
 			processed[i] = false;
 		}
-		for (Unit unit: RoundInfo.getEnemiesOnMap()) {
-			MapLocation location = unit.getLocation().getMapLocation();
-			if (unit.getType().isCombatType()) {
-				bfsArray[BFS_FIND_COMBAT_ENEMY].addSource(location.getPosition());
+		
+		if (RoundInfo.getEnemiesOnMap().length > 0) {
+			for (Unit unit: RoundInfo.getEnemiesOnMap()) {
+				MapLocation location = unit.getLocation().getMapLocation();
+				if (unit.getType().isCombatType()) {
+					bfsArray[BFS_FIND_COMBAT_ENEMY].addSource(location.getPosition());
+				}
+				bfsArray[BFS_FIND_ALL_ENEMY].addSource(location.getPosition());
+				addSource(BFS_KNIGHT_ATTACK, location, Direction.COMPASS);
+				for (int i = 0; i < RANGER_OFFSET_X.length; ++i) {
+					Vector offset = location.getPosition().add(RANGER_OFFSET_X[i], RANGER_OFFSET_Y[i]);
+					if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
+						if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset))) {
+							bfsArray[BFS_RANGER_ATTACK].addSource(offset);
+						}
+					}
+				}
 			}
-			bfsArray[BFS_FIND_ALL_ENEMY].addSource(location.getPosition());
-			addSource(BFS_KNIGHT_ATTACK, location, Direction.COMPASS);
-			for (int i = 0; i < RANGER_OFFSET_X.length; ++i) {
-				Vector offset = location.getPosition().add(RANGER_OFFSET_X[i], RANGER_OFFSET_Y[i]);
-				if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
-					if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset))) {
-						bfsArray[BFS_RANGER_ATTACK].addSource(offset);
+		} else {
+			for (Unit unit: planet.getStartingMap().getInitialUnits()) {
+				if (unit.getTeam() == GameController.INSTANCE.getEnemyTeam()) {
+					Vector position = unit.getLocation().getMapLocation().getPosition();
+					if (!explored[position.getX()][position.getY()]) {
+						bfsArray[BFS_FIND_ALL_ENEMY].addSource(position);
 					}
 				}
 			}
