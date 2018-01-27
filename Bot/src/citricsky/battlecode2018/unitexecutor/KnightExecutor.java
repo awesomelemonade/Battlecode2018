@@ -14,10 +14,32 @@ public class KnightExecutor implements UnitExecutor {
 		if (unitType.equals(UnitType.FACTORY)) {
 			return 1;
 		}
-		if (unitType.equals(UnitType.ROCKET)) {
+		if(unitType.equals(UnitType.KNIGHT)) {
 			return 2;
-		} else {
+		}
+		if(unitType.equals(UnitType.RANGER)){
+			return 3;
+		}
+		if(unitType.equals(UnitType.MAGE)) {
+			return 4;
+		}
+		return 5; //if rocket
+	}
+	private static int getAbilityPriorityIndex(Unit unit) {
+		UnitType unitType = unit.getType();
+		if (unitType.equals(UnitType.WORKER)) {
+			return 0;
+		}
+		if (unitType.equals(UnitType.FACTORY)) {
 			return 1;
+		}
+		if(unitType.equals(UnitType.MAGE)) {
+			return 3;
+		}
+		if (unitType.equals(UnitType.ROCKET)) {
+			return 4;
+		} else {
+			return 2;
 		}
 	}
 	
@@ -54,7 +76,7 @@ public class KnightExecutor implements UnitExecutor {
 			int lowestHealth = Integer.MAX_VALUE;
 			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam())) {
 				int health = enemyUnit.getHealth();
-				int unitPriority = getPriorityIndex(enemyUnit);
+				int unitPriority = getAbilityPriorityIndex(enemyUnit);
 				if (unitPriority > priorityIndex) {
 					lowestHealth = health;
 					targetEnemy = enemyUnit;
