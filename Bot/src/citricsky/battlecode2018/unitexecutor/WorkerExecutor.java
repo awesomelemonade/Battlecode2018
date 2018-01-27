@@ -61,9 +61,12 @@ public class WorkerExecutor implements UnitExecutor {
 		}
 		return bestTarget;
 	}
-	private boolean shouldReplicate() {
+	private boolean shouldReplicate(Unit unit) {
 		if (GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST) {
 			if (RoundInfo.getRoundNumber() < 20) {
+				return true;
+			}
+			if (RoundInfo.getRoundNumber() > 750) {
 				return true;
 			}
 		}
@@ -134,7 +137,7 @@ public class WorkerExecutor implements UnitExecutor {
 				}
 			}
 		}
-		if (shouldReplicate()) {
+		if (shouldReplicate(unit)) {
 			Direction bestReplicateDirection = null;
 			Vector replicatePosition = null;
 			int closestTask = Integer.MAX_VALUE;

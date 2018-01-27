@@ -8,8 +8,11 @@ public class KnightExecutor implements UnitExecutor {
 
 	private static int getPriorityIndex(Unit unit) {
 		UnitType unitType = unit.getType();
-		if (unitType.equals(UnitType.FACTORY) || unitType.equals(UnitType.WORKER)) {
+		if (unitType.equals(UnitType.WORKER)) {
 			return 0;
+		}
+		if (unitType.equals(UnitType.FACTORY)) {
+			return 1;
 		}
 		if (unitType.equals(UnitType.ROCKET)) {
 			return 2;

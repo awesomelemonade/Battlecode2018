@@ -20,15 +20,29 @@ public class RocketExecutor implements UnitExecutor {
 		this.planetCommunication = planetCommunication;
 		this.communicationIndex = 0;
 	}
+	public boolean shouldLaunch(Unit unit) {
+		if(unit.getHealth() <= 50) {
+			return true;
+		}
+		if(GameController.INSTANCE.getRoundNumber() > 740) {
+			return true;
+		}
+		if(unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
+			if(GameController.INSTANCE.getRoundNumber() < 350) {
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
 	@Override
 	public void execute(Unit unit) {
 		if (!unit.isStructureBuilt()) {
 			return;
 		}
 		if (unit.getLocation().getMapLocation().getPlanet() == Planet.EARTH) {
-			if (unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity() ||
-					((double)unit.getHealth()) / ((double)unit.getMaxHealth()) < 0.5 || 
-						GameController.INSTANCE.getRoundNumber() > 740) {
+			if (shouldLaunch(unit)) {
 				Vector candidate = planetCommunication.getLanding(communicationIndex);
 				if (candidate != null) {
 					MapLocation destination = Planet.MARS.getMapLocation(candidate);
