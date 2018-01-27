@@ -2,8 +2,17 @@ package citricsky.battlecode2018.unitexecutor;
 
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.library.UnitType;
 
 public class HealerExecutor implements UnitExecutor {
+	private static int getPriorityIndex(Unit unit) {
+		UnitType unitType = unit.getType();
+		if (unitType.equals(UnitType.WORKER)) {
+			return 0;
+		}
+		return 1;
+	}
+	
 	@Override
 	public void execute(Unit unit) {
 		Unit[] friendlyUnits = unit.senseNearbyUnitsByTeam(30, GameController.INSTANCE.getTeam());
