@@ -31,17 +31,19 @@ public class MoveManager {
 	public static final int BFS_FIND_ALL_ENEMY = 1;
 	public static final int BFS_FIND_HEAL = 2;
 	public static final int BFS_WORKER_TASK = 3;
-	public static final int BFS_WORKER_HARVEST = 4;
-	public static final int BFS_KNIGHT_ATTACK = 5;
-	public static final int BFS_RANGER_ATTACK = 6;
-	public static final int BFS_HEALER_HEAL = 7;
-	public static final int BFS_LOAD_ROCKET = 8;
-	public static final int BFS_EXPLORE = 9;
+	public static final int BFS_WORKER_BLUEPRINT = 4;
+	public static final int BFS_WORKER_HARVEST = 5;
+	public static final int BFS_KNIGHT_ATTACK = 6;
+	public static final int BFS_RANGER_ATTACK = 7;
+	public static final int BFS_HEALER_HEAL = 8;
+	public static final int BFS_LOAD_ROCKET = 9;
+	public static final int BFS_EXPLORE = 10;
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
 	private int[][] karbonite;
 	private boolean[][] explored;
+	private int[][] blueprint;
 	private int[] priorities;
 	private int[] bfsIndices;
 	private PriorityQueue<Unit> queue;
@@ -58,8 +60,9 @@ public class MoveManager {
 		this.planet = GameController.INSTANCE.getPlanet();
 		this.karbonite = new int[planet.getWidth()][planet.getHeight()];
 		this.explored = new boolean[planet.getWidth()][planet.getHeight()];
+		this.blueprint = new int[planet.getWidth()][planet.getHeight()];
 		//Initialize bfsArray
-		this.bfsArray = new BFS[10];
+		this.bfsArray = new BFS[11];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
@@ -72,6 +75,9 @@ public class MoveManager {
 				}
 			}
 		}
+	}
+	public int getBlueprint(int x, int y) {
+		return blueprint[x][y];
 	}
 	public boolean isNearEnemy(Vector position, int threshold) {
 		for (Unit unit: RoundInfo.getEnemiesOnMap()) {
@@ -161,11 +167,46 @@ public class MoveManager {
 						bfsArray[BFS_EXPLORE].addSource(location.getPosition());
 					}
 				}
-				if (karbonite[i][j] > 0 && (!nearEnemy)) {
-					bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
+				if (!nearEnemy) {
+					if (karbonite[i][j] > 0) {
+						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
+					} else {
+						if (Util.PASSABLE_PREDICATE.test(location)) { // cannot blueprint on unpassable tiles
+							if (!isNextToStructure(location)) {
+								int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
+								int buildArray = Util.getBuildArray(neighbors);
+								blueprint[i][j] = buildArray;
+							}
+						}
+					}
 				}
 			}
 		}
+		for (int i = 0; i < planet.getWidth(); ++i) {
+			for (int j = 0; j < planet.getHeight(); ++j) {
+				MapLocation location = planet.getMapLocation(i, j);
+				if (Util.PASSABLE_PREDICATE.test(location)) {
+					for (Direction direction: Direction.COMPASS) {
+						Vector offset = location.getOffsetLocation(direction).getPosition();
+						if (!Util.outOfBounds(offset, blueprint.length, blueprint[0].length)) {
+							if (blueprint[offset.getX()][offset.getY()] > 0) {
+								bfsArray[BFS_WORKER_BLUEPRINT].addSource(location.getPosition());
+								break;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+	public boolean isNextToStructure(MapLocation location) {
+		for (Direction dir: Direction.COMPASS) {
+			Vector offset = location.getPosition().add(dir.getOffsetVector());
+			if (RoundInfo.hasStructure(offset.getX(), offset.getY())) {
+				return true;
+			}
+		}
+		return false;
 	}
 	public boolean nearEnemy(Vector position, int moveDistance, boolean all) {
 		for (Direction direction: Direction.COMPASS) {
