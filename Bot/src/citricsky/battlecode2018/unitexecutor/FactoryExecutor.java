@@ -30,11 +30,14 @@ public class FactoryExecutor implements UnitExecutor {
 				if(RoundInfo.getRoundNumber() < 710) {
 					if (RoundInfo.getUnitCount(UnitType.WORKER) < 10) {
 						return UnitType.WORKER;
-					}
-					else if (RoundInfo.getCombatUnitsCount() > 20) {
+					} 
+					if (RoundInfo.getCombatUnitsCount() > 20) {
 						return null;
 					}
-				} 
+				}
+				if (RoundInfo.getCombatUnitsCount() > 30) {
+					return null;
+				}
 			}
 		}
 		if(location.getUnit().senseNearbyUnitsByTeam(16, GameController.INSTANCE.getEnemyTeam()).length > 12) {
