@@ -136,6 +136,7 @@ public class WorkerExecutor implements UnitExecutor {
 		}
 		if (shouldReplicate()) {
 			Direction bestReplicateDirection = null;
+			Vector replicatePosition = null;
 			int closestTask = Integer.MAX_VALUE;
 			for (Direction direction: Direction.COMPASS) {
 				if (unit.canReplicate(direction)) {
@@ -144,12 +145,17 @@ public class WorkerExecutor implements UnitExecutor {
 					int bfsStep = moveManager.getBFSStep(bfsIndex, position);
 					if (bfsStep < closestTask) {
 						closestTask = bfsStep;
+						replicatePosition = position;
 						bestReplicateDirection = direction;
 					}
 				}
 			}
 			if (bestReplicateDirection != null) {
 				unit.replicate(bestReplicateDirection);
+				MapLocation location = GameController.INSTANCE.getPlanet().getMapLocation(replicatePosition);
+				if (location.hasUnitAtLocation()) {
+					moveManager.queueUnit(location.getUnit()); // throw the new unit into the queue
+				}
 			}
 		}
 	}

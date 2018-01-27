@@ -1,13 +1,12 @@
 package citricsky.battlecode2018.main;
 
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
 
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
 
 public class RoundInfo {
@@ -16,13 +15,13 @@ public class RoundInfo {
 	private static int[] unitCounts;
 	private static int unitCountOnMap;
 	private static int combatUnitsCount;
-	private static Map<Integer, UnitType> unitTypes;
+	private static UnitType[] unitTypes;
 	private static Unit[] myUnits;
 	private static Unit[] enemiesOnMap;
 	private static boolean[][] structures;
 	static {
 		unitCounts = new int[UnitType.values().length];
-		unitTypes = new HashMap<Integer, UnitType>();
+		unitTypes = new UnitType[Constants.MAX_UNIT_ID];
 		planet = GameController.INSTANCE.getPlanet();
 		structures = new boolean[planet.getWidth()][planet.getHeight()];
 	}
@@ -41,9 +40,7 @@ public class RoundInfo {
 			}
 		}
 		for (Unit unit: allUnits) {
-			if (!unitTypes.containsKey(unit.getId())) {
-				unitTypes.put(unit.getId(), unit.getType());
-			}
+			unitTypes[unit.getId()] = unit.getType();
 			if (unit.getTeam() == GameController.INSTANCE.getTeam()) {
 				if (unit.getLocation().isOnMap() && unit.getType().isStructure()) {
 					structures[unit.getLocation().getMapLocation().getPosition().getX()]
@@ -81,7 +78,7 @@ public class RoundInfo {
 		return structures[x][y];
 	}
 	public static UnitType getUnitType(int id) {
-		return unitTypes.get(id);
+		return unitTypes[id];
 	}
 	public static int getUnitCountOnMap() {
 		return unitCountOnMap;

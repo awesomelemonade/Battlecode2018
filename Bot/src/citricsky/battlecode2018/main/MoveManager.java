@@ -1,8 +1,6 @@
 package citricsky.battlecode2018.main;
 
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.PriorityQueue;
 import java.util.function.Consumer;
 
@@ -14,6 +12,7 @@ import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.util.Benchmark;
+import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
 
 public class MoveManager {
@@ -43,8 +42,19 @@ public class MoveManager {
 	private Planet planet;
 	private int[][] karbonite;
 	private boolean[][] explored;
+	private int[] priorities;
+	private int[] bfsIndices;
+	private PriorityQueue<Unit> queue;
 	
 	public MoveManager() {
+		priorities = new int[Constants.MAX_UNIT_ID];
+		bfsIndices = new int[Constants.MAX_UNIT_ID];
+		queue = new PriorityQueue<Unit>(7, new Comparator<Unit>() {
+			@Override
+			public int compare(Unit a, Unit b) {
+				return Integer.compare(priorities[a.getId()], priorities[b.getId()]);
+			}
+		});
 		this.planet = GameController.INSTANCE.getPlanet();
 		this.karbonite = new int[planet.getWidth()][planet.getHeight()];
 		this.explored = new boolean[planet.getWidth()][planet.getHeight()];
@@ -151,36 +161,32 @@ public class MoveManager {
 			}
 		}
 	}
+	public void queueUnit(Unit unit) {
+		Vector position = unit.getLocation().getMapLocation().getPosition();
+		if (unit.getType().isStructure()) {
+			priorities[unit.getId()] = Integer.MIN_VALUE;
+		} else {
+			int bfsIndex = getBFSIndex(unit);
+			bfsIndices[unit.getId()] = bfsIndex;
+			if (bfsIndex == BFS_EXPLORE) {
+				priorities[unit.getId()] = Integer.MIN_VALUE;
+			} else {
+				int score = -bfsArray[bfsIndex].getStep(position.getX(), position.getY());
+				if (bfsIndex == BFS_WORKER_TASK && score == BFS.SOURCE_STEP) {
+					score = Integer.MAX_VALUE; // Workers building or repairing get priority in replication
+				}
+				priorities[unit.getId()] = score;
+			}
+		}
+		queue.add(unit);
+	}
 	public void move(Consumer<Unit> executor) {
 		Unit[] units = GameController.INSTANCE.getMyUnitsByFilter(
 				unit -> unit.getLocation().isOnMap());
 		if (units.length > 0) {
-			Map<Integer, Integer> priorities = new HashMap<Integer, Integer>();
-			Map<Integer, Integer> bfsIndices = new HashMap<Integer, Integer>();
-			PriorityQueue<Unit> queue = new PriorityQueue<Unit>(units.length, new Comparator<Unit>() {
-				@Override
-				public int compare(Unit a, Unit b) {
-					return Integer.compare(priorities.get(a.getId()), priorities.get(b.getId()));
-				}
-			});
+			queue.clear();
 			for (Unit unit: units) {
-				Vector position = unit.getLocation().getMapLocation().getPosition();
-				if (unit.getType().isStructure()) {
-					priorities.put(unit.getId(), Integer.MIN_VALUE);
-				} else {
-					int bfsIndex = getBFSIndex(unit);
-					bfsIndices.put(unit.getId(), bfsIndex);
-					if (bfsIndex == BFS_EXPLORE) {
-						priorities.put(unit.getId(), Integer.MIN_VALUE);
-					} else {
-						int score = -bfsArray[bfsIndex].getStep(position.getX(), position.getY());
-						if (bfsIndex == BFS_WORKER_TASK && score == BFS.SOURCE_STEP) {
-							score = Integer.MAX_VALUE; // Workers building or repairing get priority in replication
-						}
-						priorities.put(unit.getId(), score);
-					}
-				}
-				queue.add(unit);
+				queueUnit(unit);
 			}
 			while (!queue.isEmpty()) {
 				try {
@@ -190,7 +196,7 @@ public class MoveManager {
 							continue;
 						}
 						MapLocation location = unit.getLocation().getMapLocation();
-						int bfsIndex = bfsIndices.get(unit.getId());
+						int bfsIndex = bfsIndices[unit.getId()];
 						int step = getBFSStep(bfsIndex, location.getPosition());
 						if (step == Integer.MAX_VALUE) {
 							Direction random = Direction.randomDirection();
