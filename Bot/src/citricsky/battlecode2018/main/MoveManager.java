@@ -186,7 +186,11 @@ public class MoveManager {
 	public void queueUnit(Unit unit) {
 		Vector position = unit.getLocation().getMapLocation().getPosition();
 		if (unit.getType().isStructure()) {
-			priorities[unit.getId()] = Integer.MIN_VALUE;
+			if (unit.getType() == UnitType.FACTORY) {
+				priorities[unit.getId()] = -bfsArray[BFS_FIND_COMBAT_ENEMY].getStep(position.getX(), position.getY());
+			} else {
+				priorities[unit.getId()] = Integer.MIN_VALUE;
+			}
 		} else {
 			int bfsIndex = getBFSIndex(unit);
 			bfsIndices[unit.getId()] = bfsIndex;
