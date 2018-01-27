@@ -73,12 +73,20 @@ public class MoveManager {
 			}
 		}
 	}
+	public boolean isNearEnemy(Vector position, int threshold) {
+		for (Unit unit: RoundInfo.getEnemiesOnMap()) {
+			int distanceSquared = unit.getLocation().getMapLocation().getPosition().getDistanceSquared(position);
+			if (distanceSquared < threshold) {
+				return true;
+			}
+		}
+		return false;
+	}
 	public void updateBFS() {
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i].resetHard();
 			processed[i] = false;
 		}
-		
 		if (RoundInfo.getEnemiesOnMap().length > 0) {
 			for (Unit unit: RoundInfo.getEnemiesOnMap()) {
 				MapLocation location = unit.getLocation().getMapLocation();
@@ -91,7 +99,9 @@ public class MoveManager {
 					Vector offset = location.getPosition().add(RANGER_OFFSET_X[i], RANGER_OFFSET_Y[i]);
 					if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
 						if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset))) {
-							bfsArray[BFS_RANGER_ATTACK].addSource(offset);
+							if (!isNearEnemy(offset, 40)) {
+								bfsArray[BFS_RANGER_ATTACK].addSource(offset);
+							}
 						}
 					}
 				}
