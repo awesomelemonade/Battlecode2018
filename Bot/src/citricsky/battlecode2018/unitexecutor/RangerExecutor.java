@@ -80,7 +80,6 @@ public class RangerExecutor implements UnitExecutor {
 						if(distanceSquared > furthestDistance) {
 							targetEnemy = enemyUnit;
 							furthestDistance = distanceSquared;
-							priorityIndex = unitPriority;
 						}
 					}
 				}

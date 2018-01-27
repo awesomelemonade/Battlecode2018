@@ -27,6 +27,7 @@ public class HealerExecutor implements UnitExecutor {
 					if(priorityIndex < unitPriority && healthPercentage < 0.95) {
 						leastHealthPercentage = healthPercentage;
 						bestTarget = friendlyUnit;
+						priorityIndex = unitPriority;
 					}
 					if(priorityIndex == unitPriority) {
 						if (healthPercentage < leastHealthPercentage) {
