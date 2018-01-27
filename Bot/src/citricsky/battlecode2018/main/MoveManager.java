@@ -37,8 +37,9 @@ public class MoveManager {
 	public static final int BFS_KNIGHT_ATTACK = 6;
 	public static final int BFS_RANGER_ATTACK = 7;
 	public static final int BFS_HEALER_HEAL = 8;
-	public static final int BFS_LOAD_ROCKET = 9;
-	public static final int BFS_EXPLORE = 10;
+	public static final int BFS_HEALER_IDLE = 9;
+	public static final int BFS_LOAD_ROCKET = 10;
+	public static final int BFS_EXPLORE = 11;
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
@@ -63,7 +64,7 @@ public class MoveManager {
 		this.explored = new boolean[planet.getWidth()][planet.getHeight()];
 		this.blueprint = new int[planet.getWidth()][planet.getHeight()];
 		//Initialize bfsArray
-		this.bfsArray = new BFS[11];
+		this.bfsArray = new BFS[12];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
@@ -130,13 +131,28 @@ public class MoveManager {
 				if (unit.getHealth() < unit.getMaxHealth()) {
 					if (!nearEnemy && unit.getType().isStructure()) {
 						addSource(BFS_WORKER_TASK, location, Direction.COMPASS);
+					}
+				}
+				boolean damagedHealerTarget = false;
+				boolean idleHealerTarget = false;
+				if (!unit.getType().isStructure()) {
+					if (unit.getHealth() < unit.getMaxHealth()) {
+						damagedHealerTarget = true;
 					} else {
-						for (int i = 0; i < HEALER_OFFSET_X.length; ++i) {
-							Vector offset = location.getPosition().add(HEALER_OFFSET_X[i], HEALER_OFFSET_Y[i]);
-							if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
-								if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset)) &&
-										getBFSStep(BFS_FIND_COMBAT_ENEMY, offset) >= 12) {
+						idleHealerTarget = true;
+					}
+				}
+				if (damagedHealerTarget || idleHealerTarget) {
+					for (int i = 0; i < HEALER_OFFSET_X.length; ++i) {
+						Vector offset = location.getPosition().add(HEALER_OFFSET_X[i], HEALER_OFFSET_Y[i]);
+						if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
+							if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset)) &&
+									getBFSStep(BFS_FIND_COMBAT_ENEMY, offset) >= 12) {
+								if (damagedHealerTarget) {
 									bfsArray[BFS_HEALER_HEAL].addSource(offset);
+								}
+								if (idleHealerTarget) {
+									bfsArray[BFS_HEALER_IDLE].addSource(offset);
 								}
 							}
 						}
@@ -357,15 +373,23 @@ public class MoveManager {
 				return BFS_LOAD_ROCKET;
 			}
 		}
+		if (type == UnitType.HEALER) {
+			int healerHealStep = getBFSStep(BFS_HEALER_HEAL, position);
+			int healerIdleStep = getBFSStep(BFS_HEALER_IDLE, position);
+			if (!(healerHealStep == Integer.MAX_VALUE && healerIdleStep == Integer.MAX_VALUE)) {
+				if (healerHealStep - 5 <= healerIdleStep) {
+					return BFS_HEALER_HEAL;
+				} else {
+					return BFS_HEALER_IDLE;
+				}
+			}
+		}
 		int bfsAttackIndex = -1;
 		if (type == UnitType.KNIGHT) {
 			bfsAttackIndex = BFS_KNIGHT_ATTACK;
 		}
 		if (type == UnitType.RANGER) {
 			bfsAttackIndex = BFS_RANGER_ATTACK;
-		}
-		if (type == UnitType.HEALER) {
-			bfsAttackIndex = BFS_HEALER_HEAL;
 		}
 		if (bfsAttackIndex == -1) {
 			bfsAttackIndex = BFS_FIND_ALL_ENEMY;
