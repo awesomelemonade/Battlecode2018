@@ -1,6 +1,7 @@
 package citricsky.battlecode2018.unitexecutor;
 
 import citricsky.battlecode2018.library.Direction;
+import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
@@ -25,6 +26,9 @@ public class FactoryExecutor implements UnitExecutor {
 			} else if (RoundInfo.getCombatUnitsCount() > 20) {
 				return null;
 			}
+		}
+		if(location.getUnit().senseNearbyUnitsByTeam(16, GameController.INSTANCE.getEnemyTeam()).length > 12) {
+			return UnitType.MAGE;
 		}
 		if (moveManager.nearEnemy(location.getPosition(), 8, true)) {
 			return UnitType.KNIGHT;
