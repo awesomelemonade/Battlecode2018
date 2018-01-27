@@ -25,24 +25,23 @@ public class RangerExecutor implements UnitExecutor {
 			return;
 		}
 		if (unit.isAttackReady()) {
-			int bestDistanceSquared = Integer.MAX_VALUE;
+			double lowestHealthPercentage = 1.01;
 			Unit bestTarget = null;
 			int priorityIndex = 0;
 			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(50, GameController.INSTANCE.getEnemyTeam())) {
+				float healthPercentage = enemyUnit.getHealth()/enemyUnit.getMaxHealth();
 				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
 						.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
 				int unitPriority = getPriorityIndex(enemyUnit);
 				if (distanceSquared > unit.getRangerCannotAttackRange() && distanceSquared < unit.getAttackRange()) {
-					if (distanceSquared < unit.getAttackRange()) {
-						if (unitPriority > priorityIndex) {
-							bestDistanceSquared = distanceSquared;
+					if (unitPriority > priorityIndex) {
+						lowestHealthPercentage = healthPercentage;
+						bestTarget = enemyUnit;
+						priorityIndex = unitPriority;
+					} else if (unitPriority == priorityIndex) {
+						if (healthPercentage < lowestHealthPercentage) {
+							lowestHealthPercentage = healthPercentage;
 							bestTarget = enemyUnit;
-							priorityIndex = unitPriority;
-						} else if (unitPriority == priorityIndex) {
-							if (distanceSquared < bestDistanceSquared) {
-								bestDistanceSquared = distanceSquared;
-								bestTarget = enemyUnit;
-							}
 						}
 					}
 				}

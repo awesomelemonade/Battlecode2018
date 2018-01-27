@@ -24,10 +24,19 @@ public class KnightExecutor implements UnitExecutor {
 		if (unit.isAttackReady()) {
 			Unit targetEnemy = null;
 			int priorityIndex = Integer.MIN_VALUE;
+			double lowestHealthPercentage = 1.01;
 			for(Unit enemy : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getEnemyTeam())){
+				double healthPercentage = enemy.getHealth()/enemy.getMaxHealth();
 				if(getPriorityIndex(enemy) > priorityIndex) {
+					lowestHealthPercentage = healthPercentage;
 					targetEnemy = enemy;
 					priorityIndex = getPriorityIndex(enemy);
+				}
+				else if(getPriorityIndex(enemy) == priorityIndex) {
+					if(healthPercentage < lowestHealthPercentage) {
+						targetEnemy = enemy;
+						lowestHealthPercentage = healthPercentage;
+					}
 				}
 			}
 			if (targetEnemy != null) {
@@ -39,21 +48,18 @@ public class KnightExecutor implements UnitExecutor {
 		if(unit.isAbilityUnlocked() && unit.isJavelinReady()){
 			Unit targetEnemy = null;
 			int priorityIndex = Integer.MIN_VALUE;
-			int bestDistanceSquared = Integer.MAX_VALUE;
+			double lowestHealthPercentage = 1.01;
 			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam())) {
-				int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
-						.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
+				float healthPercentage = enemyUnit.getHealth()/enemyUnit.getMaxHealth();
 				int unitPriority = getPriorityIndex(enemyUnit);
-				if (distanceSquared <= unit.getAbilityRange()) {
-					if (unitPriority > priorityIndex) {
-						bestDistanceSquared = distanceSquared;
+				if (unitPriority > priorityIndex) {
+					lowestHealthPercentage = healthPercentage;
+					targetEnemy = enemyUnit;
+					priorityIndex = unitPriority;
+				} else if (unitPriority == priorityIndex) {
+					if (healthPercentage < lowestHealthPercentage) {
+						lowestHealthPercentage = healthPercentage;
 						targetEnemy = enemyUnit;
-						priorityIndex = unitPriority;
-					} else if (unitPriority == priorityIndex) {
-						if (distanceSquared < bestDistanceSquared) {
-							bestDistanceSquared = distanceSquared;
-							targetEnemy = enemyUnit;
-						}
 					}
 				}
 			}
