@@ -21,6 +21,9 @@ public class Location {
 	public boolean isOnMap() {
 		return bcLocation.isOnMap();
 	}
+	protected void setMapLocation(MapLocation mapLocation) {
+		this.mapLocation = mapLocation;
+	}
 	public MapLocation getMapLocation() {
 		return mapLocation;
 	}

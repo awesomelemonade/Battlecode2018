@@ -158,9 +158,7 @@ public class WorkerExecutor implements UnitExecutor {
 			if (bestReplicateDirection != null) {
 				unit.replicate(bestReplicateDirection);
 				MapLocation location = GameController.INSTANCE.getPlanet().getMapLocation(replicatePosition);
-				if (location.hasUnitAtLocation()) {
-					moveManager.queueUnit(location.getUnit()); // throw the new unit into the queue
-				}
+				moveManager.queueUnit(location.getUnit()); // throw the new unit into the queue
 			}
 		}
 	}

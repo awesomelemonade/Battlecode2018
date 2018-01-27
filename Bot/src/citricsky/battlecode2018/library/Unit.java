@@ -66,11 +66,11 @@ public class Unit {
 	}
 	
 	public boolean isAbilityUnlocked() {
-		return bcUnit.isAbilityUnlocked()>0;
+		return bcUnit.isAbilityUnlocked() > 0;
 	}
 	
 	public boolean isFactoryProducing() {
-		return bcUnit.isFactoryProducing()>0;
+		return bcUnit.isFactoryProducing() > 0;
 	}
 	
 	public int getKnightDefense() {
@@ -159,6 +159,7 @@ public class Unit {
 	
 	public void blink(MapLocation location) {
 		gcInstance.getBcGameController().blink(id, location.getBcMapLocation());
+		this.location.setMapLocation(location);
 	}
 	
 	public void blueprint(UnitType structureType, Direction direction) {
@@ -323,6 +324,7 @@ public class Unit {
 	
 	public void move(Direction direction) {
 		gcInstance.getBcGameController().moveRobot(id, direction.getBcDirection());
+		location.setMapLocation(location.getMapLocation().getOffsetLocation(direction));
 	}
 	
 	public void overcharge(Unit target) {
