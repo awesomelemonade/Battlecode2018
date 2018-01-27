@@ -11,16 +11,16 @@ public class HealerExecutor implements UnitExecutor {
 			double leastHealthPercentage = 1.0;
 			Unit bestTarget = null;
 			for (Unit friendlyUnit : friendlyUnits) {
-				double healthPercentage = ((double)friendlyUnit.getHealth()) / ((double)friendlyUnit.getMaxHealth());
-				if (healthPercentage < leastHealthPercentage) {
-					bestTarget = friendlyUnit;
-					leastHealthPercentage = healthPercentage;
+				if (unit.canHeal(friendlyUnit)) {
+					double healthPercentage = ((double)friendlyUnit.getHealth()) / ((double)friendlyUnit.getMaxHealth());
+					if (healthPercentage < leastHealthPercentage) {
+						bestTarget = friendlyUnit;
+						leastHealthPercentage = healthPercentage;
+					}
 				}
 			}
 			if (bestTarget != null) {
-				if (unit.canHeal(bestTarget)) {
-					unit.heal(bestTarget);
-				}
+				unit.heal(bestTarget);
 			}
 		}
 		if (unit.isAbilityUnlocked() && unit.isOverchargeReady()) {
