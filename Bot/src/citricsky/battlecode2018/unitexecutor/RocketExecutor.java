@@ -20,6 +20,7 @@ public class RocketExecutor implements UnitExecutor {
 		this.planetCommunication = planetCommunication;
 		this.communicationIndex = 0;
 	}
+	
 	public boolean shouldLaunch(Unit unit) {
 		if(unit.getHealth() <= 50) {
 			return true;
@@ -28,7 +29,7 @@ public class RocketExecutor implements UnitExecutor {
 			return true;
 		}
 		if(unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
-			if(GameController.INSTANCE.getRoundNumber() < 350) {
+			if(GameController.INSTANCE.getRoundNumber() < 500) {
 				return true;
 			}
 		}

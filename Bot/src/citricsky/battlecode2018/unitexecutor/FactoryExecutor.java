@@ -26,9 +26,9 @@ public class FactoryExecutor implements UnitExecutor {
 			}
 			return null;
 		}
-		if(location.getUnit().senseNearbyUnitsByTeam(16, GameController.INSTANCE.getEnemyTeam()).length > 12) {
+		/*if(location.getUnit().senseNearbyUnitsByTeam(16, GameController.INSTANCE.getEnemyTeam()).length > 12) {
 			return UnitType.MAGE;
-		}
+		}*/
 		if (moveManager.nearEnemy(location.getPosition(), 7, true)) {
 			return UnitType.KNIGHT;
 		}
