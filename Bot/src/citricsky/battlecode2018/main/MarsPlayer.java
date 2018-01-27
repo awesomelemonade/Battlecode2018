@@ -2,6 +2,7 @@ package citricsky.battlecode2018.main;
 
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.library.Vector;
 import citricsky.battlecode2018.unitexecutor.HealerExecutor;
 import citricsky.battlecode2018.unitexecutor.KnightExecutor;
 import citricsky.battlecode2018.unitexecutor.MageExecutor;
@@ -11,6 +12,8 @@ import citricsky.battlecode2018.unitexecutor.UnitExecutor;
 import citricsky.battlecode2018.unitexecutor.WorkerExecutor;
 import citricsky.battlecode2018.util.Benchmark;
 
+import java.util.Map;
+
 public class MarsPlayer {
 	public static void execute() {
 		Benchmark benchmark = new Benchmark();
@@ -18,7 +21,7 @@ public class MarsPlayer {
 		UnitExecutor[] executors = new UnitExecutor[UnitType.values().length];
 		MoveManager moveManager = new MoveManager();
 		PlanetCommunication communication = new PlanetCommunication();
-		
+
 		executors[UnitType.FACTORY.ordinal()] = null;
 		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager, communication);
 		executors[UnitType.RANGER.ordinal()] = new RangerExecutor();
