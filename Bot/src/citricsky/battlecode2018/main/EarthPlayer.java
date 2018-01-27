@@ -18,7 +18,7 @@ public class EarthPlayer {
 		UnitType[] researchOrder = new UnitType[]
 				{UnitType.WORKER, //finishes at Round 25
 				 UnitType.HEALER, //finishes at Round 50
-				 UnitType.RANGER, //finishes at Round 75
+				 UnitType.RANGER, //finishes at Round 150
 				 UnitType.HEALER, //finishes at Round 175
 				 UnitType.ROCKET, //finishes at Round 225
 				 UnitType.RANGER, //finishes at Round 325
