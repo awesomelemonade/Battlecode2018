@@ -30,11 +30,13 @@ public class FactoryExecutor implements UnitExecutor {
 		if(location.getUnit().senseNearbyUnitsByTeam(16, GameController.INSTANCE.getEnemyTeam()).length > 12) {
 			return UnitType.MAGE;
 		}
-		if (moveManager.nearEnemy(location.getPosition(), 8, true)) {
+		if (moveManager.nearEnemy(location.getPosition(), 7, true)) {
 			return UnitType.KNIGHT;
 		}
-		if (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 6 < RoundInfo.getUnitCount(UnitType.FACTORY)) {
-			return UnitType.WORKER;
+		if (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 4 < RoundInfo.getUnitCount(UnitType.FACTORY)) {
+			if(RoundInfo.getUnitCount(UnitType.WORKER) < 10) {
+				return UnitType.WORKER;
+			}		
 		}
 		if ((float)RoundInfo.getUnitCount(UnitType.HEALER) < (float)RoundInfo.getCombatUnitsCount() / 2.5) {
 			return UnitType.HEALER;
