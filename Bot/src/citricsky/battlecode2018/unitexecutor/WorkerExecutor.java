@@ -6,10 +6,10 @@ import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
+import citricsky.battlecode2018.main.BFS;
 import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.util.Constants;
-import citricsky.battlecode2018.util.Util;
 
 public class WorkerExecutor implements UnitExecutor {
 	private MoveManager moveManager;
@@ -63,11 +63,9 @@ public class WorkerExecutor implements UnitExecutor {
 	}
 	private boolean shouldReplicate() {
 		if (GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST) {
-			if (RoundInfo.getRoundNumber() > 750) {
+			if (RoundInfo.getRoundNumber() < 20) {
 				return true;
 			}
-			return (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 6 < RoundInfo.getUnitCount(UnitType.FACTORY) || 
-					(GameController.INSTANCE.getCurrentKarbonite() > 300 && RoundInfo.getUnitCount(UnitType.FACTORY) < 3));
 		}
 		return false;
 	}
@@ -103,10 +101,8 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 			//try blueprint
 			UnitType blueprintType = getBlueprintType();
-			if ((blueprintType == UnitType.ROCKET ||
-					(RoundInfo.getUnitCount(UnitType.FACTORY) <
-							(RoundInfo.getRoundNumber() < 50 ? 1 : (RoundInfo.getRoundNumber() < 100 ? 3 : 5)))) &&
-					blueprintType.getBaseCost() <= GameController.INSTANCE.getCurrentKarbonite()) {
+			if (blueprintType != null && blueprintType.getBaseCost() <= GameController.INSTANCE.getCurrentKarbonite() &&
+					moveManager.getBFSStep(MoveManager.BFS_WORKER_BLUEPRINT, unit.getLocation().getMapLocation().getPosition()) == BFS.SOURCE_STEP) {
 				Direction blueprintDirection = null;
 				Vector position = null;
 				int bestBuild = -1;
@@ -116,8 +112,7 @@ public class WorkerExecutor implements UnitExecutor {
 						if (isNextToStructure(location)) {
 							continue;
 						}
-						int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
-						int buildArray = Util.getBuildArray(neighbors);
+						int buildArray = moveManager.getBlueprint(location.getPosition().getX(), location.getPosition().getY());
 						if (buildArray > bestBuild) {
 							position = location.getPosition();
 							bestBuild = buildArray;
@@ -162,7 +157,7 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 		}
 	}
-	private boolean isNextToStructure(MapLocation location) {
+	public boolean isNextToStructure(MapLocation location) {
 		for (Direction dir: Direction.COMPASS) {
 			Vector offset = location.getPosition().add(dir.getOffsetVector());
 			if (RoundInfo.hasStructure(offset.getX(), offset.getY())) {
