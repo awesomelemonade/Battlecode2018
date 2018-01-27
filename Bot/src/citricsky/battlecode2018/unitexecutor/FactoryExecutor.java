@@ -18,13 +18,15 @@ public class FactoryExecutor implements UnitExecutor {
 	
 	public UnitType getProduceType(MapLocation location) {
 		if (RoundInfo.getRoundNumber() > 650) {
-			if (RoundInfo.getUnitCount(UnitType.WORKER) < 10) {
-				return UnitType.WORKER;
+			if(RoundInfo.getRoundNumber() > 710) {
+				if (RoundInfo.getUnitCount(UnitType.WORKER) < 10) {
+					return UnitType.WORKER;
+				}
 			} else if (RoundInfo.getCombatUnitsCount() > 20) {
 				return null;
 			}
 		}
-		if (moveManager.nearEnemy(location.getPosition(), 10, true)) {
+		if (moveManager.nearEnemy(location.getPosition(), 8, true)) {
 			return UnitType.KNIGHT;
 		}
 		if (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 6 < RoundInfo.getUnitCount(UnitType.FACTORY)) {

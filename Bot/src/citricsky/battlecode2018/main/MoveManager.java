@@ -273,7 +273,7 @@ public class MoveManager {
 				unit.getLocation().getMapLocation().getPosition(), ((double)unit.getHealth()) / ((double)unit.getMaxHealth()));
 	}
 	public int getBFSIndex(UnitType type, Planet planet, Vector position, double percentHealth) {
-		if (percentHealth <= 0.5 && type != UnitType.HEALER) {
+		if (percentHealth <= 0.5 && type != UnitType.HEALER && type!= UnitType.WORKER) {
 			if (getBFSStep(BFS_FIND_HEAL, position) != Integer.MAX_VALUE) {
 				return BFS_FIND_HEAL;
 			}
