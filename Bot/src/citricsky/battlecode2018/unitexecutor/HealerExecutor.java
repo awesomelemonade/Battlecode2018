@@ -22,12 +22,13 @@ public class HealerExecutor implements UnitExecutor {
 			int priorityIndex = Integer.MIN_VALUE;
 			for (Unit friendlyUnit : friendlyUnits) {
 				if (unit.canHeal(friendlyUnit)) {
+					int unitPriority = getPriorityIndex(friendlyUnit);
 					double healthPercentage = ((double)friendlyUnit.getHealth()) / ((double)friendlyUnit.getMaxHealth());
-					if(priorityIndex < getPriorityIndex(friendlyUnit) && healthPercentage < 0.95) {
+					if(priorityIndex < unitPriority && healthPercentage < 0.95) {
 						leastHealthPercentage = healthPercentage;
 						bestTarget = friendlyUnit;
 					}
-					if(priorityIndex == getPriorityIndex(friendlyUnit)) {
+					if(priorityIndex == unitPriority) {
 						if (healthPercentage < leastHealthPercentage) {
 							bestTarget = friendlyUnit;
 							leastHealthPercentage = healthPercentage;

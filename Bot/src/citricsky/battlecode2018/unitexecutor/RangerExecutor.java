@@ -21,6 +21,17 @@ public class RangerExecutor implements UnitExecutor {
 			return 1;
 		}
 	}
+	private static int getAbilityPriorityIndex(Unit unit) {
+		UnitType unitType = unit.getType();
+		if (unitType.equals(UnitType.FACTORY)) {
+			return 1;
+		}
+		if (unitType.equals(UnitType.ROCKET)) {
+			return 2;
+		} else {
+			return 0;
+		}
+	}
 	
 	@Override
 	public void execute(Unit unit) {
@@ -54,13 +65,23 @@ public class RangerExecutor implements UnitExecutor {
 		if(unit.isAbilityUnlocked() && unit.isBeginSnipeReady()) {
 			if(unit.isAttackReady() && unit.isMoveReady()) {
 				int furthestDistance = Integer.MIN_VALUE;
+				int priorityIndex = Integer.MIN_VALUE;
 				Unit targetEnemy = null;
 				for(Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
+					int unitPriority = getAbilityPriorityIndex(unit);
 					int distanceSquared = enemyUnit.getLocation().getMapLocation().getPosition()
 							.getDistanceSquared(unit.getLocation().getMapLocation().getPosition());
-					if(distanceSquared > furthestDistance) {
+					if(unitPriority > priorityIndex) {
 						targetEnemy = enemyUnit;
 						furthestDistance = distanceSquared;
+						priorityIndex = unitPriority;
+					}
+					if(unitPriority == priorityIndex) {
+						if(distanceSquared > furthestDistance) {
+							targetEnemy = enemyUnit;
+							furthestDistance = distanceSquared;
+							priorityIndex = unitPriority;
+						}
 					}
 				}
 				if(targetEnemy != null) {
