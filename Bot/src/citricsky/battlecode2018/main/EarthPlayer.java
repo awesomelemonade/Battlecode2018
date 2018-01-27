@@ -5,6 +5,7 @@ import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.unitexecutor.FactoryExecutor;
 import citricsky.battlecode2018.unitexecutor.HealerExecutor;
 import citricsky.battlecode2018.unitexecutor.KnightExecutor;
+import citricsky.battlecode2018.unitexecutor.MageExecutor;
 import citricsky.battlecode2018.unitexecutor.RangerExecutor;
 import citricsky.battlecode2018.unitexecutor.RocketExecutor;
 import citricsky.battlecode2018.unitexecutor.UnitExecutor;
@@ -23,8 +24,9 @@ public class EarthPlayer {
 				 UnitType.ROCKET, //finishes at Round 225
 				 UnitType.RANGER, //finishes at Round 325
 				 UnitType.RANGER, //finishes at Round 525
-				 UnitType.ROCKET, //finishes at Round 625
-				 UnitType.ROCKET, //finishes at Round 725
+				 UnitType.KNIGHT, //finishes at Round 550
+				 UnitType.KNIGHT, //finishes at Round 625
+				 UnitType.KNIGHT, //finishes at Round 725
 				 UnitType.HEALER, //finishes at Round 825
 				 }; 
 		/*UnitType[] researchOrder = new UnitType[] {
@@ -43,7 +45,7 @@ public class EarthPlayer {
 		executors[UnitType.RANGER.ordinal()] = new RangerExecutor();
 		executors[UnitType.KNIGHT.ordinal()] = new KnightExecutor();
 		executors[UnitType.HEALER.ordinal()] = new HealerExecutor();
-		executors[UnitType.MAGE.ordinal()] = null;
+		executors[UnitType.MAGE.ordinal()] = new MageExecutor();
 		executors[UnitType.WORKER.ordinal()] = new WorkerExecutor(moveManager);
 		
 		while (true) {
