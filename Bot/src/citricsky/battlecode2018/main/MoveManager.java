@@ -167,7 +167,7 @@ public class MoveManager {
 		for (Unit unit: RoundInfo.getMyUnits()) {
 			if (unit.getLocation().isOnMap()) {
 				MapLocation location = unit.getLocation().getMapLocation();
-				if (unit.getType().isCombatType() || unit.getType() == UnitType.FACTORY) {
+				if (unit.getType() != UnitType.WORKER) {
 					bfsArray[BFS_FIND_FRIENDLY].addSource(location.getPosition());
 				}
 				boolean nearEnemy = nearEnemy(location.getPosition(), 12, false);
