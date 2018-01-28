@@ -90,12 +90,11 @@ public class WorkerExecutor implements UnitExecutor {
 		}
 	}
 	public static UnitType getBlueprintTargetType() {
-		if (RoundInfo.getCombatUnitsCount() > 50) {
+		if (RoundInfo.getCombatUnitsCount() > 30) {
 			return UnitType.ROCKET;
 		}
 		if ((RoundInfo.getRoundNumber() < 100) ||
-				(RoundInfo.getUnitCount(UnitType.FACTORY) < 5 && RoundInfo.getRoundNumber() < 625) ||
-					(RoundInfo.getUnitCount(UnitType.FACTORY) < 1 && RoundInfo.getRoundNumber() < 675)) {
+				(RoundInfo.getUnitCount(UnitType.FACTORY) < 5 && RoundInfo.getRoundNumber() < 450)) {
 			return UnitType.FACTORY;
 		} else {
 			return UnitType.ROCKET;
