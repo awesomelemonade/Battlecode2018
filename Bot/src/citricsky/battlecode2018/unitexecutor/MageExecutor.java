@@ -13,7 +13,7 @@ public class MageExecutor implements UnitExecutor {
 		Unit bestTarget = null;
  		for (Unit enemyUnit : enemyUnits) {
  			int thisScore = EnemyMap.getScore(enemyUnit);
-			if (thisScore <= 0) return null;
+			if (thisScore <= 0) continue;
 			if (thisScore > bestScore) {
 				bestScore = thisScore;
 				bestTarget = enemyUnit;
