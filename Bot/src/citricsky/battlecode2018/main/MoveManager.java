@@ -330,13 +330,14 @@ public class MoveManager {
 							if (unit.canMove(direction)) {
 								unit.move(direction);
 							} else {
+								int targetStep = getBFSStep(bfsIndex, location.getPosition().add(direction.getOffsetVector()));
 								// look around for one with the same step
 								for (Direction dir: Direction.COMPASS) {
 									if (dir == direction) {
 										continue;
 									}
 									int candidateStep = getBFSStep(bfsIndex, location.getPosition().add(dir.getOffsetVector()));
-									if (candidateStep == step) {
+									if (candidateStep == targetStep) {
 										if (unit.canMove(dir)) {
 											unit.move(dir);
 											break;
