@@ -51,7 +51,8 @@ public class RocketExecutor implements UnitExecutor {
 				if (candidate != null) {
 					MapLocation destination = Planet.MARS.getMapLocation(candidate);
 					if (unit.canLaunchRocket(destination)) {
-						System.out.println("Launching Rocket: " + destination);
+						System.out.println("Launching Rocket: " + destination + " with " +
+					unit.getGarrisonUnitIds().length + "/" + unit.getStructureMaxCapacity() + " units");
 						unit.launchRocket(destination);
 						communicationIndex++;
 						return;
@@ -65,7 +66,8 @@ public class RocketExecutor implements UnitExecutor {
 								(x + offsetX) % Planet.MARS.getWidth(), (y + offsetY) % Planet.MARS.getHeight());
 						if(destination.isPassableTerrain()) {
 							if (unit.canLaunchRocket(destination)) {
-								System.out.println("Launching Random Rocket: " + destination);
+								System.out.println("Launching Random Rocket: " + destination + " with " +
+										unit.getGarrisonUnitIds().length + "/" + unit.getStructureMaxCapacity() + " units");
 								unit.launchRocket(destination);
 								return;
 							}
