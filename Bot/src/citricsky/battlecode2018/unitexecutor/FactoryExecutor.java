@@ -19,8 +19,9 @@ public class FactoryExecutor implements UnitExecutor {
 	}
 	
 	public UnitType getProduceType(MapLocation location) {
-		if ((RoundInfo.getRoundNumber() > 600 && RoundInfo.getCombatUnitsCount() > 20 ||
-				RoundInfo.getRoundNumber() > 500 && RoundInfo.getCombatUnitsCount() > 35)) {
+		if ((RoundInfo.getRoundNumber() > 700 && RoundInfo.getCombatUnitsCount() > 5) ||
+				(RoundInfo.getRoundNumber() > 600 && RoundInfo.getCombatUnitsCount() > 15) ||
+				(RoundInfo.getRoundNumber() > 500 && RoundInfo.getCombatUnitsCount() > 35)) {
 			if (RoundInfo.getRoundNumber() < 710) {
 				if (RoundInfo.getUnitCount(UnitType.WORKER) < 8) {
 					return UnitType.WORKER;

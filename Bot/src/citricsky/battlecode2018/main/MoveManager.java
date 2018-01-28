@@ -379,7 +379,7 @@ public class MoveManager {
 		}
 		if (type == UnitType.WORKER) {
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position) - 3;
-			if (workerTaskStep <= 3) {
+			if (workerTaskStep <= 3 || (WorkerExecutor.getBlueprintTargetType() == UnitType.ROCKET && workerTaskStep <= 10)) {
 				return BFS_WORKER_TASK;
 			}
 			int workerBlueprintStep = getBFSStep(BFS_WORKER_BLUEPRINT, position);
