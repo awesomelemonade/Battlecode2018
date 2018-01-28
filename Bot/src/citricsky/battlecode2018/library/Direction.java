@@ -90,4 +90,18 @@ public enum Direction {
 	public static Direction randomDirection() {
 		return Direction.values()[(int) (Math.random() * LENGTH)];
 	}
+	
+	public static Direction[] shuffle(Direction[] directions) {
+		Direction[] shuffled = new Direction[directions.length];
+		for (int i = 0; i < shuffled.length; ++i) {
+			shuffled[i] = directions[i];
+		}
+		for (int i = shuffled.length - 1; i > 0; --i) {
+			int index = (int)(Math.random() * i);
+			Direction temp = shuffled[index];
+			shuffled[index] = shuffled[i];
+			shuffled[i] = temp;
+		}
+		return shuffled;
+	}
 }

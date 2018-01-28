@@ -366,7 +366,7 @@ public class MoveManager {
 								unit.move(random);
 							}
 						} else if (step == BFS.SOURCE_STEP) {
-							for (Direction direction: Direction.COMPASS) {
+							for (Direction direction: Direction.shuffle(Direction.COMPASS)) {
 								MapLocation offset = location.getOffsetLocation(direction);
 								if (Util.PASSABLE_PREDICATE.test(offset) && getBFSStep(bfsIndex, offset.getPosition()) == BFS.SOURCE_STEP) {
 									if (unit.canMove(direction)) {
@@ -382,7 +382,7 @@ public class MoveManager {
 							} else {
 								int targetStep = getBFSStep(bfsIndex, location.getPosition().add(direction.getOffsetVector()));
 								// look around for one with the same step
-								for (Direction dir: Direction.COMPASS) {
+								for (Direction dir: Direction.shuffle(Direction.COMPASS)) {
 									if (dir == direction) {
 										continue;
 									}
