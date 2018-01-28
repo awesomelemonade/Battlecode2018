@@ -13,13 +13,11 @@ public class RoundInfo {
 	private static Planet planet;
 	private static int roundNumber;
 	private static int[] unitCounts;
-	private static int unitCountOnMap;
 	private static int combatUnitsCount;
 	private static UnitType[] unitTypes;
 	private static Unit[] myUnits;
 	private static Unit[] enemiesOnMap;
 	private static boolean[][] structures;
-	private static int rocketSpots;
 	static {
 		unitCounts = new int[UnitType.values().length];
 		unitTypes = new UnitType[Constants.MAX_UNIT_ID];
@@ -27,9 +25,7 @@ public class RoundInfo {
 		structures = new boolean[planet.getWidth()][planet.getHeight()];
 	}
 	public static void update() {
-		unitCountOnMap = 0;
 		combatUnitsCount = 0;
-		rocketSpots = 0;
 		roundNumber = GameController.INSTANCE.getRoundNumber();
 		Unit[] allUnits = GameController.INSTANCE.getAllUnits();
 		myUnits = new Unit[allUnits.length];
@@ -62,19 +58,13 @@ public class RoundInfo {
 		}
 		for (Unit unit: myUnits) {
 			unitCounts[unit.getType().ordinal()]++;
-			if (unit.getLocation().isOnMap()) {
-				unitCountOnMap++;
+			if (unit.getLocation().isOnMap() || (unit.getLocation().isInGarrison() &&
+					unitTypes[unit.getLocation().getGarrisonStructureId()] == UnitType.FACTORY)) {
 				if (unit.getType().isCombatType()) {
 					combatUnitsCount++;
 				}
 			}
-			if (unit.getType() == UnitType.ROCKET) {
-				rocketSpots += unit.getStructureMaxCapacity() - unit.getGarrisonUnitIds().length;
-			}
 		}
-	}
-	public static int getRocketSpots() {
-		return rocketSpots;
 	}
 	public static void addStructure(int x, int y) {
 		structures[x][y] = true;
@@ -87,9 +77,6 @@ public class RoundInfo {
 	}
 	public static UnitType getUnitType(int id) {
 		return unitTypes[id];
-	}
-	public static int getUnitCountOnMap() {
-		return unitCountOnMap;
 	}
 	public static int getCombatUnitsCount() {
 		return combatUnitsCount;
