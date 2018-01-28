@@ -369,9 +369,12 @@ public class MoveManager {
 			}
 		}
 		if (planet == Planet.EARTH) {
-			int roundsToRocket = Math.round((float)getBFSStep(BFS_LOAD_ROCKET, position)*((float)type.getBaseMovementCooldown()/10));
-			if (RoundInfo.getRoundNumber() + roundsToRocket > 730) {
-				return BFS_LOAD_ROCKET;
+			int bfsStep = getBFSStep(BFS_LOAD_ROCKET, position);
+			if(bfsStep != Integer.MAX_VALUE) {
+				int roundsToRocket = Math.round((float)bfsStep*((float)type.getBaseMovementCooldown()/10.0f));
+				if (RoundInfo.getRoundNumber() + roundsToRocket > 730) {
+					return BFS_LOAD_ROCKET;
+				}
 			}
 		}
 		if (type == UnitType.HEALER) {
