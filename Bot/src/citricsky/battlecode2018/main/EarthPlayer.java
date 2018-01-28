@@ -17,18 +17,18 @@ public class EarthPlayer {
 		Benchmark benchmark = new Benchmark();
 		GameController gc = GameController.INSTANCE;
 		UnitType[] researchOrder = new UnitType[]
-				{UnitType.WORKER, //finishes at Round 25
+				{UnitType.KNIGHT, //finishes at Round 25
 				 UnitType.HEALER, //finishes at Round 50
 				 UnitType.HEALER, //finishes at Round 150
-				 UnitType.KNIGHT, //finishes at Round 175
-				 UnitType.ROCKET, //finishes at Round 225
-				 UnitType.RANGER, //finishes at Round 250
-				 UnitType.RANGER, //finishes at Round 350
-				 UnitType.RANGER, //finishes at Round 550
-				 UnitType.KNIGHT, //finishes at Round 625
-				 UnitType.KNIGHT, //finishes at Round 725
-				 UnitType.MAGE,   //finishes at Round 750
-				 UnitType.HEALER, //finishes at Round 850
+				 UnitType.ROCKET, //finishes at Round 200
+				 UnitType.KNIGHT, //finishes at Round 275
+				 UnitType.KNIGHT, //finishes at Round 375
+				 UnitType.MAGE,   //finishes at Round 400
+				 UnitType.ROCKET, //finishes at Round 500
+				 UnitType.ROCKET, //finishes at Round 600
+				 UnitType.MAGE,   //finishes at Round 675
+				 UnitType.MAGE,   //finishes at Round 775
+				 UnitType.HEALER, //finishes at Round 875
 				 }; 
 		/*UnitType[] researchOrder = new UnitType[] {
 				UnitType.WORKER, UnitType.HEALER, UnitType.RANGER, UnitType.HEALER,
