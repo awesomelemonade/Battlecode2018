@@ -19,15 +19,17 @@ public class FactoryExecutor implements UnitExecutor {
 	}
 	
 	public UnitType getProduceType(MapLocation location) {
-		if ((RoundInfo.getRoundNumber() > 700 && RoundInfo.getCombatUnitsCount() > 5) ||
-				(RoundInfo.getRoundNumber() > 600 && RoundInfo.getCombatUnitsCount() > 15) ||
-				(RoundInfo.getRoundNumber() > 500 && RoundInfo.getCombatUnitsCount() > 35)) {
-			if (RoundInfo.getRoundNumber() < 710) {
-				if (RoundInfo.getUnitCount(UnitType.WORKER) < 8) {
-					return UnitType.WORKER;
+		if (RoundInfo.getRoundNumber() > 400 && RoundInfo.getRocketSpaces() < RoundInfo.getCombatUnitsCount()) {
+			if ((RoundInfo.getRoundNumber() > 700 && RoundInfo.getCombatUnitsCount() > 5) ||
+					(RoundInfo.getRoundNumber() > 600 && RoundInfo.getCombatUnitsCount() > 15) ||
+					(RoundInfo.getRoundNumber() > 500 && RoundInfo.getCombatUnitsCount() > 35)) {
+				if (RoundInfo.getRoundNumber() < 710) {
+					if (RoundInfo.getUnitCount(UnitType.WORKER) < 8) {
+						return UnitType.WORKER;
+					}
 				}
+				return null;
 			}
-			return null;
 		}
 		/*if(location.getUnit().senseNearbyUnitsByTeam(16, GameController.INSTANCE.getEnemyTeam()).length > 12) {
 			return UnitType.MAGE;
