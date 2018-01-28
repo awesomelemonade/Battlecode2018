@@ -1,8 +1,11 @@
 package citricsky.battlecode2018.unitexecutor;
 
+import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
+import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.main.RoundInfo;
 
 public class KnightExecutor implements UnitExecutor {
 
@@ -50,7 +53,15 @@ public class KnightExecutor implements UnitExecutor {
 			Unit bestTarget = null;
 			int priorityIndex = Integer.MIN_VALUE;
 			int lowestHealth = Integer.MAX_VALUE;
-			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getEnemyTeam())){
+			for (Direction direction: Direction.COMPASS) {
+				MapLocation offset = unit.getLocation().getMapLocation().getOffsetLocation(direction);
+				if (!offset.hasUnitAtLocation()) {
+					continue;
+				}
+				Unit enemyUnit = offset.getUnit();
+				if (enemyUnit.getTeam() == GameController.INSTANCE.getTeam()) {
+					continue;
+				}
 				if (unit.canAttack(enemyUnit)) {
 					int health = enemyUnit.getHealth();
 					int unitPriority = getPriorityIndex(enemyUnit);
@@ -74,24 +85,24 @@ public class KnightExecutor implements UnitExecutor {
 			Unit targetEnemy = null;
 			int priorityIndex = Integer.MIN_VALUE;
 			int lowestHealth = Integer.MAX_VALUE;
-			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(10, GameController.INSTANCE.getEnemyTeam())) {
-				int health = enemyUnit.getHealth();
-				int unitPriority = getAbilityPriorityIndex(enemyUnit);
-				if (unitPriority > priorityIndex) {
-					lowestHealth = health;
-					targetEnemy = enemyUnit;
-					priorityIndex = unitPriority;
-				} else if (unitPriority == priorityIndex) {
-					if (health < lowestHealth) {
+			for (Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
+				if (unit.canJavelin(enemyUnit)) {
+					int health = enemyUnit.getHealth();
+					int unitPriority = getAbilityPriorityIndex(enemyUnit);
+					if (unitPriority > priorityIndex) {
 						lowestHealth = health;
 						targetEnemy = enemyUnit;
+						priorityIndex = unitPriority;
+					} else if (unitPriority == priorityIndex) {
+						if (health < lowestHealth) {
+							lowestHealth = health;
+							targetEnemy = enemyUnit;
+						}
 					}
 				}
 			}
 			if (targetEnemy != null) {
-				if (unit.canJavelin(targetEnemy)) {
-					unit.javelin(targetEnemy);
-				}
+				unit.javelin(targetEnemy);
 			}
 		}
 	}

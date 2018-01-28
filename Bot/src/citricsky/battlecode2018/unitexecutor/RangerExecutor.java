@@ -1,6 +1,5 @@
 package citricsky.battlecode2018.unitexecutor;
 
-import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
@@ -75,7 +74,7 @@ public class RangerExecutor implements UnitExecutor {
 			Unit bestTarget = null;
 			int priorityIndex = Integer.MIN_VALUE;
 			int lowestHealth = Integer.MAX_VALUE;
-			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(50, GameController.INSTANCE.getEnemyTeam())) {
+			for (Unit enemyUnit : RoundInfo.getEnemiesOnMap()) {
 				if (unit.canAttack(enemyUnit)) {
 					int health = enemyUnit.getHealth();
 					int unitPriority = getPriorityIndex(enemyUnit);
