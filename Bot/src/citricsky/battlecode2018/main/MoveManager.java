@@ -225,7 +225,7 @@ public class MoveManager {
 			for (int i = 0; i < planet.getWidth(); ++i) {
 				for (int j = 0; j < planet.getHeight(); ++j) {
 					MapLocation location = planet.getMapLocation(i, j);
-					if (Util.PASSABLE_PREDICATE.test(location)) {
+					if (Util.PASSABLE_PREDICATE.test(location) && (!location.hasUnitAtLocation())) {
 						for (Direction direction: Direction.COMPASS) {
 							Vector offset = location.getOffsetLocation(direction).getPosition();
 							if (!Util.outOfBounds(offset, blueprint.length, blueprint[0].length)) {
@@ -360,51 +360,45 @@ public class MoveManager {
 				unit.getLocation().getMapLocation().getPosition(), ((double)unit.getHealth()) / ((double)unit.getMaxHealth()));
 	}
 	public int getBFSIndex(UnitType type, Planet planet, Vector position, double percentHealth) {
-		if (percentHealth <= 0.5 && type != UnitType.HEALER && type!= UnitType.WORKER) {
+		if (percentHealth <= 0.5 && type != UnitType.HEALER) {
 			if (getBFSStep(BFS_FIND_HEAL, position) != Integer.MAX_VALUE) {
 				return BFS_FIND_HEAL;
 			}
 		}
 		if (type == UnitType.WORKER) {
-			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
+			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position) - 3;
 			if (workerTaskStep <= 3) {
 				return BFS_WORKER_TASK;
 			}
 			int workerBlueprintStep = getBFSStep(BFS_WORKER_BLUEPRINT, position);
-			if (WorkerExecutor.getBlueprintType() != null && workerBlueprintStep != Integer.MAX_VALUE) {
-				return BFS_WORKER_BLUEPRINT;
+			if (workerBlueprintStep != Integer.MAX_VALUE) {
+				if (WorkerExecutor.getBlueprintType() != null || RoundInfo.getRoundNumber() > 600) {
+					return BFS_WORKER_BLUEPRINT;
+				}
 			}
 			int workerHarvestStep = getBFSStep(BFS_WORKER_HARVEST, position);
+			if (workerHarvestStep > 20 && RoundInfo.getRoundNumber() > 20 && planet == Planet.EARTH) {
+				workerHarvestStep = Integer.MAX_VALUE;
+			}
 			if (workerTaskStep == Integer.MAX_VALUE && workerHarvestStep == Integer.MAX_VALUE &&
 					workerBlueprintStep == Integer.MAX_VALUE) {
 				return BFS_EXPLORE;
 			}
-			if (workerHarvestStep == Integer.MAX_VALUE) {
-				return BFS_WORKER_TASK;
+			if (workerTaskStep == Integer.MAX_VALUE && workerHarvestStep == Integer.MAX_VALUE) {
+				return BFS_WORKER_BLUEPRINT;
 			}
-			if (workerTaskStep == Integer.MAX_VALUE) {
-				if (workerHarvestStep > 20) {
-					return BFS_WORKER_BLUEPRINT;
-				} else {
-					return BFS_WORKER_HARVEST;
-				}
-			}
-			if (workerTaskStep - 3 <= workerHarvestStep) {
+			if (workerTaskStep <= workerHarvestStep) {
 				return BFS_WORKER_TASK;
 			} else {
-				if (workerHarvestStep > 20) {
-					return BFS_WORKER_BLUEPRINT;
-				} else {
-					return BFS_WORKER_HARVEST;
-				}
+				return BFS_WORKER_HARVEST;
 			}
 		}
 		if (planet == Planet.EARTH) {
 			int bfsStep = getBFSStep(BFS_LOAD_ROCKET, position);
 			if(bfsStep != Integer.MAX_VALUE) {
 				int roundsToRocket = Math.round((float)bfsStep*((float)type.getBaseMovementCooldown()/10.0f));
-				roundsToRocket *= Math.pow(1.01, roundsToRocket);
-				if (RoundInfo.getRoundNumber() + roundsToRocket > 700) {
+				roundsToRocket *= Math.pow(1.02, roundsToRocket);
+				if (RoundInfo.getRoundNumber() + roundsToRocket > 650) {
 					return BFS_LOAD_ROCKET;
 				}
 			}
@@ -443,8 +437,10 @@ public class MoveManager {
 			}
 			if (bfsAttackIndex != BFS_FIND_ALL_ENEMY) {
 				int findStep = getBFSStep(BFS_FIND_ALL_ENEMY, position);
-				if (findStep != Integer.MAX_VALUE) {
+				if (findStep < 20) {
 					return BFS_FIND_ALL_ENEMY;
+				} else {
+					return BFS_EXPLORE;
 				}
 			}
 		}

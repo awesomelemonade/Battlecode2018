@@ -84,6 +84,7 @@ public class RocketExecutor implements UnitExecutor {
 				}
 				for (Unit target : unit.senseNearbyUnitsByTeam(2, GameController.INSTANCE.getTeam())) {
 					if (target.getType().isStructure()) continue;
+					if (target.getType() == UnitType.WORKER && RoundInfo.getRoundNumber() > 400 && RoundInfo.getRoundNumber() < 700) continue;
 					if (target.getType() == UnitType.WORKER && hasWorker && GameController.INSTANCE.getRoundNumber() < 739) continue;
 					if (unit.canLoad(target)) {
 						if (target.getType() == UnitType.WORKER) {
