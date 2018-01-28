@@ -19,8 +19,6 @@ public class RoundInfo {
 	private static Unit[] myUnits;
 	private static Unit[] enemiesOnMap;
 	private static boolean[][] structures;
-	private static int unitsInRockets;
-	private static int rocketSpaces;
 	static {
 		unitCounts = new int[UnitType.values().length];
 		enemyUnitCounts = new int[UnitType.values().length];
@@ -30,8 +28,6 @@ public class RoundInfo {
 	}
 	public static void update() {
 		combatUnitsCount = 0;
-		unitsInRockets = 0;
-		rocketSpaces = 0;
 		for (int i = 0; i < unitCounts.length; ++i) {
 			unitCounts[i] = 0;
 			enemyUnitCounts[i] = 0;
@@ -60,11 +56,6 @@ public class RoundInfo {
 						combatUnitsCount++;
 					}
 				}
-				if (unit.getType() == UnitType.ROCKET) {
-					int numInGarrison = unit.getGarrisonUnitIds().length;
-					unitsInRockets += numInGarrison;
-					rocketSpaces += unit.getStructureMaxCapacity() - numInGarrison;
-				}
 				myUnits[myUnitsCount++] = unit;
 				unitCounts[unit.getType().ordinal()]++;
 			} else {
@@ -76,12 +67,6 @@ public class RoundInfo {
 		}
 		myUnits = Arrays.copyOfRange(myUnits, 0, myUnitsCount);
 		enemiesOnMap = Arrays.copyOfRange(enemiesOnMap, 0, enemiesOnMapCount);
-	}
-	public static int getUnitsInRockets() {
-		return unitsInRockets;
-	}
-	public static int getRocketSpaces() {
-		return rocketSpaces;
 	}
 	public static void addStructure(int x, int y) {
 		structures[x][y] = true;
