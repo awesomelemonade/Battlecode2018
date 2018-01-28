@@ -399,7 +399,7 @@ public class MoveManager {
 			int bfsStep = getBFSStep(BFS_LOAD_ROCKET, position);
 			if(bfsStep != Integer.MAX_VALUE) {
 				int roundsToRocket = Math.round((float)bfsStep*((float)type.getBaseMovementCooldown()/10.0f));
-				if (RoundInfo.getRoundNumber() + roundsToRocket > 730) {
+				if (RoundInfo.getRoundNumber() + roundsToRocket > 700) {
 					return BFS_LOAD_ROCKET;
 				}
 			}
