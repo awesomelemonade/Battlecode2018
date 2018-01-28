@@ -213,7 +213,8 @@ public class MoveManager {
 						if (planet == Planet.EARTH) {
 							if (Util.PASSABLE_PREDICATE.test(location) && (!isNextToStructure(location)) &&
 									(!location.hasUnitAtLocation() && 
-											getBFSStep(BFS_FIND_FRIENDLY, location.getPosition()) < 15)) {
+											(WorkerExecutor.getBlueprintTargetType() == UnitType.FACTORY || 
+											getBFSStep(BFS_FIND_FRIENDLY, location.getPosition()) < 15))) {
 								int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
 								int buildArray = Util.getBuildArray(neighbors);
 								blueprint[i][j] = buildArray;
