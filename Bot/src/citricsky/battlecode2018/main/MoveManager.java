@@ -154,7 +154,9 @@ public class MoveManager {
 				boolean nearEnemy = nearEnemy(location.getPosition(), 12, false);
 				if (unit.getHealth() < unit.getMaxHealth()) {
 					if (!nearEnemy && unit.getType().isStructure()) {
-						addSource(BFS_WORKER_TASK, location, Direction.COMPASS);
+						if ((!unit.isStructureBuilt()) || RoundInfo.getRoundNumber() < 600) {
+							addSource(BFS_WORKER_TASK, location, Direction.COMPASS);
+						}
 					}
 				}
 				boolean damagedHealerTarget = false;
