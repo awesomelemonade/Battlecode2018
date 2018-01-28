@@ -69,6 +69,18 @@ public class WorkerExecutor implements UnitExecutor {
 			if (RoundInfo.getRoundNumber() > 750) {
 				return true;
 			}
+			int minKarbonite = 60;
+			if (RoundInfo.getRoundNumber() < 100) {
+				minKarbonite = 30;
+			}
+			if (RoundInfo.getRoundNumber() < 150) {
+				MapLocation unitLocation = unit.getLocation().getMapLocation();
+				for(Direction offset : Direction.COMPASS) {
+					if(unitLocation.getOffsetLocation(offset).getKarboniteCount()>=minKarbonite) {
+						return true;
+					}
+				}
+			}
 		}
 		return false;
 	}
