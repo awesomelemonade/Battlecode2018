@@ -59,8 +59,9 @@ public class FactoryExecutor implements UnitExecutor {
 		}
 		int[] garrison = unit.getGarrisonUnitIds();
 		if(RoundInfo.getRoundNumber() > 100 || hasBeenDamaged || 
-				garrison.length == unit.getStructureMaxCapacity() ||
-					unit.senseNearbyUnitsByTeam(17, GameController.INSTANCE.getEnemyTeam()).length > 1) {
+				WorkerExecutor.hasBeenDamaged|| garrison.length == unit.getStructureMaxCapacity() ||
+					unit.senseNearbyUnitsByTeam(17, GameController.INSTANCE.getEnemyTeam()).length > 1 ||
+						unit.senseNearbyUnitsByTeam(5, GameController.INSTANCE.getEnemyTeam()).length > 0) {
 			for (int i = 0; i < garrison.length; ++i) {
 				Direction bestUnloadDirection = null;
 				Vector bestUnloadPosition = null;
