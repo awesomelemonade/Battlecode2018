@@ -48,7 +48,7 @@ public class FactoryExecutor implements UnitExecutor {
 			return;
 		}
 		UnitType produceType = getProduceType(unit.getLocation().getMapLocation());
-		if (produceType != null && (produceType == UnitType.WORKER || RoundInfo.getCombatUnitsCount() < 50) && unit.canProduceRobot(produceType)) {
+		if (produceType != null && (produceType == UnitType.WORKER || RoundInfo.getCombatUnitsCount() < 60) && unit.canProduceRobot(produceType)) {
 			unit.produceRobot(produceType);
 		}
 		int[] garrison = unit.getGarrisonUnitIds();

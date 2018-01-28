@@ -358,13 +358,15 @@ public class MoveManager {
 			}
 		}
 		if (type == UnitType.WORKER) {
-			if (WorkerExecutor.getBlueprintType() != null) {
+			int workerBlueprintStep = getBFSStep(BFS_WORKER_BLUEPRINT, position);
+			if (WorkerExecutor.getBlueprintType() != null && workerBlueprintStep != Integer.MAX_VALUE) {
 				return BFS_WORKER_BLUEPRINT;
 			}
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
 			int workerHarvestStep = getBFSStep(BFS_WORKER_HARVEST, position);
-			if (workerTaskStep == Integer.MAX_VALUE && workerHarvestStep == Integer.MAX_VALUE) {
-				return BFS_WORKER_BLUEPRINT;
+			if (workerTaskStep == Integer.MAX_VALUE && workerHarvestStep == Integer.MAX_VALUE &&
+					workerBlueprintStep == Integer.MAX_VALUE) {
+				return BFS_EXPLORE;
 			}
 			if (workerHarvestStep == Integer.MAX_VALUE) {
 				return BFS_WORKER_TASK;
