@@ -272,7 +272,7 @@ public class MoveManager {
 			if (unit.getType() == UnitType.FACTORY) {
 				priorities[unit.getId()] = -bfsArray[BFS_FIND_COMBAT_ENEMY].getStep(position.getX(), position.getY());
 			} else {
-				priorities[unit.getId()] = Integer.MIN_VALUE;
+				priorities[unit.getId()] = Integer.MAX_VALUE;
 			}
 		} else {
 			int bfsIndex = getBFSIndex(unit);
