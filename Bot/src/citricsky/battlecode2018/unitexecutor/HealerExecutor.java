@@ -48,19 +48,27 @@ public class HealerExecutor implements UnitExecutor {
 			}
 		}
 		if (unit.isAbilityUnlocked() && unit.isOverchargeReady()) {
-			double leastAbilityPercentage = 1.1;
+			int bestAbilityHeat = 0;
 			Unit bestTarget = null;
+			int bestStepsToEnemy = Integer.MAX_VALUE;
 			for (Unit friendlyUnit : RoundInfo.getMyUnits()) {
-				if(friendlyUnit.getType().isStructure()) continue;
+				if (!friendlyUnit.getLocation().isOnMap()) continue;
+				if (friendlyUnit.getType().isStructure()) continue;
 				if (unit.canOvercharge(friendlyUnit)) {
-					double abilityPercentage = friendlyUnit.getAbilityHeat()/friendlyUnit.getAbilityCooldown();
-					if(abilityPercentage < leastAbilityPercentage) {
+					int stepsToEnemy = moveManager.getBFSStep(MoveManager.BFS_FIND_COMBAT_ENEMY, friendlyUnit.getLocation().getMapLocation().getPosition());
+					int abilityHeat = friendlyUnit.getAbilityHeat();
+					if (abilityHeat > bestAbilityHeat) {
 						bestTarget = friendlyUnit;
-						leastAbilityPercentage = abilityPercentage;
+						bestAbilityHeat = abilityHeat;
+						bestStepsToEnemy = stepsToEnemy;
+					} else if (abilityHeat == bestAbilityHeat && stepsToEnemy < bestStepsToEnemy) {
+						bestTarget = friendlyUnit;
+						bestAbilityHeat = abilityHeat;
+						bestStepsToEnemy = stepsToEnemy;
 					}
 				}
 			}
-			if(leastAbilityPercentage < 0.6) {
+			if(bestTarget != null) {
 				unit.overcharge(bestTarget);
 				moveManager.queueUnit(unit);
 			}
