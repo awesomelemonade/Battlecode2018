@@ -19,14 +19,6 @@ public enum Planet {
 		this.startingMap.init();
 	}
 	
-	public void clearMapLocations() {
-		for(int i=0;i<mapLocations.length;++i) {
-			for(int j=0;j<mapLocations[0].length;++j) {
-				mapLocations[i][j] = null;
-			}
-		}
-	}
-	
 	public MapLocation getMapLocation(int x, int y) {
 		if(mapLocations[x+BUFFER][y+BUFFER]==null) {
 			mapLocations[x+BUFFER][y+BUFFER] = new MapLocation(new bc.MapLocation(bcPlanet, x, y));

@@ -23,10 +23,12 @@ public class MoveManager {
 	private static final int[] RANGER_OFFSET_Y = new int[] { 0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 1, 0, -1,
 			-2, -3, -4, -5, -5, -6, -6, -7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1 };
 	private static final int[] HEALER_OFFSET_X = new int[] {
-			0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1
+			0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1,
+			4, 4, 4, 3, 2, 1, 0, -1, -2, -3, -4, -4, -4, -4, -4, -3, -2, -1, 0, 1, 2, 3, 4, 4
 	};
 	private static final int[] HEALER_OFFSET_Y = new int[] {
-			5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5
+			5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5,
+			0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, -1, -2, -3, -4, -4, -4, -4, -4, -3, -2, -1
 	};
 	public static final int BFS_FIND_COMBAT_ENEMY = 0;
 	public static final int BFS_FIND_ALL_ENEMY = 1;
@@ -90,11 +92,21 @@ public class MoveManager {
 		}
 		return false;
 	}
+	public static void debugPop(Benchmark benchmark, int threshold, String message) {
+		double deltaTime = benchmark.pop() / 1000000.0;
+		if (deltaTime > threshold) {
+			System.out.println(String.format(message, deltaTime));
+		}
+	}
 	public void updateBFS() {
+		Benchmark benchmark = new Benchmark();
+		benchmark.push();
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i].resetHard();
 			processed[i] = false;
 		}
+		debugPop(benchmark, 10, "Reset: %fms");
+		benchmark.push();
 		if (RoundInfo.getEnemiesOnMap().length > 0) {
 			for (Unit unit: RoundInfo.getEnemiesOnMap()) {
 				MapLocation location = unit.getLocation().getMapLocation();
@@ -124,6 +136,8 @@ public class MoveManager {
 				}
 			}
 		}
+		debugPop(benchmark, 10, "EnemyUnits: %fms");
+		benchmark.push();
 		for (Unit unit: RoundInfo.getMyUnits()) {
 			if (unit.getLocation().isOnMap()) {
 				MapLocation location = unit.getLocation().getMapLocation();
@@ -169,6 +183,8 @@ public class MoveManager {
 				}
 			}
 		}
+		debugPop(benchmark, 10, "MyUnits: %fms");
+		benchmark.push();
 		for (int i = 0; i < planet.getWidth(); ++i) {
 			for (int j = 0; j < planet.getHeight(); ++j) {
 				MapLocation location = planet.getMapLocation(i, j);
@@ -190,7 +206,7 @@ public class MoveManager {
 					if (karbonite[i][j] > 0) {
 						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
 					} else {
-						if (Util.PASSABLE_PREDICATE.test(location) && !isNextToStructure(location)) {
+						if (Util.PASSABLE_PREDICATE.test(location) && !isNextToStructure(location) && (!location.hasUnitAtLocation())) {
 							int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
 							int buildArray = Util.getBuildArray(neighbors);
 							blueprint[i][j] = buildArray;
@@ -201,6 +217,8 @@ public class MoveManager {
 				}
 			}
 		}
+		debugPop(benchmark, 10, "Planet: %fms");
+		benchmark.push();
 		for (int i = 0; i < planet.getWidth(); ++i) {
 			for (int j = 0; j < planet.getHeight(); ++j) {
 				MapLocation location = planet.getMapLocation(i, j);
@@ -217,6 +235,7 @@ public class MoveManager {
 				}
 			}
 		}
+		debugPop(benchmark, 10, "Blueprint: %fms");
 	}
 	public boolean isNextToStructure(MapLocation location) {
 		for (Direction dir: Direction.COMPASS) {

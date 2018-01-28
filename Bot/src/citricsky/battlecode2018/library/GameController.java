@@ -120,9 +120,6 @@ public enum GameController {
 	}
 
 	public void yield() {
-		for (Planet planet : Planet.values()) {
-			planet.clearMapLocations();
-		}
 		bcGameController.nextTurn();
 	}
 
