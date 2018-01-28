@@ -92,6 +92,7 @@ runGame() {
 update() {
     if [[ $(getBotCommit) != ${PREV_BOT_COMMIT} ]]; then
         echo "<<<< Bot updated. Restarting script... >>>>"
+        resetBot
         chmod +x "${SCRIPT}"
         exec "${SCRIPT}"
         exit 0
