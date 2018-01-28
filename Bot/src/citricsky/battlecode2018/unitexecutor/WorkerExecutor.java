@@ -65,6 +65,9 @@ public class WorkerExecutor implements UnitExecutor {
 	}
 	private boolean shouldReplicate(Unit unit) {
 		if (GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST) {
+			if (RoundInfo.getEnemyUnitCount(UnitType.FACTORY) > 0 && RoundInfo.getUnitCount(UnitType.FACTORY) == 0) {
+				return false;
+			}
 			if (RoundInfo.getRoundNumber() < 20) {
 				return true;
 			}
@@ -91,7 +94,7 @@ public class WorkerExecutor implements UnitExecutor {
 		}
 	}
 	public static UnitType getBlueprintTargetType() {
-		if (RoundInfo.getCombatUnitsCount() > 30) {
+		if (RoundInfo.getCombatUnitsCount() - RoundInfo.getUnitsInRockets() > 30) {
 			return UnitType.ROCKET;
 		}
 		if ((RoundInfo.getRoundNumber() < 100) ||

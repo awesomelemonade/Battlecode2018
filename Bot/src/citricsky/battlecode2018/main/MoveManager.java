@@ -30,6 +30,14 @@ public class MoveManager {
 			5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5,
 			0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, -1, -2, -3, -4, -4, -4, -4, -4, -3, -2, -1
 	};
+	private static final int[] MAGE_OFFSET_X = new int[] {
+			0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1,
+			4, 4, 4, 3, 2, 1, 0, -1, -2, -3, -4, -4, -4, -4, -4, -3, -2, -1, 0, 1, 2, 3, 4, 4
+	};
+	private static final int[] MAGE_OFFSET_Y = new int[] {
+			5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5,
+			0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, -1, -2, -3, -4, -4, -4, -4, -4, -3, -2, -1
+	};
 	public static final int BFS_FIND_COMBAT_ENEMY = 0;
 	public static final int BFS_FIND_ALL_ENEMY = 1;
 	public static final int BFS_FIND_HEAL = 2;
@@ -40,9 +48,10 @@ public class MoveManager {
 	public static final int BFS_RANGER_ATTACK = 7;
 	public static final int BFS_HEALER_HEAL = 8;
 	public static final int BFS_HEALER_IDLE = 9;
-	public static final int BFS_LOAD_ROCKET = 10;
-	public static final int BFS_EXPLORE = 11;
-	public static final int BFS_FIND_FRIENDLY = 12; // Friendly non rockets and non workers
+	public static final int BFS_MAGE_ATTACK = 10;
+	public static final int BFS_LOAD_ROCKET = 11;
+	public static final int BFS_EXPLORE = 12;
+	public static final int BFS_FIND_FRIENDLY = 13; // Friendly non rockets and non workers
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
@@ -50,16 +59,22 @@ public class MoveManager {
 	private boolean[][] explored;
 	private int[][] blueprint;
 	private int[] priorities;
+	private int[] subPriorities;
 	private int[] bfsIndices;
 	private PriorityQueue<Unit> queue;
 	
 	public MoveManager() {
 		priorities = new int[Constants.MAX_UNIT_ID];
+		subPriorities = new int[Constants.MAX_UNIT_ID];
 		bfsIndices = new int[Constants.MAX_UNIT_ID];
 		queue = new PriorityQueue<Unit>(7, new Comparator<Unit>() {
 			@Override
 			public int compare(Unit a, Unit b) {
-				return Integer.compare(priorities[b.getId()], priorities[a.getId()]);
+				int compare = Integer.compare(priorities[b.getId()], priorities[a.getId()]);
+				if (compare == 0) {
+					compare = Integer.compare(subPriorities[b.getId()], subPriorities[a.getId()]);
+				}
+				return compare;
 			}
 		});
 		this.planet = GameController.INSTANCE.getPlanet();
@@ -67,7 +82,7 @@ public class MoveManager {
 		this.explored = new boolean[planet.getWidth()][planet.getHeight()];
 		this.blueprint = new int[planet.getWidth()][planet.getHeight()];
 		//Initialize bfsArray
-		this.bfsArray = new BFS[13];
+		this.bfsArray = new BFS[14];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
@@ -126,6 +141,16 @@ public class MoveManager {
 						}
 					}
 				}
+				for (int i = 0; i < MAGE_OFFSET_X.length; ++i) {
+					Vector offset = location.getPosition().add(MAGE_OFFSET_X[i], MAGE_OFFSET_Y[i]);
+					if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
+						if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset))) {
+							if (!isNearEnemy(offset, 15)) {
+								bfsArray[BFS_MAGE_ATTACK].addSource(offset);
+							}
+						}
+					}
+				}
 			}
 		} else {
 			for (Unit unit: planet.getStartingMap().getInitialUnits()) {
@@ -148,7 +173,9 @@ public class MoveManager {
 				boolean nearEnemy = nearEnemy(location.getPosition(), 12, false);
 				if (unit.getHealth() < unit.getMaxHealth()) {
 					if (!nearEnemy && unit.getType().isStructure()) {
-						addSource(BFS_WORKER_TASK, location, Direction.COMPASS);
+						if ((!unit.isStructureBuilt()) || RoundInfo.getRoundNumber() < 600) {
+							addSource(BFS_WORKER_TASK, location, Direction.COMPASS);
+						}
 					}
 				}
 				boolean damagedHealerTarget = false;
@@ -279,7 +306,11 @@ public class MoveManager {
 			if (unit.getType() == UnitType.FACTORY) {
 				priorities[unit.getId()] = -bfsArray[BFS_FIND_COMBAT_ENEMY].getStep(position.getX(), position.getY());
 			} else {
-				priorities[unit.getId()] = Integer.MAX_VALUE;
+				if (planet == Planet.EARTH) {
+					priorities[unit.getId()] = Integer.MAX_VALUE;
+				} else {
+					priorities[unit.getId()] = Integer.MIN_VALUE;
+				}
 			}
 		} else {
 			int bfsIndex = getBFSIndex(unit);
@@ -290,6 +321,18 @@ public class MoveManager {
 				int score = -bfsArray[bfsIndex].getStep(position.getX(), position.getY());
 				if (bfsIndex == BFS_WORKER_TASK && score == BFS.SOURCE_STEP) {
 					score = Integer.MAX_VALUE; // Workers building or repairing get priority in replication
+				}
+				if (unit.getType() == UnitType.WORKER) {
+					// count number of workers near this tile
+					int workers = 0;
+					for (Unit u: RoundInfo.getMyUnits()) {
+						if (u.getType() == UnitType.WORKER && u.getLocation().isOnMap()) {
+							if (Util.getMovementDistance(u.getLocation().getMapLocation().getPosition(), position) < 6) {
+								workers++;
+							}
+						}
+					}
+					subPriorities[unit.getId()] = workers;
 				}
 				priorities[unit.getId()] = score;
 			}
@@ -375,7 +418,7 @@ public class MoveManager {
 		}
 		if (type == UnitType.WORKER) {
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position) - 3;
-			if (workerTaskStep <= 3) {
+			if (workerTaskStep <= 3 || (WorkerExecutor.getBlueprintTargetType() == UnitType.ROCKET && workerTaskStep <= 10)) {
 				return BFS_WORKER_TASK;
 			}
 			int workerBlueprintStep = getBFSStep(BFS_WORKER_BLUEPRINT, position);
@@ -428,6 +471,9 @@ public class MoveManager {
 		}
 		if (type == UnitType.RANGER) {
 			bfsAttackIndex = BFS_RANGER_ATTACK;
+		}
+		if (type == UnitType.MAGE) {
+			bfsAttackIndex = BFS_MAGE_ATTACK;
 		}
 		if (bfsAttackIndex == -1) {
 			bfsAttackIndex = BFS_FIND_ALL_ENEMY;

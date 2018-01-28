@@ -32,10 +32,10 @@ public class RocketExecutor implements UnitExecutor {
 			if(GameController.INSTANCE.getRoundNumber() < 500) {
 				return true;
 			}
-		}*/
+		}
 		if(unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
 			return true;
-		}
+		}*/
 		
 		return false;
 	}

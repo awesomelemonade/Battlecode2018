@@ -27,4 +27,7 @@ public class Location {
 	public MapLocation getMapLocation() {
 		return mapLocation;
 	}
+	public int getGarrisonStructureId() {
+		return bcLocation.structure();
+	}
 }
