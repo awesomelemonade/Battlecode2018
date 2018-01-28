@@ -91,12 +91,14 @@ public class BFS {
 			Vector vector = queue.poll();
 			for(Direction direction: Direction.COMPASS) {
 				Vector candidate = vector.add(direction.getOffsetVector());
-				if((!Util.outOfBounds(candidate, data.length, data[0].length)) && passable.test(candidate)) {
+				if((!Util.outOfBounds(candidate, data.length, data[0].length))) {
 					if (data[candidate.getX()][candidate.getY()] == 0) {
 						data[candidate.getX()][candidate.getY()] =
 								((direction.getOpposite().ordinal() & DIRECTION_BITMASK) << DIRECTION_SHIFT) |
 								((step & STEP_BITMASK) << STEP_SHIFT);
-						queue.add(candidate);
+						if (passable.test(candidate)) {
+							queue.add(candidate);
+						}
 					}
 				}
 			}
