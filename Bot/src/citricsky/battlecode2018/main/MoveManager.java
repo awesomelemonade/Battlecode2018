@@ -153,7 +153,7 @@ public class MoveManager {
 					if (unit.getHealth() < unit.getMaxHealth()) {
 						damagedHealerTarget = true;
 					} else {
-						if (nearEnemy) {
+						if (nearEnemy && unit.getType() != UnitType.WORKER) {
 							idleHealerTarget = true;
 						}
 					}
