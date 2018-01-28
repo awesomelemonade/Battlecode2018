@@ -84,16 +84,21 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 			if (RoundInfo.getRoundNumber() < 150) {
 				MapLocation unitLocation = unit.getLocation().getMapLocation();
+				int totalKarbonite = 0;
 				for(Direction offset : Direction.COMPASS) {
-					if(unitLocation.getOffsetLocation(offset).getKarboniteCount()>=minKarbonite) {
-						return true;
-					}
+					totalKarbonite += unitLocation.getOffsetLocation(offset).getKarboniteCount();
+				}
+				if (totalKarbonite >= minKarbonite) {
+					return true;
 				}
 			}
 		}
 		return false;
 	}
 	public static UnitType getBlueprintType() {
+		if (GameController.INSTANCE.getPlanet() == Planet.MARS) {
+			return null;
+		}
 		UnitType target = getBlueprintTargetType();
 		if (target.getBaseCost() <= GameController.INSTANCE.getCurrentKarbonite()) {
 			return target;

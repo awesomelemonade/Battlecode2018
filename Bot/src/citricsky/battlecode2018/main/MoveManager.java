@@ -206,12 +206,14 @@ public class MoveManager {
 					if (karbonite[i][j] > 0) {
 						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
 					} else {
-						if (Util.PASSABLE_PREDICATE.test(location) && !isNextToStructure(location) && (!location.hasUnitAtLocation())) {
-							int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
-							int buildArray = Util.getBuildArray(neighbors);
-							blueprint[i][j] = buildArray;
-						} else {
-							blueprint[i][j] = -1;
+						if (planet == Planet.EARTH) {
+							if (Util.PASSABLE_PREDICATE.test(location) && !isNextToStructure(location) && (!location.hasUnitAtLocation())) {
+								int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
+								int buildArray = Util.getBuildArray(neighbors);
+								blueprint[i][j] = buildArray;
+							} else {
+								blueprint[i][j] = -1;
+							}
 						}
 					}
 				}
@@ -219,16 +221,18 @@ public class MoveManager {
 		}
 		debugPop(benchmark, 10, "Planet: %fms");
 		benchmark.push();
-		for (int i = 0; i < planet.getWidth(); ++i) {
-			for (int j = 0; j < planet.getHeight(); ++j) {
-				MapLocation location = planet.getMapLocation(i, j);
-				if (Util.PASSABLE_PREDICATE.test(location)) {
-					for (Direction direction: Direction.COMPASS) {
-						Vector offset = location.getOffsetLocation(direction).getPosition();
-						if (!Util.outOfBounds(offset, blueprint.length, blueprint[0].length)) {
-							if (blueprint[offset.getX()][offset.getY()] > 0) {
-								bfsArray[BFS_WORKER_BLUEPRINT].addSource(location.getPosition());
-								break;
+		if (planet == Planet.EARTH) {
+			for (int i = 0; i < planet.getWidth(); ++i) {
+				for (int j = 0; j < planet.getHeight(); ++j) {
+					MapLocation location = planet.getMapLocation(i, j);
+					if (Util.PASSABLE_PREDICATE.test(location)) {
+						for (Direction direction: Direction.COMPASS) {
+							Vector offset = location.getOffsetLocation(direction).getPosition();
+							if (!Util.outOfBounds(offset, blueprint.length, blueprint[0].length)) {
+								if (blueprint[offset.getX()][offset.getY()] > 0) {
+									bfsArray[BFS_WORKER_BLUEPRINT].addSource(location.getPosition());
+									break;
+								}
 							}
 						}
 					}
@@ -424,7 +428,7 @@ public class MoveManager {
 		int attackStep = getBFSStep(bfsAttackIndex, position);
 		if (attackStep < 10) {
 			return bfsAttackIndex;
-		}else {
+		} else {
 			if (planet == Planet.EARTH) {
 				int bfsStep = getBFSStep(BFS_LOAD_ROCKET, position);
 				if (bfsStep != Integer.MAX_VALUE && (RoundInfo.getRoundNumber() > 600 ||
