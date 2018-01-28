@@ -3,7 +3,6 @@
 SCRIPT=$(realpath ${0})
 PRE="00000000"
 SCAFF_DIR=~/bc18-scaffold
-SCAFF_COM=""
 BOT_DIR=~/citricsky-battlecode2018
 BOT_COM=""
 NUMGAMES=0
@@ -39,14 +38,9 @@ copyBot() {
     echo ">>>>"
 }
 
-getScaffCommit() {
-    cd ${SCAFF_DIR}
-    echo $(git log | head -n 1 | cut -d' ' -f2)
-}
-
 getBotCommit() {
     cd ${BOT_DIR}
-    echo $(git log | head -n 1 | cut -d' ' -f2)
+    echo $(git log origin --pretty=format:"%H" | head -n 1)
 }
 
 runGame() {
@@ -94,7 +88,6 @@ runGame() {
 }
 
 resetScaffold
-SCAFF_COM=$(getScaffCommit)
 
 resetBot
 BOT_COM=$(getBotCommit)
