@@ -84,6 +84,7 @@ runGame() {
     scp "${LOGFILE}" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/battlecode/games/"
     ssh ubuntu@ssh.pantherman594.com "sed -i '1 i${BOT_COM} ${GAME_ID} ${OPPONENT} ${MAP} ${RESULT}' /var/www/pantherman594/battlecode/games/gamedata"
     echo ">>>>"
+
     echo "<<<< Cleaning up"
     rm "${LOGFILE}" "${GAME_ID}.bc18z"
     mv "${PRE}Bot" "Bot"
@@ -107,8 +108,10 @@ while true; do
             echo "<<<< Bot updated. Restarting script... >>>>"
             chmod +x "${SCRIPT}"
             exec "${SCRIPT}"
-            break
+            exit 0
         fi
         runGame SuperCowPowers $(echo "${map}" | cut -d'.' -f1)
+        sleep 10
     done
+    sleep 300
 done
