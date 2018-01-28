@@ -1,13 +1,13 @@
  package citricsky.battlecode2018.library;
 
 public enum UnitType {
-	WORKER  (bc.UnitType.Worker,   50, 100,   0,  0, 50),
-	KNIGHT  (bc.UnitType.Knight,   40, 250,  80,  2, 50),
-	RANGER  (bc.UnitType.Ranger,   40, 200,  30, 50, 70),
-	MAGE    (bc.UnitType.Mage,     40,  80,  60, 30, 30),
-	HEALER  (bc.UnitType.Healer,   40, 100, -10, 30, 50),
-	ROCKET  (bc.UnitType.Rocket,  150, 200,   0,  0,  2),
-	FACTORY (bc.UnitType.Factory, 200, 300,   0,  0,  2);
+	WORKER  (bc.UnitType.Worker,   50, 100,   0,  0, 50, 20),
+	KNIGHT  (bc.UnitType.Knight,   40, 250,  80,  2, 50, 15),
+	RANGER  (bc.UnitType.Ranger,   40, 200,  30, 50, 70, 30),
+	MAGE    (bc.UnitType.Mage,     40,  80,  60, 30, 30, 20),
+	HEALER  (bc.UnitType.Healer,   40, 100, -10, 30, 50, 25),
+	ROCKET  (bc.UnitType.Rocket,  150, 200,   0,  0,  2, 0),
+	FACTORY (bc.UnitType.Factory, 200, 300,   0,  0,  2, 0);
 
 	private bc.UnitType bcUnitType;
 	private int baseCost;
@@ -15,14 +15,16 @@ public enum UnitType {
 	private int baseDamage;
 	private int baseAttackRange;
 	private int baseVisionRange;
+	private int baseMovementCooldown;
 
-	UnitType(bc.UnitType bcUnitType, int baseCost, int baseHealth, int baseDamage, int baseAttackRange, int baseVisionRange) {
+	UnitType(bc.UnitType bcUnitType, int baseCost, int baseHealth, int baseDamage, int baseAttackRange, int baseVisionRange, int baseMovementCooldown) {
 		this.bcUnitType = bcUnitType;
 		this.baseCost = baseCost;
 		this.baseHealth = baseHealth;
 		this.baseDamage = baseDamage;
 		this.baseAttackRange = baseAttackRange;
 		this.baseVisionRange = baseVisionRange;
+		this.baseMovementCooldown = baseMovementCooldown;
 	}
 
 	protected bc.UnitType getBcUnitType(){
@@ -42,6 +44,9 @@ public enum UnitType {
 	}
 	public int getBaseVisionRange() {
 		return baseVisionRange;
+	}
+	public int getBaseMovementCooldown() {
+		return baseMovementCooldown;
 	}
 	public boolean isStructure() {
 		return UnitType.isStructure(this);

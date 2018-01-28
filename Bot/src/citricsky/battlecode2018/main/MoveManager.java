@@ -369,7 +369,8 @@ public class MoveManager {
 			}
 		}
 		if (planet == Planet.EARTH) {
-			if (RoundInfo.getRoundNumber() + GameController.INSTANCE.getCurrentFlightDuration() > 800) {
+			int roundsToRocket = Math.round(getBFSStep(BFS_LOAD_ROCKET, position)*(type.getBaseMovementCooldown()/10));
+			if (RoundInfo.getRoundNumber() + roundsToRocket > 730) {
 				return BFS_LOAD_ROCKET;
 			}
 		}
