@@ -87,6 +87,11 @@ public class RocketExecutor implements UnitExecutor {
 					if (target.getType() == UnitType.WORKER && RoundInfo.getRoundNumber() > 400 && RoundInfo.getRoundNumber() < 700) continue;
 					if (target.getType() == UnitType.WORKER && hasWorker && GameController.INSTANCE.getRoundNumber() < 739) continue;
 					if (unit.canLoad(target)) {
+						if (target.getType().isCombatType() && moveManager.getBFSStep(MoveManager.BFS_FIND_ALL_ENEMY,
+								target.getLocation().getMapLocation().getPosition()) < 8 &&
+								RoundInfo.getRoundNumber() < 700) {
+							continue;
+						}
 						if (target.getType() == UnitType.WORKER) {
 							hasWorker = true;
 						}
