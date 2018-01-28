@@ -53,14 +53,6 @@ public class Vector {
 	public Direction getDirectionTowards(int x, int y) {
 		return Direction.valueOf(add(-x, -y).invert());
 	}
-
-	public Vector[] getAdjacentVectors() {
-		return new Vector[] {
-				add(-1, -1), add(-1, 0), add(-1, 1),
-				add(0, -1), add(0, 1),
-				add(1, -1), add(1, 0), add(1, 1)
-		};
-	}
 	
 	@Override
 	public boolean equals(Object o) {

@@ -109,8 +109,15 @@ public class PlanetCommunication {
 
 		Set<Vector> ignoreLocations = new HashSet<>();
 		for (Map.Entry<Vector, Integer> location : locations) {
-			if (!ignoreLocations.contains(location.getKey())) {
-				ignoreLocations.addAll(Arrays.asList(location.getKey().getAdjacentVectors()));
+			boolean shouldIgnore = false;
+			for (Vector ignoreLoc : ignoreLocations) {
+				if (location.getKey().getDistanceSquared(ignoreLoc) <= 4) {
+					shouldIgnore = true;
+					break;
+				}
+			}
+			if (!shouldIgnore) {
+				ignoreLocations.add(location.getKey());
 				addLanding(location.getKey());
 			}
 		}
