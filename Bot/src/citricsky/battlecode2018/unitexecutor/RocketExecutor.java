@@ -103,6 +103,7 @@ public class RocketExecutor implements UnitExecutor {
 			int[] garrison = unit.getGarrisonUnitIds();
 			for (int i = 0; i < garrison.length; ++i) {
 				Direction bestUnloadDirection = null;
+				Vector bestUnloadPosition = null;
 				int closestEnemy = Integer.MAX_VALUE;
 				for (Direction direction: Direction.COMPASS) {
 					if (unit.canUnload(direction)) {
@@ -111,6 +112,7 @@ public class RocketExecutor implements UnitExecutor {
 						int bfsStep = moveManager.getBFSStep(bfsIndex, position) - 1;
 						if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
 							closestEnemy = bfsStep;
+							bestUnloadPosition = position;
 							bestUnloadDirection = direction;
 						}
 					}
@@ -119,6 +121,8 @@ public class RocketExecutor implements UnitExecutor {
 					break;
 				} else {
 					unit.unload(bestUnloadDirection);
+					MapLocation location = GameController.INSTANCE.getPlanet().getMapLocation(bestUnloadPosition);
+					moveManager.queueUnit(location.getUnit()); // throw the new unit into the queue
 				}
 			}
 		}

@@ -63,6 +63,7 @@ public class FactoryExecutor implements UnitExecutor {
 					unit.senseNearbyUnitsByTeam(17, GameController.INSTANCE.getEnemyTeam()).length > 1) {
 			for (int i = 0; i < garrison.length; ++i) {
 				Direction bestUnloadDirection = null;
+				Vector bestUnloadPosition = null;
 				int closestEnemy = Integer.MAX_VALUE;
 				for (Direction direction: Direction.COMPASS) {
 					if (unit.canUnload(direction)) {
@@ -72,6 +73,7 @@ public class FactoryExecutor implements UnitExecutor {
 						if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
 							closestEnemy = bfsStep;
 							bestUnloadDirection = direction;
+							bestUnloadPosition = position;
 						}
 					}
 				}
@@ -79,6 +81,8 @@ public class FactoryExecutor implements UnitExecutor {
 					break;
 				} else {
 					unit.unload(bestUnloadDirection);
+					MapLocation location = GameController.INSTANCE.getPlanet().getMapLocation(bestUnloadPosition);
+					moveManager.queueUnit(location.getUnit()); // throw the new unit into the queue
 				}
 			}
 		}

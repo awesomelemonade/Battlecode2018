@@ -42,6 +42,7 @@ public class MoveManager {
 	public static final int BFS_HEALER_IDLE = 9;
 	public static final int BFS_LOAD_ROCKET = 10;
 	public static final int BFS_EXPLORE = 11;
+	public static final int BFS_FIND_FRIENDLY = 12; // Friendly non rockets and non workers
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
@@ -66,7 +67,7 @@ public class MoveManager {
 		this.explored = new boolean[planet.getWidth()][planet.getHeight()];
 		this.blueprint = new int[planet.getWidth()][planet.getHeight()];
 		//Initialize bfsArray
-		this.bfsArray = new BFS[12];
+		this.bfsArray = new BFS[13];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
@@ -141,6 +142,9 @@ public class MoveManager {
 		for (Unit unit: RoundInfo.getMyUnits()) {
 			if (unit.getLocation().isOnMap()) {
 				MapLocation location = unit.getLocation().getMapLocation();
+				if (unit.getType().isCombatType() || unit.getType() == UnitType.FACTORY) {
+					bfsArray[BFS_FIND_FRIENDLY].addSource(location.getPosition());
+				}
 				boolean nearEnemy = nearEnemy(location.getPosition(), 12, false);
 				if (unit.getHealth() < unit.getMaxHealth()) {
 					if (!nearEnemy && unit.getType().isStructure()) {
@@ -207,7 +211,9 @@ public class MoveManager {
 						bfsArray[BFS_WORKER_HARVEST].addSource(location.getPosition());
 					} else {
 						if (planet == Planet.EARTH) {
-							if (Util.PASSABLE_PREDICATE.test(location) && !isNextToStructure(location) && (!location.hasUnitAtLocation())) {
+							if (Util.PASSABLE_PREDICATE.test(location) && (!isNextToStructure(location)) &&
+									(!location.hasUnitAtLocation() && 
+											getBFSStep(BFS_FIND_FRIENDLY, location.getPosition()) < 15)) {
 								int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
 								int buildArray = Util.getBuildArray(neighbors);
 								blueprint[i][j] = buildArray;
