@@ -70,6 +70,9 @@ public class WorkerExecutor implements UnitExecutor {
 				return true;
 			}
 			int minKarbonite = 60;
+			if (RoundInfo.getRoundNumber() < 50) {
+				minKarbonite = 20;
+			}
 			if (RoundInfo.getRoundNumber() < 100) {
 				minKarbonite = 30;
 			}
