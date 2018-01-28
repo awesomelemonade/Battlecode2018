@@ -88,6 +88,15 @@ runGame() {
     echo ">>>>"
 }
 
+update() {
+    if [[ $(getBotCommit) != ${PREV_BOT_COMMIT} ]]; then
+        echo "<<<< Bot updated. Restarting script... >>>>"
+        chmod +x "${SCRIPT}"
+        exec "${SCRIPT}"
+        exit 0
+    fi
+}
+
 resetScaffold
 
 resetBot
@@ -99,14 +108,12 @@ ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git pull"
 while true; do
     cd ${SCAFF_DIR}
     for map in $(ls battlecode-maps | sort -R); do
-        if [[ $(getBotCommit) != ${PREV_BOT_COMMIT} ]]; then
-            echo "<<<< Bot updated. Restarting script... >>>>"
-            chmod +x "${SCRIPT}"
-            exec "${SCRIPT}"
-            exit 0
-        fi
+        update
         runGame SuperCowPowers $(echo "${map}" | cut -d'.' -f1)
         sleep 10s
     done
-    sleep 1h
+    for i in {1..360}; do
+        update
+        sleep 10s
+    done
 done
