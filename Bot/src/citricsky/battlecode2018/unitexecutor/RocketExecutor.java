@@ -22,10 +22,15 @@ public class RocketExecutor implements UnitExecutor {
 	}
 	
 	public boolean shouldLaunch(Unit unit) {
-		if(unit.getHealth() <= 50) {
+		if (unit.getHealth() <= 100) {
 			return true;
 		}
-		if(GameController.INSTANCE.getRoundNumber() == 749) {
+		if (GameController.INSTANCE.getRoundNumber() == 749) {
+			return true;
+		}
+		//launch if there is no where else to blueprint rockets
+		if (moveManager.getBFSStep(MoveManager.BFS_WORKER_BLUEPRINT, unit.getLocation().getMapLocation().getPosition()) == Integer.MAX_VALUE && 
+				unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
 			return true;
 		}
 		/*if(unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
