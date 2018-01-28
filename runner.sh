@@ -106,7 +106,7 @@ while true; do
             exit 0
         fi
         runGame SuperCowPowers $(echo "${map}" | cut -d'.' -f1)
-        sleep 10
+        sleep 10s
     done
-    sleep 300
+    sleep 1h
 done
