@@ -105,6 +105,7 @@ while true; do
     for map in $(ls battlecode-maps | sort -R); do
         if [[ $(getBotCommit) != ${BOT_COM} ]]; then
             echo "<<<< Bot updated. Restarting script... >>>>"
+            chmod +x "${SCRIPT}"
             exec "${SCRIPT}"
             break
         fi
