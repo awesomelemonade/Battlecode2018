@@ -34,34 +34,7 @@ public class RangerExecutor implements UnitExecutor {
 	}
 	
 	@Override
-	public void execute(Unit unit) {
-		if (unit.isRangerSniping()) {
-			return;
-		}
-		if (unit.isAttackReady()) {
-			Unit bestTarget = null;
-			int priorityIndex = Integer.MIN_VALUE;
-			int lowestHealth = Integer.MAX_VALUE;
-			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(50, GameController.INSTANCE.getEnemyTeam())) {
-				if (unit.canAttack(enemyUnit)) {
-					int health = enemyUnit.getHealth();
-					int unitPriority = getPriorityIndex(enemyUnit);
-					if (unitPriority > priorityIndex) {
-						bestTarget = enemyUnit;
-						lowestHealth = health;
-						priorityIndex = unitPriority;
-					} else if (unitPriority == priorityIndex) {
-						if (health < lowestHealth) {
-							bestTarget = enemyUnit;
-							lowestHealth = health;
-						}
-					}
-				}
-			}
-			if (bestTarget != null) {
-				unit.attack(bestTarget);
-			}
-		}
+	public void postExecute(Unit unit) {
 		if(unit.isAbilityUnlocked() && unit.isBeginSnipeReady()) {
 			if(unit.isAttackReady() && unit.isMoveReady()) {
 				int furthestDistance = Integer.MIN_VALUE;
@@ -89,6 +62,37 @@ public class RangerExecutor implements UnitExecutor {
 						unit.beginSnipe(targetLocation);
 					}
 				}
+			}
+		}
+	}
+	
+	@Override
+	public void execute(Unit unit) {
+		if (unit.isRangerSniping()) {
+			return;
+		}
+		if (unit.isAttackReady()) {
+			Unit bestTarget = null;
+			int priorityIndex = Integer.MIN_VALUE;
+			int lowestHealth = Integer.MAX_VALUE;
+			for (Unit enemyUnit : unit.senseNearbyUnitsByTeam(50, GameController.INSTANCE.getEnemyTeam())) {
+				if (unit.canAttack(enemyUnit)) {
+					int health = enemyUnit.getHealth();
+					int unitPriority = getPriorityIndex(enemyUnit);
+					if (unitPriority > priorityIndex) {
+						bestTarget = enemyUnit;
+						lowestHealth = health;
+						priorityIndex = unitPriority;
+					} else if (unitPriority == priorityIndex) {
+						if (health < lowestHealth) {
+							bestTarget = enemyUnit;
+							lowestHealth = health;
+						}
+					}
+				}
+			}
+			if (bestTarget != null) {
+				unit.attack(bestTarget);
 			}
 		}
 	}

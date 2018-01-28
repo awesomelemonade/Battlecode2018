@@ -289,7 +289,7 @@ public class MoveManager {
 		}
 		queue.add(unit);
 	}
-	public void move(Consumer<Unit> executor) {
+	public void move(Consumer<Unit> executor, Consumer<Unit> postExecutor) {
 		Unit[] units = GameController.INSTANCE.getMyUnitsByFilter(
 				unit -> unit.getLocation().isOnMap());
 		if (units.length > 0) {
@@ -300,6 +300,9 @@ public class MoveManager {
 			while (!queue.isEmpty()) {
 				try {
 					Unit unit = queue.poll();
+					if (unit.getType().isCombatType()) {
+						executor.accept(unit);
+					}
 					if ((!unit.getType().isStructure()) && unit.isMoveReady()) {
 						if (unit.getType() == UnitType.RANGER && unit.isRangerSniping()) {
 							continue;
@@ -344,6 +347,7 @@ public class MoveManager {
 						}
 					}
 					executor.accept(unit);
+					postExecutor.accept(unit);
 				} catch (Exception ex) {
 					System.out.println("Move Exception: "+ex.getMessage());
 					ex.printStackTrace();
@@ -399,6 +403,7 @@ public class MoveManager {
 			int bfsStep = getBFSStep(BFS_LOAD_ROCKET, position);
 			if(bfsStep != Integer.MAX_VALUE) {
 				int roundsToRocket = Math.round((float)bfsStep*((float)type.getBaseMovementCooldown()/10.0f));
+				roundsToRocket *= Math.pow(1.01, roundsToRocket);
 				if (RoundInfo.getRoundNumber() + roundsToRocket > 700) {
 					return BFS_LOAD_ROCKET;
 				}

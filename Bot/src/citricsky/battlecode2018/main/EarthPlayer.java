@@ -81,6 +81,17 @@ public class EarthPlayer {
 							System.out.println("Execution Exception: "+ ex.getMessage());
 							ex.printStackTrace();
 						}
+					}, unit -> {
+						try {
+							if(executors[unit.getType().ordinal()] != null) {
+								benchmark.push();
+								executors[unit.getType().ordinal()].postExecute(unit);
+								debugPop(benchmark, 5, "Post Execution Time: " + unit.getType() + " - %fms");
+							}
+						} catch (Exception ex) {
+							System.out.println("Execution Exception: "+ ex.getMessage());
+							ex.printStackTrace();
+						}
 					});
 				} else {
 					System.out.println("Skipping Round: " + gc.getRoundNumber() + " - " + gc.getTimeLeft() + "ms");
