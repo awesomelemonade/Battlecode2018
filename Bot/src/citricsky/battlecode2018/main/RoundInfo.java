@@ -13,6 +13,7 @@ public class RoundInfo {
 	private static Planet planet;
 	private static int roundNumber;
 	private static int[] unitCounts;
+	private static int[] enemyUnitCounts;
 	private static int combatUnitsCount;
 	private static UnitType[] unitTypes;
 	private static Unit[] myUnits;
@@ -20,12 +21,17 @@ public class RoundInfo {
 	private static boolean[][] structures;
 	static {
 		unitCounts = new int[UnitType.values().length];
+		enemyUnitCounts = new int[UnitType.values().length];
 		unitTypes = new UnitType[Constants.MAX_UNIT_ID];
 		planet = GameController.INSTANCE.getPlanet();
 		structures = new boolean[planet.getWidth()][planet.getHeight()];
 	}
 	public static void update() {
 		combatUnitsCount = 0;
+		for (int i = 0; i < unitCounts.length; ++i) {
+			unitCounts[i] = 0;
+			enemyUnitCounts[i] = 0;
+		}
 		roundNumber = GameController.INSTANCE.getRoundNumber();
 		Unit[] allUnits = GameController.INSTANCE.getAllUnits();
 		myUnits = new Unit[allUnits.length];
@@ -44,27 +50,23 @@ public class RoundInfo {
 					structures[unit.getLocation().getMapLocation().getPosition().getX()]
 							[unit.getLocation().getMapLocation().getPosition().getY()] = true;
 				}
+				if (unit.getLocation().isOnMap() || (unit.getLocation().isInGarrison() &&
+					unitTypes[unit.getLocation().getGarrisonStructureId()] == UnitType.FACTORY)) {
+					if (unit.getType().isCombatType()) {
+						combatUnitsCount++;
+					}
+				}
 				myUnits[myUnitsCount++] = unit;
+				unitCounts[unit.getType().ordinal()]++;
 			} else {
 				if (unit.getLocation().isOnMap()) {
 					enemiesOnMap[enemiesOnMapCount++] = unit;
 				}
+				enemyUnitCounts[unit.getType().ordinal()]++;
 			}
 		}
 		myUnits = Arrays.copyOfRange(myUnits, 0, myUnitsCount);
 		enemiesOnMap = Arrays.copyOfRange(enemiesOnMap, 0, enemiesOnMapCount);
-		for (int i = 0; i < unitCounts.length; ++i) {
-			unitCounts[i] = 0;
-		}
-		for (Unit unit: myUnits) {
-			unitCounts[unit.getType().ordinal()]++;
-			if (unit.getLocation().isOnMap() || (unit.getLocation().isInGarrison() &&
-					unitTypes[unit.getLocation().getGarrisonStructureId()] == UnitType.FACTORY)) {
-				if (unit.getType().isCombatType()) {
-					combatUnitsCount++;
-				}
-			}
-		}
 	}
 	public static void addStructure(int x, int y) {
 		structures[x][y] = true;
@@ -95,5 +97,8 @@ public class RoundInfo {
 	}
 	public static int[] getUnitCounts() {
 		return unitCounts;
+	}
+	public static int getEnemyUnitCount(UnitType type) {
+		return enemyUnitCounts[type.ordinal()];
 	}
 }

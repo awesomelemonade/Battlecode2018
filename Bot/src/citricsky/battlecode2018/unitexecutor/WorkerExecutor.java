@@ -64,6 +64,9 @@ public class WorkerExecutor implements UnitExecutor {
 	}
 	private boolean shouldReplicate(Unit unit) {
 		if (GameController.INSTANCE.getCurrentKarbonite() > Constants.WORKER_REPLICATE_COST) {
+			if (RoundInfo.getEnemyUnitCount(UnitType.FACTORY) > 0 && RoundInfo.getUnitCount(UnitType.FACTORY) == 0) {
+				return false;
+			}
 			if (RoundInfo.getRoundNumber() < 20) {
 				return true;
 			}
