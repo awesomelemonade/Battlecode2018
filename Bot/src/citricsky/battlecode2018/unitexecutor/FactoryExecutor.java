@@ -69,7 +69,7 @@ public class FactoryExecutor implements UnitExecutor {
 				Direction bestUnloadDirection = null;
 				Vector bestUnloadPosition = null;
 				int closestEnemy = Integer.MAX_VALUE;
-				for (Direction direction: Direction.COMPASS) {
+				for (Direction direction: Direction.shuffle(Direction.COMPASS)) {
 					if (unit.canUnload(direction)) {
 						Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
 						int bfsIndex = moveManager.getBFSIndex(RoundInfo.getUnitType(garrison[i]), Planet.EARTH, position, 1.0);

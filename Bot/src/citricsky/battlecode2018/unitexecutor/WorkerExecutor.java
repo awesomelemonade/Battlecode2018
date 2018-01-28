@@ -166,7 +166,7 @@ public class WorkerExecutor implements UnitExecutor {
 			Direction bestReplicateDirection = null;
 			Vector replicatePosition = null;
 			int closestTask = Integer.MAX_VALUE;
-			for (Direction direction: Direction.COMPASS) {
+			for (Direction direction: Direction.shuffle(Direction.COMPASS)) {
 				if (unit.canReplicate(direction)) {
 					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
 					int bfsIndex = moveManager.getBFSIndex(UnitType.WORKER, unit.getLocation().getMapLocation().getPlanet(), position, 1.0);

@@ -126,7 +126,7 @@ public class MoveManager {
 		if (RoundInfo.getEnemiesOnMap().length > 0) {
 			for (Unit unit: RoundInfo.getEnemiesOnMap()) {
 				MapLocation location = unit.getLocation().getMapLocation();
-				if (unit.getType().isCombatType()) {
+				if (unit.getType().isCombatType() || unit.getType() == UnitType.FACTORY) {
 					bfsArray[BFS_FIND_COMBAT_ENEMY].addSource(location.getPosition());
 				}
 				bfsArray[BFS_FIND_ALL_ENEMY].addSource(location.getPosition());
@@ -172,7 +172,7 @@ public class MoveManager {
 				}
 				boolean nearEnemy = nearEnemy(location.getPosition(), 12, false);
 				if (unit.getHealth() < unit.getMaxHealth()) {
-					if (!nearEnemy && unit.getType().isStructure()) {
+					if (unit.getType().isStructure()) {
 						if ((!unit.isStructureBuilt()) || RoundInfo.getRoundNumber() < 600) {
 							addSource(BFS_WORKER_TASK, location, Direction.COMPASS);
 						}
