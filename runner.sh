@@ -40,7 +40,8 @@ copyBot() {
 
 getBotCommit() {
     cd ${BOT_DIR}
-    echo $(git log origin --pretty=format:"%H" | head -n 1)
+    git fetch &> /dev/null
+    echo $(git log FETCH_HEAD --pretty=format:"%H" | head -n 1)
 }
 
 runGame() {
