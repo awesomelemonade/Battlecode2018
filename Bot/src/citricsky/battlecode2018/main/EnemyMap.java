@@ -22,7 +22,7 @@ public class EnemyMap {
 
 		Arrays.sort(enemyUnits, (unit1, unit2) -> Integer.compare(getScore(unit2), getScore(unit1))); // Purposefully flipped, to sort largest -> smallest
 
-		lastRound = (int) GameController.INSTANCE.getRoundNumber();
+		lastRound = RoundInfo.getRoundNumber();
 		return enemyUnits;
 	}
 

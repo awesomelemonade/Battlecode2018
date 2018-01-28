@@ -29,6 +29,9 @@ public class FactoryExecutor implements UnitExecutor {
 			}
 			return null;
 		}
+		if (RoundInfo.getRoundNumber() > 620) {
+			return UnitType.MAGE;
+		}
 		/*if(location.getUnit().senseNearbyUnitsByTeam(16, GameController.INSTANCE.getEnemyTeam()).length > 12) {
 			return UnitType.MAGE;
 		}*/
@@ -43,11 +46,7 @@ public class FactoryExecutor implements UnitExecutor {
 		if ((float)RoundInfo.getUnitCount(UnitType.HEALER) < (float)RoundInfo.getCombatUnitsCount() / 2) {
 			return UnitType.HEALER;
 		}
-		if (RoundInfo.getRoundNumber() > 650) {
-			return UnitType.MAGE;
-		} else {
-			return UnitType.RANGER;
-		}
+		return UnitType.RANGER;
 	}
 	
 	@Override
