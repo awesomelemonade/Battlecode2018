@@ -362,11 +362,14 @@ public class MoveManager {
 			}
 		}
 		if (type == UnitType.WORKER) {
+			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
+			if (workerTaskStep <= 3) {
+				return BFS_WORKER_TASK;
+			}
 			int workerBlueprintStep = getBFSStep(BFS_WORKER_BLUEPRINT, position);
 			if (WorkerExecutor.getBlueprintType() != null && workerBlueprintStep != Integer.MAX_VALUE) {
 				return BFS_WORKER_BLUEPRINT;
 			}
-			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position);
 			int workerHarvestStep = getBFSStep(BFS_WORKER_HARVEST, position);
 			if (workerTaskStep == Integer.MAX_VALUE && workerHarvestStep == Integer.MAX_VALUE &&
 					workerBlueprintStep == Integer.MAX_VALUE) {
@@ -381,9 +384,6 @@ public class MoveManager {
 				} else {
 					return BFS_WORKER_HARVEST;
 				}
-			}
-			if (workerTaskStep <= 3) {
-				return BFS_WORKER_TASK;
 			}
 			if (workerTaskStep - 3 <= workerHarvestStep) {
 				return BFS_WORKER_TASK;

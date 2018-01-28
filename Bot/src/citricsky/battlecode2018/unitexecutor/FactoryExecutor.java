@@ -17,8 +17,8 @@ public class FactoryExecutor implements UnitExecutor {
 	}
 	
 	public UnitType getProduceType(MapLocation location) {
-		if (RoundInfo.getRoundNumber() > 600 && RoundInfo.getCombatUnitsCount() > 20 ||
-				RoundInfo.getRoundNumber() > 500 && RoundInfo.getCombatUnitsCount() > 35) {
+		if ((RoundInfo.getRoundNumber() > 600 && RoundInfo.getCombatUnitsCount() > 20 ||
+				RoundInfo.getRoundNumber() > 500 && RoundInfo.getCombatUnitsCount() > 35) && RoundInfo.getRocketSpots() < 10) {
 			if (RoundInfo.getRoundNumber() < 710) {
 				if (RoundInfo.getUnitCount(UnitType.WORKER) < 8) {
 					return UnitType.WORKER;
@@ -49,7 +49,7 @@ public class FactoryExecutor implements UnitExecutor {
 			return;
 		}
 		UnitType produceType = getProduceType(unit.getLocation().getMapLocation());
-		if (produceType != null && (produceType == UnitType.WORKER || RoundInfo.getCombatUnitsCount() < 60) && unit.canProduceRobot(produceType)) {
+		if (produceType != null && (produceType == UnitType.WORKER || RoundInfo.getCombatUnitsCount() < 70) && unit.canProduceRobot(produceType)) {
 			unit.produceRobot(produceType);
 		}
 		int[] garrison = unit.getGarrisonUnitIds();
