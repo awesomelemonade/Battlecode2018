@@ -57,6 +57,7 @@ runGame() {
     mv Bot ${PRE}Bot
     mv "${1}" "${PRE}${1}"
 
+    ssh ubuntu@ssh.pantherman594.com "sed -i '1i${PREV_BOT_COMMIT} ${GAME_ID} ${OPPONENT} ${MAP} Running' /var/www/pantherman594/battlecode/games/gamedata"
     ${CMD} | tee ${LOGFILE}
     echo ">>>>"
 
@@ -77,7 +78,7 @@ runGame() {
 
     scp "${GAME_ID}.bc18z" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/battlecode/games/"
     scp "${LOGFILE}" "ubuntu@ssh.pantherman594.com:/var/www/pantherman594/battlecode/games/"
-    ssh ubuntu@ssh.pantherman594.com "sed -i '1 i${PREV_BOT_COMMIT} ${GAME_ID} ${OPPONENT} ${MAP} ${RESULT}' /var/www/pantherman594/battlecode/games/gamedata"
+    ssh ubuntu@ssh.pantherman594.com "sed -i '1s/ Running/ ${RESULT}/' /var/www/pantherman594/battlecode/games/gamedata"
     echo ">>>>"
 
     echo "<<<< Cleaning up"
