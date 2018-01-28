@@ -43,7 +43,11 @@ public class FactoryExecutor implements UnitExecutor {
 		if ((float)RoundInfo.getUnitCount(UnitType.HEALER) < (float)RoundInfo.getCombatUnitsCount() / 2) {
 			return UnitType.HEALER;
 		}
-		return UnitType.RANGER;
+		if (RoundInfo.getRoundNumber() > 650) {
+			return UnitType.MAGE;
+		} else {
+			return UnitType.RANGER;
+		}
 	}
 	
 	@Override
