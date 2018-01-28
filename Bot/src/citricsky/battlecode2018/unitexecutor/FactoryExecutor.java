@@ -1,6 +1,7 @@
 package citricsky.battlecode2018.unitexecutor;
 
 import citricsky.battlecode2018.library.Direction;
+import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
@@ -57,7 +58,9 @@ public class FactoryExecutor implements UnitExecutor {
 			unit.produceRobot(produceType);
 		}
 		int[] garrison = unit.getGarrisonUnitIds();
-		if(RoundInfo.getRoundNumber() > 100 || hasBeenDamaged || garrison.length == unit.getStructureMaxCapacity()) {
+		if(RoundInfo.getRoundNumber() > 100 || hasBeenDamaged || 
+				garrison.length == unit.getStructureMaxCapacity() ||
+					unit.senseNearbyUnitsByTeam(17, GameController.INSTANCE.getEnemyTeam()).length > 1) {
 			for (int i = 0; i < garrison.length; ++i) {
 				Direction bestUnloadDirection = null;
 				int closestEnemy = Integer.MAX_VALUE;
