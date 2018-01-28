@@ -1,7 +1,6 @@
 package citricsky.battlecode2018.unitexecutor;
 
 import citricsky.battlecode2018.library.Direction;
-import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;

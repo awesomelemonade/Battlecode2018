@@ -25,7 +25,7 @@ public class RocketExecutor implements UnitExecutor {
 		if(unit.getHealth() <= 50) {
 			return true;
 		}
-		if(GameController.INSTANCE.getRoundNumber() > 740) {
+		if(GameController.INSTANCE.getRoundNumber() > 748) {
 			return true;
 		}
 		if(unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
