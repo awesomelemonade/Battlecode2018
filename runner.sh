@@ -89,6 +89,7 @@ runGame() {
     rm "${LOGFILE}" "${GAME_ID}.bc18z"
     mv "${PRE}Bot" "Bot"
     mv "${PRE}${OPPONENT}" "${OPPONENT}"
+    ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/battlecode/games; ls -t | tail -n +101 | xargs rm --"
     echo ">>>>"
 }
 
