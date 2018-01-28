@@ -10,6 +10,7 @@ import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.main.RoundInfo;
 
 public class FactoryExecutor implements UnitExecutor {
+	public static boolean hasBeenDamaged = false;
 	private MoveManager moveManager;
 	
 	public FactoryExecutor(MoveManager moveManager) {
@@ -48,12 +49,15 @@ public class FactoryExecutor implements UnitExecutor {
 		if (!unit.isStructureBuilt()) {
 			return;
 		}
+		else if(unit.getHealth() < unit.getMaxHealth()) {
+			hasBeenDamaged = true;
+		}
 		UnitType produceType = getProduceType(unit.getLocation().getMapLocation());
 		if (produceType != null && (produceType == UnitType.WORKER || RoundInfo.getCombatUnitsCount() < 70) && unit.canProduceRobot(produceType)) {
 			unit.produceRobot(produceType);
 		}
 		int[] garrison = unit.getGarrisonUnitIds();
-		if(RoundInfo.getRoundNumber() > 100 || unit.getHealth() < unit.getMaxHealth() || garrison.length == unit.getStructureMaxCapacity()) {
+		if(RoundInfo.getRoundNumber() > 100 || hasBeenDamaged || garrison.length == unit.getStructureMaxCapacity()) {
 			for (int i = 0; i < garrison.length; ++i) {
 				Direction bestUnloadDirection = null;
 				int closestEnemy = Integer.MAX_VALUE;
