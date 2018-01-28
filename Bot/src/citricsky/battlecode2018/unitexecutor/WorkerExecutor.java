@@ -3,6 +3,7 @@ package citricsky.battlecode2018.unitexecutor;
 import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
+import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.library.Vector;
@@ -68,6 +69,11 @@ public class WorkerExecutor implements UnitExecutor {
 			}
 			if (RoundInfo.getRoundNumber() > 750) {
 				return true;
+			}
+			if (GameController.INSTANCE.getPlanet() == Planet.EARTH) {
+				if (moveManager.getBFSStep(MoveManager.BFS_WORKER_BLUEPRINT, unit.getLocation().getMapLocation().getPosition()) == Integer.MAX_VALUE) {
+					return true;
+				}
 			}
 		}
 		return false;
