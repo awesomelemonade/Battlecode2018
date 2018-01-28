@@ -57,12 +57,12 @@ public class RoundInfo {
 					if (unit.getType().isCombatType()) {
 						combatUnitsCount++;
 					}
+					unitCounts[unit.getType().ordinal()]++;
 				}
 				if (unit.getType() == UnitType.ROCKET) {
 					rocketSpaces += unit.getStructureMaxCapacity() - unit.getGarrisonUnitIds().length;
 				}
 				myUnits[myUnitsCount++] = unit;
-				unitCounts[unit.getType().ordinal()]++;
 			} else {
 				if (unit.getLocation().isOnMap()) {
 					enemiesOnMap[enemiesOnMapCount++] = unit;
