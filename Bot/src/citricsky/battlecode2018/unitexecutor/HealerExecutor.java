@@ -2,9 +2,16 @@ package citricsky.battlecode2018.unitexecutor;
 
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
+import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.main.RoundInfo;
 
 public class HealerExecutor implements UnitExecutor {
+	private MoveManager moveManager;
+	
+	public HealerExecutor(MoveManager moveManager) {
+		this.moveManager = moveManager;
+	}
+	
 	private static int getPriorityIndex(Unit unit) {
 		UnitType unitType = unit.getType();
 		if (unitType.equals(UnitType.WORKER)) {
@@ -55,6 +62,7 @@ public class HealerExecutor implements UnitExecutor {
 			}
 			if(leastAbilityPercentage < 0.6) {
 				unit.overcharge(bestTarget);
+				moveManager.queueUnit(unit);
 			}
 		}
 	}

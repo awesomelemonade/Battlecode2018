@@ -24,7 +24,7 @@ public class MarsPlayer {
 		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager, communication);
 		executors[UnitType.RANGER.ordinal()] = new RangerExecutor();
 		executors[UnitType.KNIGHT.ordinal()] = new KnightExecutor();
-		executors[UnitType.HEALER.ordinal()] = new HealerExecutor();
+		executors[UnitType.HEALER.ordinal()] = new HealerExecutor(moveManager);
 		executors[UnitType.MAGE.ordinal()] = new MageExecutor();
 		executors[UnitType.WORKER.ordinal()] = new WorkerExecutor(moveManager);
 		
