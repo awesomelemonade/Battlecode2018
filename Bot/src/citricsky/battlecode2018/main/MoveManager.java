@@ -50,16 +50,22 @@ public class MoveManager {
 	private boolean[][] explored;
 	private int[][] blueprint;
 	private int[] priorities;
+	private int[] subPriorities;
 	private int[] bfsIndices;
 	private PriorityQueue<Unit> queue;
 	
 	public MoveManager() {
 		priorities = new int[Constants.MAX_UNIT_ID];
+		subPriorities = new int[Constants.MAX_UNIT_ID];
 		bfsIndices = new int[Constants.MAX_UNIT_ID];
 		queue = new PriorityQueue<Unit>(7, new Comparator<Unit>() {
 			@Override
 			public int compare(Unit a, Unit b) {
-				return Integer.compare(priorities[b.getId()], priorities[a.getId()]);
+				int compare = Integer.compare(priorities[b.getId()], priorities[a.getId()]);
+				if (compare == 0) {
+					compare = Integer.compare(subPriorities[b.getId()], subPriorities[a.getId()]);
+				}
+				return compare;
 			}
 		});
 		this.planet = GameController.INSTANCE.getPlanet();
@@ -294,6 +300,18 @@ public class MoveManager {
 				int score = -bfsArray[bfsIndex].getStep(position.getX(), position.getY());
 				if (bfsIndex == BFS_WORKER_TASK && score == BFS.SOURCE_STEP) {
 					score = Integer.MAX_VALUE; // Workers building or repairing get priority in replication
+				}
+				if (unit.getType() == UnitType.WORKER) {
+					// count number of workers near this tile
+					int workers = 0;
+					for (Unit u: RoundInfo.getMyUnits()) {
+						if (u.getType() == UnitType.WORKER && u.getLocation().isOnMap()) {
+							if (Util.getMovementDistance(u.getLocation().getMapLocation().getPosition(), position) < 6) {
+								workers++;
+							}
+						}
+					}
+					subPriorities[unit.getId()] = workers;
 				}
 				priorities[unit.getId()] = score;
 			}
