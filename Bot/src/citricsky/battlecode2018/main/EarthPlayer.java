@@ -22,13 +22,12 @@ public class EarthPlayer {
 				UnitType.KNIGHT, //finishes at Round 150
 				UnitType.KNIGHT, //finishes at Round 225
 				UnitType.HEALER, //finishes at Round 325
-				UnitType.KNIGHT, //finishes at Round 425
-				UnitType.ROCKET,   //finishes at Round 475
+				UnitType.ROCKET,   //finishes at Round 375
+				UnitType.ROCKET, //finishes at Round 475
 				UnitType.ROCKET, //finishes at Round 575
-				UnitType.ROCKET, //finishes at Round 675
-				UnitType.MAGE,   //finishes at Round 700
-				UnitType.MAGE,   //finishes at Round 775
-				UnitType.MAGE, //finishes at Round 875
+				UnitType.MAGE,   //finishes at Round 600
+				UnitType.MAGE,   //finishes at Round 675
+				UnitType.MAGE, //finishes at Round 775
 		}; 
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
