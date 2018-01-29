@@ -86,39 +86,43 @@ public class PlanetCommunication {
 			if (complete) break;
 		}
 
-		SortedSet<Map.Entry<Vector, Integer>> locations = new TreeSet<>((Map.Entry<Vector, Integer> a, Map.Entry<Vector, Integer> b) -> {
-			int compare = Integer.compare(a.getValue(), b.getValue());
-			if (compare == 0) {
-				compare = Integer.compare(a.getKey().getX(), b.getKey().getX());
-				if (compare == 0) {
-					return Integer.compare(a.getKey().getY(), b.getKey().getY());
-				}
-				return compare;
+		PriorityQueue<Vector> queue = new PriorityQueue<Vector>(7, new Comparator<Vector>() {
+			@Override
+			public int compare(Vector a, Vector b) {
+				return Integer.compare(hitMap[a.getX()][a.getY()], hitMap[b.getX()][b.getY()]);
 			}
-			return compare;
 		});
-
 
 		for (int x = 0; x < width; x++) {
 			for (int y = 0; y < height; y++) {
 				if (hitMap[x][y] < BOUND_START) {
-					locations.add(new AbstractMap.SimpleImmutableEntry<>(new Vector(x, y), hitMap[x][y]));
+					queue.add(new Vector(x, y));
 				}
 			}
 		}
 
-		Set<Vector> ignoreLocations = new HashSet<>();
-		for (Map.Entry<Vector, Integer> location : locations) {
-			boolean shouldIgnore = false;
-			for (Vector ignoreLoc : ignoreLocations) {
-				if (location.getKey().getDistanceSquared(ignoreLoc) <= 4) {
-					shouldIgnore = true;
-					break;
-				}
+		Set<Vector> ignoreLocations = new HashSet<Vector>();
+		while (!queue.isEmpty()) {
+			Vector polled = queue.poll();
+			int value = hitMap[polled.getX()][polled.getY()];
+			List<Vector> same = new ArrayList<Vector>();
+			same.add(polled);
+			while ((!queue.isEmpty()) && hitMap[queue.peek().getX()][queue.peek().getY()] == value) {
+				same.add(queue.poll());
 			}
-			if (!shouldIgnore) {
-				ignoreLocations.add(location.getKey());
-				addLanding(location.getKey());
+			Collections.shuffle(same);
+			for (Vector candidate: same) {
+				boolean shouldIgnore = false;
+				for (Vector ignoreLoc : ignoreLocations) {
+					if (candidate.getDistanceSquared(ignoreLoc) <= 4) {
+						shouldIgnore = true;
+						break;
+					}
+				}
+				if (!shouldIgnore) {
+					ignoreLocations.add(candidate);
+					addLanding(candidate);
+				}
 			}
 		}
 	}
