@@ -259,7 +259,12 @@ public class MoveManager {
 			for (int i = 0; i < planet.getWidth(); ++i) {
 				for (int j = 0; j < planet.getHeight(); ++j) {
 					MapLocation location = planet.getMapLocation(i, j);
-					if (Util.PASSABLE_PREDICATE.test(location) && (!location.hasUnitAtLocation())) {
+					if (location.hasUnitAtLocation()) {
+						if (location.getUnit().getType() != UnitType.WORKER) {
+							continue;
+						}
+					}
+					if (Util.PASSABLE_PREDICATE.test(location)) {
 						for (Direction direction: Direction.COMPASS) {
 							Vector offset = location.getOffsetLocation(direction).getPosition();
 							if (!Util.outOfBounds(offset, blueprint.length, blueprint[0].length)) {

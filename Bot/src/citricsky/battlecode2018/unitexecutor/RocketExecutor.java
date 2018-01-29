@@ -29,19 +29,17 @@ public class RocketExecutor implements UnitExecutor {
 			return true;
 		}
 		//launch if there is no where else to blueprint rockets
-		if (moveManager.getBFSStep(MoveManager.BFS_WORKER_BLUEPRINT, unit.getLocation().getMapLocation().getPosition()) == Integer.MAX_VALUE && 
-				unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
-			return true;
-		}
-		/*if(unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
-			if(GameController.INSTANCE.getRoundNumber() < 500) {
-				return true;
-			}
-		}
-		if(unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
-			return true;
-		}*/
 		
+		if (unit.getGarrisonUnitIds().length == unit.getStructureMaxCapacity()) {
+			for (Direction direction: Direction.COMPASS) {
+				Vector offset = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
+				int step = moveManager.getBFSStep(MoveManager.BFS_WORKER_BLUEPRINT, offset);
+				if(step != Integer.MAX_VALUE) {
+					return false;
+				}
+			}
+			return true;
+		}
 		return false;
 	}
 	
