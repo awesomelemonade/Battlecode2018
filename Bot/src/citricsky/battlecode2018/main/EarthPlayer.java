@@ -28,6 +28,10 @@ public class EarthPlayer {
 				UnitType.MAGE,   //finishes at Round 600
 				UnitType.MAGE,   //finishes at Round 675
 				UnitType.MAGE, //finishes at Round 775
+				UnitType.KNIGHT,
+				UnitType.RANGER,
+				UnitType.RANGER,
+				UnitType.RANGER,
 		}; 
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
