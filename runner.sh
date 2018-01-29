@@ -34,7 +34,10 @@ copyBot() {
     mkdir -p "${SCAFF_DIR}/Bot"
     cp "${BOT_DIR}/Bot/src/Player.java" "${SCAFF_DIR}/Bot/"
     cp -r "${BOT_DIR}/Bot/src/citricsky" "${SCAFF_DIR}/Bot/"
-    cp "${SCAFF_DIR}/examplefuncsplayer-java/run.sh" "${SCAFF_DIR}/Bot/run.sh"
+    cd "${SCAFF_DIR}/Bot"
+    javac $(find . -name '*.java') -classpath ../battlecode/java
+    echo "#!/bin/sh" > "${SCAFF_DIR}/Bot/run.sh"
+    echo "java -Xmx40m -classpath .:../battlecode/java Player" >> "${SCAFF_DIR}/Bot/run.sh"
     echo ">>>>"
 }
 
