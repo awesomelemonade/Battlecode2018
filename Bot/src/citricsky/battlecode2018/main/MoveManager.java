@@ -148,7 +148,7 @@ public class MoveManager {
 		for (Unit unit: RoundInfo.getMyUnits()) {
 			if (unit.getLocation().isOnMap()) {
 				MapLocation location = unit.getLocation().getMapLocation();
-				if (unit.getType() != UnitType.WORKER) {
+				if (unit.getType() != UnitType.WORKER && unit.getHealth() * 2 > unit.getMaxHealth()) {
 					bfsArray[BFS_FIND_FRIENDLY].addSource(location.getPosition());
 				}
 				boolean nearEnemy = nearEnemy(location.getPosition(), 12, false);
@@ -404,6 +404,10 @@ public class MoveManager {
 		if (percentHealth <= 0.5 && type != UnitType.HEALER) {
 			if (getBFSStep(BFS_FIND_HEAL, position) != Integer.MAX_VALUE) {
 				return BFS_FIND_HEAL;
+			} else {
+				if (getBFSStep(BFS_FIND_FRIENDLY, position) != Integer.MAX_VALUE) {
+					return BFS_FIND_FRIENDLY;
+				}
 			}
 		}
 		if (type == UnitType.WORKER) {
