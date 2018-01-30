@@ -15,7 +15,9 @@ resetScaffold() {
     git reset --hard
     git clean -fdx
     git pull
-    cp -r ../SuperCowPowers .
+    for bot in $BOTS; do
+        cp -r ../$bot .
+    done
     mkdir replays
     sed -i '2 i\python3() {\n    ~ubuntu/.pyenv/versions/general/bin/python $@\n}\npip3() {\n    echo $@\n}' battlecode.sh
     echo ">>>>"
