@@ -15,7 +15,7 @@ resetScaffold() {
     git reset --hard
     git clean -fdx
     git pull
-    for bot in $BOTS; do
+    for bot in ${BOTS[@]}; do
         echo "<<< Copying ${bot}"
         cp -rv ../$bot .
         echo ">>>"
@@ -118,7 +118,7 @@ ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git pull"
 while true; do
     cd ${SCAFF_DIR}
     for map in $(ls battlecode-maps | sort -R); do
-        for bot in $BOTS; do
+        for bot in ${BOTS[@]}; do
             update
             runGame $bot $(echo "${map}" | cut -d'.' -f1)
             sleep 10s
