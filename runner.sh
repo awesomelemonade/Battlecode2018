@@ -7,6 +7,7 @@ BOT_DIR=~/citricsky-battlecode2018
 PREV_BOT_COMMIT=""
 NUMGAMES=0
 NUMWINS=0
+BOTS=("SuperCowPowers" "QualifyingBot")
 
 resetScaffold() {
     echo "<<<< Resetting Scaffold"
@@ -113,9 +114,11 @@ ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git pull"
 while true; do
     cd ${SCAFF_DIR}
     for map in $(ls battlecode-maps | sort -R); do
-        update
-        runGame SuperCowPowers $(echo "${map}" | cut -d'.' -f1)
-        sleep 10s
+        for bot in $BOTS; do
+            update
+            runGame $bot $(echo "${map}" | cut -d'.' -f1)
+            sleep 10s
+        done
     done
     for i in {1..360}; do
         update
