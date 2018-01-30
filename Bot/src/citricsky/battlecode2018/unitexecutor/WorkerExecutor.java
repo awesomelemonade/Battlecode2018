@@ -13,7 +13,6 @@ import citricsky.battlecode2018.main.RoundInfo;
 import citricsky.battlecode2018.util.Constants;
 
 public class WorkerExecutor implements UnitExecutor {
-	public static boolean hasBeenDamaged = false;
 	private static MoveManager moveManager;
 	public WorkerExecutor(MoveManager moveManager) {
 		WorkerExecutor.moveManager = moveManager;
@@ -110,9 +109,6 @@ public class WorkerExecutor implements UnitExecutor {
 	}
 	@Override
 	public void execute(Unit unit) {
-		if(unit.getHealth() < unit.getMaxHealth()) {
-			hasBeenDamaged = true;
-		}
 		workerAction: 
 		if (!unit.hasWorkerActed()) {
 			//try build

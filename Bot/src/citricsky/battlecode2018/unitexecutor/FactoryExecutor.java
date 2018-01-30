@@ -11,7 +11,6 @@ import citricsky.battlecode2018.main.MoveManager;
 import citricsky.battlecode2018.main.RoundInfo;
 
 public class FactoryExecutor implements UnitExecutor {
-	public static boolean hasBeenDamaged = false;
 	private MoveManager moveManager;
 	
 	public FactoryExecutor(MoveManager moveManager) {
@@ -53,41 +52,33 @@ public class FactoryExecutor implements UnitExecutor {
 		if (!unit.isStructureBuilt()) {
 			return;
 		}
-		else if(unit.getHealth() < unit.getMaxHealth()) {
-			hasBeenDamaged = true;
-		}
 		UnitType produceType = getProduceType(unit.getLocation().getMapLocation());
 		if (produceType != null && (produceType == UnitType.WORKER || RoundInfo.getCombatUnitsCount() < 70) && unit.canProduceRobot(produceType)) {
 			unit.produceRobot(produceType);
 		}
 		int[] garrison = unit.getGarrisonUnitIds();
-		if(RoundInfo.getRoundNumber() > 100 || hasBeenDamaged || 
-				WorkerExecutor.hasBeenDamaged || garrison.length == unit.getStructureMaxCapacity() || 
-						unit.senseNearbyUnitsByTeam(40, GameController.INSTANCE.getEnemyTeam()).length > 0 ||
-							unit.senseNearbyUnitsByTeam(60, GameController.INSTANCE.getEnemyTeam()).length > 1) {
-			for (int i = 0; i < garrison.length; ++i) {
-				Direction bestUnloadDirection = null;
-				Vector bestUnloadPosition = null;
-				int closestEnemy = Integer.MAX_VALUE;
-				for (Direction direction: Direction.shuffle(Direction.COMPASS)) {
-					if (unit.canUnload(direction)) {
-						Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-						int bfsIndex = moveManager.getBFSIndex(RoundInfo.getUnitType(garrison[i]), Planet.EARTH, position, 1.0);
-						int bfsStep = moveManager.getBFSStep(bfsIndex, position) - 1;
-						if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
-							closestEnemy = bfsStep;
-							bestUnloadDirection = direction;
-							bestUnloadPosition = position;
-						}
+		for (int i = 0; i < garrison.length; ++i) {
+			Direction bestUnloadDirection = null;
+			Vector bestUnloadPosition = null;
+			int closestEnemy = Integer.MAX_VALUE;
+			for (Direction direction: Direction.shuffle(Direction.COMPASS)) {
+				if (unit.canUnload(direction)) {
+					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
+					int bfsIndex = moveManager.getBFSIndex(RoundInfo.getUnitType(garrison[i]), Planet.EARTH, position, 1.0);
+					int bfsStep = moveManager.getBFSStep(bfsIndex, position) - 1;
+					if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
+						closestEnemy = bfsStep;
+						bestUnloadDirection = direction;
+						bestUnloadPosition = position;
 					}
 				}
-				if (bestUnloadDirection == null) {
-					break;
-				} else {
-					unit.unload(bestUnloadDirection);
-					MapLocation location = GameController.INSTANCE.getPlanet().getMapLocation(bestUnloadPosition);
-					moveManager.queueUnit(location.getUnit()); // throw the new unit into the queue
-				}
+			}
+			if (bestUnloadDirection == null) {
+				break;
+			} else {
+				unit.unload(bestUnloadDirection);
+				MapLocation location = GameController.INSTANCE.getPlanet().getMapLocation(bestUnloadPosition);
+				moveManager.queueUnit(location.getUnit()); // throw the new unit into the queue
 			}
 		}
 	}
