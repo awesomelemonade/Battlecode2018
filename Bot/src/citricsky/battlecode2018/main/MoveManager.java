@@ -17,27 +17,6 @@ import citricsky.battlecode2018.util.Constants;
 import citricsky.battlecode2018.util.Util;
 
 public class MoveManager {
-	// 40 to 50 attack range for Ranger
-	private static final int[] RANGER_OFFSET_X = new int[] { 7, 7, 6, 6, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -6, -6,
-			-7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5, 6, 6, 7 };
-	private static final int[] RANGER_OFFSET_Y = new int[] { 0, 1, 2, 3, 4, 5, 5, 6, 6, 7, 7, 7, 6, 6, 5, 5, 4, 3, 2, 1, 0, -1,
-			-2, -3, -4, -5, -5, -6, -6, -7, -7, -7, -6, -6, -5, -5, -4, -3, -2, -1 };
-	private static final int[] HEALER_OFFSET_X = new int[] {
-			0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1,
-			4, 4, 4, 3, 2, 1, 0, -1, -2, -3, -4, -4, -4, -4, -4, -3, -2, -1, 0, 1, 2, 3, 4, 4
-	};
-	private static final int[] HEALER_OFFSET_Y = new int[] {
-			5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5,
-			0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, -1, -2, -3, -4, -4, -4, -4, -4, -3, -2, -1
-	};
-	private static final int[] MAGE_OFFSET_X = new int[] {
-			0, 1, 2, 3, 4, 5, 5, 5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1,
-			4, 4, 4, 3, 2, 1, 0, -1, -2, -3, -4, -4, -4, -4, -4, -3, -2, -1, 0, 1, 2, 3, 4, 4
-	};
-	private static final int[] MAGE_OFFSET_Y = new int[] {
-			5, 5, 5, 4, 3, 2, 1, 0, -1, -2, -3, -4, -5, -5, -5, -5, -5, -4, -3, -2, -1, 0, 1, 2, 3, 4, 5, 5,
-			0, 1, 2, 3, 4, 4, 4, 4, 4, 3, 2, 1, 0, -1, -2, -3, -4, -4, -4, -4, -4, -3, -2, -1
-	};
 	public static final int BFS_FIND_COMBAT_ENEMY = 0;
 	public static final int BFS_FIND_ALL_ENEMY = 1;
 	public static final int BFS_FIND_HEAL = 2;
@@ -131,8 +110,8 @@ public class MoveManager {
 				}
 				bfsArray[BFS_FIND_ALL_ENEMY].addSource(location.getPosition());
 				addSource(BFS_KNIGHT_ATTACK, location, Direction.COMPASS);
-				for (int i = 0; i < RANGER_OFFSET_X.length; ++i) {
-					Vector offset = location.getPosition().add(RANGER_OFFSET_X[i], RANGER_OFFSET_Y[i]);
+				for (int i = 0; i < Constants.RANGER_OFFSET_X.length; ++i) {
+					Vector offset = location.getPosition().add(Constants.RANGER_OFFSET_X[i], Constants.RANGER_OFFSET_Y[i]);
 					if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
 						if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset))) {
 							if (!isNearEnemy(offset, 40)) {
@@ -141,8 +120,8 @@ public class MoveManager {
 						}
 					}
 				}
-				for (int i = 0; i < MAGE_OFFSET_X.length; ++i) {
-					Vector offset = location.getPosition().add(MAGE_OFFSET_X[i], MAGE_OFFSET_Y[i]);
+				for (int i = 0; i < Constants.MAGE_OFFSET_X.length; ++i) {
+					Vector offset = location.getPosition().add(Constants.MAGE_OFFSET_X[i], Constants.MAGE_OFFSET_Y[i]);
 					if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
 						if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset))) {
 							if (!isNearEnemy(offset, 15)) {
@@ -190,8 +169,8 @@ public class MoveManager {
 					}
 				}
 				if (damagedHealerTarget || idleHealerTarget) {
-					for (int i = 0; i < HEALER_OFFSET_X.length; ++i) {
-						Vector offset = location.getPosition().add(HEALER_OFFSET_X[i], HEALER_OFFSET_Y[i]);
+					for (int i = 0; i < Constants.HEALER_OFFSET_X.length; ++i) {
+						Vector offset = location.getPosition().add(Constants.HEALER_OFFSET_X[i], Constants.HEALER_OFFSET_Y[i]);
 						if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
 							if (Util.PASSABLE_PREDICATE.test(planet.getMapLocation(offset)) &&
 									getBFSStep(BFS_FIND_COMBAT_ENEMY, offset) >= 12) {

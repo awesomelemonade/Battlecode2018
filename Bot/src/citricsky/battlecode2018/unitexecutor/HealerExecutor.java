@@ -55,6 +55,7 @@ public class HealerExecutor implements UnitExecutor {
 			for (Unit friendlyUnit : RoundInfo.getMyUnits()) {
 				if (!friendlyUnit.getLocation().isOnMap()) continue;
 				if (friendlyUnit.getType().isStructure()) continue;
+				if (friendlyUnit.getType() == UnitType.HEALER) continue;
 				if (unit.canOvercharge(friendlyUnit)) {
 					int stepsToEnemy = moveManager.getBFSStep(MoveManager.BFS_FIND_COMBAT_ENEMY, friendlyUnit.getLocation().getMapLocation().getPosition());
 					int abilityHeat = friendlyUnit.getAbilityHeat();
