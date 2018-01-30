@@ -10,6 +10,8 @@ public class Unit {
 	private UnitType type;
 	private Location location;
 	private int[] garrison;
+	private int health;
+	private int maxHealth;
 	
 	private GameController gcInstance = GameController.INSTANCE;
 	
@@ -21,6 +23,8 @@ public class Unit {
 		this.type = UnitType.valueOf(bcUnit.unitType());
 		this.location = new Location(bcUnit.location());
 		this.garrison = LibraryUtil.toArray(bcUnit.structureGarrison());
+		this.health = (int)bcUnit.health();
+		this.maxHealth = (int)bcUnit.maxHealth();
 	}
 	
 	public int getAbilityCooldown() {
@@ -269,11 +273,11 @@ public class Unit {
 	}
 
 	public int getHealth() {
-		return (int)bcUnit.health();
+		return health;
 	}
 
 	public int getMaxHealth() {
-		return (int)bcUnit.maxHealth();
+		return maxHealth;
 	}
 	
 	public boolean isAttackReady() {

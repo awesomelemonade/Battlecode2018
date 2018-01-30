@@ -73,6 +73,9 @@ public class RoundInfo {
 			}
 		}
 	}
+	public static Planet getPlanet() {
+		return planet;
+	}
 	public static int getRocketSpots() {
 		return rocketSpots;
 	}
