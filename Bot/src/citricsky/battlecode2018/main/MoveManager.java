@@ -37,6 +37,7 @@ public class MoveManager {
 	private int[][] karbonite;
 	private boolean[][] explored;
 	private int[][] blueprint;
+	private int blueprintCount;
 	private int[] priorities;
 	private int[] subPriorities;
 	private int[] bfsIndices;
@@ -100,6 +101,7 @@ public class MoveManager {
 			bfsArray[i].resetHard();
 			processed[i] = false;
 		}
+		blueprintCount = 0;
 		debugPop(benchmark, 10, "Reset: %fms");
 		benchmark.push();
 		if (RoundInfo.getEnemiesOnMap().length > 0) {
@@ -224,6 +226,7 @@ public class MoveManager {
 								int neighbors = Util.getNeighbors(location, Util.PASSABLE_PREDICATE.negate());
 								int buildArray = Util.getBuildArray(neighbors);
 								blueprint[i][j] = buildArray;
+								blueprintCount++;
 							} else {
 								blueprint[i][j] = -1;
 							}
@@ -258,6 +261,9 @@ public class MoveManager {
 			}
 		}
 		debugPop(benchmark, 10, "Blueprint: %fms");
+	}
+	public int getBlueprintCount() {
+		return blueprintCount;
 	}
 	public boolean isNextToStructure(MapLocation location) {
 		for (Direction dir: Direction.COMPASS) {

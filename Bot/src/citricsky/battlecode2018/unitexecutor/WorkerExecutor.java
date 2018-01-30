@@ -14,9 +14,9 @@ import citricsky.battlecode2018.util.Constants;
 
 public class WorkerExecutor implements UnitExecutor {
 	public static boolean hasBeenDamaged = false;
-	private MoveManager moveManager;
+	private static MoveManager moveManager;
 	public WorkerExecutor(MoveManager moveManager) {
-		this.moveManager = moveManager;
+		WorkerExecutor.moveManager = moveManager;
 	}
 	private static Unit getBuildTarget(MapLocation location) {
 		Unit bestTarget = null;
@@ -89,11 +89,13 @@ public class WorkerExecutor implements UnitExecutor {
 			return null;
 		}
 		UnitType target = getBlueprintTargetType();
-		if (target.getBaseCost() <= GameController.INSTANCE.getCurrentKarbonite()) {
-			return target;
-		} else {
+		if (target.getBaseCost() > GameController.INSTANCE.getCurrentKarbonite()) {
 			return null;
 		}
+		if (target == UnitType.FACTORY && moveManager.getBlueprintCount() <= 1 && RoundInfo.getUnitCount(UnitType.FACTORY) > 0) {
+			return null;
+		}
+		return target;
 	}
 	public static UnitType getBlueprintTargetType() {
 		if (RoundInfo.getCombatUnitsCount() > 30) {
