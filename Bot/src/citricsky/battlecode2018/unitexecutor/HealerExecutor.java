@@ -48,8 +48,8 @@ public class HealerExecutor implements UnitExecutor {
 			}
 		}
 		if (unit.isAbilityUnlocked() && unit.isOverchargeReady()) {
-			int bestAbilityHeat = 0;
-			int bestAttackHeat = 0;
+			int bestAbilityHeat = Integer.MIN_VALUE;
+			int bestAttackHeat = Integer.MIN_VALUE;
 			Unit bestTarget = null;
 			int bestStepsToEnemy = Integer.MAX_VALUE;
 			for (Unit friendlyUnit : RoundInfo.getMyUnits()) {
@@ -58,8 +58,8 @@ public class HealerExecutor implements UnitExecutor {
 				if (friendlyUnit.getType() == UnitType.HEALER || friendlyUnit.getType() == UnitType.WORKER) continue;
 				if (unit.canOvercharge(friendlyUnit)) {
 					int stepsToEnemy = moveManager.getBFSStep(MoveManager.BFS_FIND_COMBAT_ENEMY, friendlyUnit.getLocation().getMapLocation().getPosition());
-					int abilityHeat = friendlyUnit.getAbilityHeat();
-					int attackHeat = friendlyUnit.getAttackHeat();
+					int abilityHeat = friendlyUnit.isAbilityUnlocked()?friendlyUnit.getAbilityHeat():0;
+					int attackHeat = friendlyUnit.isAttackReady()?0:friendlyUnit.getAttackHeat();
 					if (abilityHeat > bestAbilityHeat) {
 						bestTarget = friendlyUnit;
 						bestAbilityHeat = abilityHeat;
@@ -70,7 +70,8 @@ public class HealerExecutor implements UnitExecutor {
 						bestAbilityHeat = abilityHeat;
 						bestStepsToEnemy = stepsToEnemy;
 						bestAttackHeat = attackHeat;
-					}else if (abilityHeat == bestAbilityHeat && attackHeat == bestAttackHeat && stepsToEnemy < bestStepsToEnemy) {
+					} else if (abilityHeat == bestAbilityHeat && attackHeat == bestAttackHeat &&
+							stepsToEnemy < bestStepsToEnemy) {
 						bestTarget = friendlyUnit;
 						bestAbilityHeat = abilityHeat;
 						bestStepsToEnemy = stepsToEnemy;
@@ -78,9 +79,9 @@ public class HealerExecutor implements UnitExecutor {
 					}
 				}
 			}
-			if(bestTarget != null) {
+			if(bestTarget != null && (bestAbilityHeat > 0 || bestAttackHeat > 0)) {
 				unit.overcharge(bestTarget);
-				moveManager.queueUnit(unit);
+				moveManager.queueUnit(bestTarget);
 			}
 		}
 	}

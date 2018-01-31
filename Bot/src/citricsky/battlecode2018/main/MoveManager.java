@@ -480,7 +480,7 @@ public class MoveManager {
 		}
 		int attackStep = getBFSStep(bfsAttackIndex, position);
 		if (attackStep != Integer.MAX_VALUE) {
-			if (isSafe(position.add(getBFSDirection(bfsAttackIndex, position).getOffsetVector())) ||
+			if (isSafe(position.add(getBFSDirection(bfsAttackIndex, position).getOffsetVector()), type) ||
 					getBFSStep(BFS_RETREAT, position) == Integer.MAX_VALUE) {
 				return bfsAttackIndex;
 			} else {
@@ -505,7 +505,7 @@ public class MoveManager {
 		}
 		return BFS_EXPLORE;
 	}
-	public boolean isSafe(Vector position) {
+	public boolean isSafe(Vector position, UnitType type) {
 		return EnemyMap.getHeatMapScore(position) >= 0;
 	}
 	public Direction getBFSDirection(int bfsIndex, Vector position) {
