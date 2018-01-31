@@ -73,6 +73,12 @@ public class RoundInfo {
 		myUnits = Arrays.copyOfRange(myUnits, 0, myUnitsCount);
 		enemiesOnMap = Arrays.copyOfRange(enemiesOnMap, 0, enemiesOnMapCount);
 	}
+	public static void addUnitCount(UnitType type) {
+		unitCounts[type.ordinal()]++;
+		if (type.isCombatType()) {
+			combatUnitsCount++;
+		}
+	}
 	public static int getRocketSpaces() {
 		return rocketSpaces;
 	}

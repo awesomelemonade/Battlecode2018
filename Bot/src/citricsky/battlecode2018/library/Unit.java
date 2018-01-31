@@ -2,6 +2,8 @@ package citricsky.battlecode2018.library;
 
 import java.util.function.Predicate;
 
+import citricsky.battlecode2018.main.RoundInfo;
+
 public class Unit {
 	protected bc.Unit bcUnit;
 	
@@ -345,6 +347,7 @@ public class Unit {
 	
 	public void produceRobot(UnitType type) {
 		gcInstance.getBcGameController().produceRobot(id, type.getBcUnitType());
+		RoundInfo.addUnitCount(type);
 	}
 	
 	public void repair(Unit target) {
