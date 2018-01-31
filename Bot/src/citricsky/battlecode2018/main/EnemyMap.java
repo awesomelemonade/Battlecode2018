@@ -63,8 +63,8 @@ public class EnemyMap {
 		}
 		
 		System.out.println("MAP");
-		for (int x = 0; x < planet.getWidth(); x++) {
-			for (int y = 0; y < planet.getHeight(); y++) {
+		for (int y = planet.getHeight() - 1; y >= 0; y--) {
+			for (int x = 0; x < planet.getWidth(); x++) {
 				String print = String.valueOf(heatMap[x][y]);
 				while (print.length() < 3) {
 					print += " ";

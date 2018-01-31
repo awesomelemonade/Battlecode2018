@@ -48,7 +48,6 @@ public class EarthPlayer {
 		executors[UnitType.MAGE.ordinal()] = new MageExecutor();
 		executors[UnitType.WORKER.ordinal()] = new WorkerExecutor(moveManager);
 		
-		EnemyMap.updateHeatMap();
 		while (true) {
 			try {
 				benchmark.push();
@@ -101,6 +100,7 @@ public class EarthPlayer {
 				System.out.println("Mystery Exception: " + ex.getMessage());
 				ex.printStackTrace();
 			}
+			EnemyMap.updateHeatMap();
 			gc.yield();
 		}
 	}
