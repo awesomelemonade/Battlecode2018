@@ -112,7 +112,9 @@ public class MoveManager {
 					bfsArray[BFS_FIND_COMBAT_ENEMY].addSource(location.getPosition());
 				}
 				bfsArray[BFS_FIND_ALL_ENEMY].addSource(location.getPosition());
-				addSource(BFS_KNIGHT_ATTACK, location, Direction.COMPASS);
+				if (unit.getType() != UnitType.WORKER) {
+					addSource(BFS_KNIGHT_ATTACK, location, Direction.COMPASS);
+				}
 				for (int i = 0; i < Constants.RANGER_OFFSET_X.length; ++i) {
 					Vector offset = location.getPosition().add(Constants.RANGER_OFFSET_X[i], Constants.RANGER_OFFSET_Y[i]);
 					if (!Util.outOfBounds(offset, planet.getWidth(), planet.getHeight())) {
