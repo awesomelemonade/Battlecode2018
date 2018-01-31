@@ -100,7 +100,9 @@ public class EarthPlayer {
 				System.out.println("Mystery Exception: " + ex.getMessage());
 				ex.printStackTrace();
 			}
+			benchmark.push();
 			EnemyMap.updateHeatMap();
+			debugPop(benchmark, 0, "Map update time: %fms");
 			gc.yield();
 		}
 	}
