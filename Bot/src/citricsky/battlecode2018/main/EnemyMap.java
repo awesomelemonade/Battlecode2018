@@ -10,6 +10,7 @@ public class EnemyMap {
 	private static int[] scoreCache;
 	private static int[] updateTime;
 	private static int[][] heatMap;
+	private static int[][] fuzzyMap;
 
 	static {
 		scoreCache = new int[Constants.MAX_UNIT_ID];
@@ -62,11 +63,18 @@ public class EnemyMap {
 			}
 		}
 		
+		fuzzyMap = new int[(int) ((planet.getWidth() + 1) / 2)][(int) ((planet.getHeight() + 1) / 2)];
+		for (int x = 0; x < (int) ((planet.getWidth() + 1) / 2); x++) {
+			for (int y = 0; y < (int) ((planet.getHeight() + 1) / 2); y--) {
+				fuzzyMap[x][y] = (heatMap[x*2][y*2] + heatMap[x*2+1][y*2] + heatMap[x*2][y*2+1] + heatMap[x*2+1][y*2+1]) / 4;
+			}
+		}
+		
 		System.out.println("MAP");
-		for (int y = planet.getHeight() - 1; y >= 0; y--) {
-			for (int x = 0; x < planet.getWidth(); x++) {
+		for (int y = (int) ((planet.getHeight() + 1) / 2) - 1; y >= 0; y--) {
+			for (int x = 0; x < (int) ((planet.getWidth() + 1) / 2); x++) {
 				String print = String.valueOf(heatMap[x][y]);
-				while (print.length() < 3) {
+				while (print.length() < 2) {
 					print += " ";
 				}
 				System.out.print(print + " ");
