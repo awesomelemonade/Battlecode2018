@@ -57,28 +57,32 @@ public class FactoryExecutor implements UnitExecutor {
 			unit.produceRobot(produceType);
 		}
 		int[] garrison = unit.getGarrisonUnitIds();
-		for (int i = 0; i < garrison.length; ++i) {
-			Direction bestUnloadDirection = null;
-			Vector bestUnloadPosition = null;
-			int closestEnemy = Integer.MAX_VALUE;
-			for (Direction direction: Direction.shuffle(Direction.COMPASS)) {
-				if (unit.canUnload(direction)) {
-					Vector position = unit.getLocation().getMapLocation().getPosition().add(direction.getOffsetVector());
-					int bfsIndex = moveManager.getBFSIndex(RoundInfo.getUnitType(garrison[i]), Planet.EARTH, position, 1.0);
-					int bfsStep = moveManager.getBFSStep(bfsIndex, position) - 1;
-					if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
-						closestEnemy = bfsStep;
-						bestUnloadDirection = direction;
-						bestUnloadPosition = position;
+		if (garrison.length > 0) {
+			Direction[] shuffled = Direction.shuffle(Direction.COMPASS);
+			int shuffledIndex = 0;
+			for (int i = 0; i < garrison.length; ++i) {
+				Direction bestUnloadDirection = null;
+				Vector bestUnloadPosition = null;
+				int closestEnemy = Integer.MAX_VALUE;
+				for (; shuffledIndex < shuffled.length; ++shuffledIndex) {
+					if (unit.canUnload(shuffled[shuffledIndex])) {
+						Vector position = unit.getLocation().getMapLocation().getPosition().add(shuffled[shuffledIndex].getOffsetVector());
+						int bfsIndex = moveManager.getBFSIndex(RoundInfo.getUnitType(garrison[i]), Planet.EARTH, position, 1.0);
+						int bfsStep = moveManager.getBFSStep(bfsIndex, position) - 1;
+						if (closestEnemy == Integer.MAX_VALUE || bfsStep < closestEnemy) {
+							closestEnemy = bfsStep;
+							bestUnloadDirection = shuffled[shuffledIndex];
+							bestUnloadPosition = position;
+						}
 					}
 				}
-			}
-			if (bestUnloadDirection == null) {
-				break;
-			} else {
-				unit.unload(bestUnloadDirection);
-				MapLocation location = GameController.INSTANCE.getPlanet().getMapLocation(bestUnloadPosition);
-				moveManager.queueUnit(location.getUnit()); // throw the new unit into the queue
+				if (bestUnloadDirection == null) {
+					break;
+				} else {
+					unit.unload(bestUnloadDirection);
+					MapLocation location = GameController.INSTANCE.getPlanet().getMapLocation(bestUnloadPosition);
+					moveManager.queueUnit(location.getUnit()); // throw the new unit into the queue
+				}
 			}
 		}
 	}

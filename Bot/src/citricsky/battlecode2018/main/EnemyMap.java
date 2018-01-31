@@ -67,10 +67,15 @@ public class EnemyMap {
 					unit.getType() == UnitType.WORKER || unit.getType() == UnitType.HEALER ||
 					(!unit.getLocation().isOnMap())) continue;
 			int distanceSquared = unit.getLocation().getMapLocation().getPosition().getDistanceSquared(position);
-			if (distanceSquared > unit.getAttackRange()) {
+			int attackRange = unit.getType().getBaseAttackRange();
+			if (unit.getType() == UnitType.KNIGHT) {
+				attackRange = 5;
+			}
+			if (distanceSquared > attackRange) {
 				continue;
 			}
-			if (unit.getType() == UnitType.RANGER && distanceSquared <= unit.getRangerCannotAttackRange()) {
+			if (unit.getType() == UnitType.RANGER && distanceSquared <= unit.getRangerCannotAttackRange() &&
+					unit.getTeam() == GameController.INSTANCE.getEnemyTeam()) {
 				continue;
 			}
 			score += unit.getTeam() == GameController.INSTANCE.getTeam() ? 1 : -1;

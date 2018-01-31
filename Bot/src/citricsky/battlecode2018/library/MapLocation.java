@@ -79,7 +79,7 @@ public class MapLocation {
 	public boolean hasUnitAtLocation() {
 		return GameController.INSTANCE.getBcGameController().hasUnitAtLocation(bcMapLocation);
 	}
-
+	
 	public int getKarboniteCount() {
 		return (int) GameController.INSTANCE.getBcGameController().karboniteAt(bcMapLocation);
 	}

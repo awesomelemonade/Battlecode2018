@@ -31,6 +31,7 @@ public class MoveManager {
 	public static final int BFS_LOAD_ROCKET = 11;
 	public static final int BFS_EXPLORE = 12;
 	public static final int BFS_FIND_FRIENDLY = 13; // Friendly non rockets and non workers
+	public static final int BFS_RETREAT = 14;
 	private BFS[] bfsArray;
 	private boolean[] processed;
 	private Planet planet;
@@ -62,7 +63,7 @@ public class MoveManager {
 		this.explored = new boolean[planet.getWidth()][planet.getHeight()];
 		this.blueprint = new int[planet.getWidth()][planet.getHeight()];
 		//Initialize bfsArray
-		this.bfsArray = new BFS[14];
+		this.bfsArray = new BFS[15];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
 			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
@@ -186,6 +187,9 @@ public class MoveManager {
 						}
 					}
 				}
+				if (unit.getType() == UnitType.FACTORY && unit.isStructureBuilt()) {
+					bfsArray[BFS_RETREAT].addSource(location.getPosition());
+				}
 				if (unit.getType() == UnitType.ROCKET && unit.isStructureBuilt() &&
 						unit.getGarrisonUnitIds().length < unit.getStructureMaxCapacity()) {
 					bfsArray[BFS_LOAD_ROCKET].addSource(location.getPosition());
@@ -203,7 +207,9 @@ public class MoveManager {
 				boolean nearEnemy = nearEnemy(location.getPosition(), 12, false);
 				if (GameController.INSTANCE.canSenseLocation(location)) {
 					explored[i][j] = !nearEnemy;
-					karbonite[i][j] = location.getKarboniteCount();
+					if (planet == Planet.MARS || karbonite[i][j] > 0) {
+						karbonite[i][j] = location.getKarboniteCount();
+					}
 				} else {
 					if (planet == Planet.MARS && (!nearEnemy)) {
 						bfsArray[BFS_EXPLORE].addSource(location.getPosition());
@@ -474,10 +480,11 @@ public class MoveManager {
 		}
 		int attackStep = getBFSStep(bfsAttackIndex, position);
 		if (attackStep != Integer.MAX_VALUE) {
-			if (isSafe(position.add(getBFSDirection(bfsAttackIndex, position).getOffsetVector()))) {
+			if (isSafe(position.add(getBFSDirection(bfsAttackIndex, position).getOffsetVector())) ||
+					getBFSStep(BFS_RETREAT, position) == Integer.MAX_VALUE) {
 				return bfsAttackIndex;
 			} else {
-				return BFS_FIND_FRIENDLY;
+				return BFS_RETREAT;
 			}
 		} else {
 			if (planet == Planet.EARTH) {
@@ -499,7 +506,7 @@ public class MoveManager {
 		return BFS_EXPLORE;
 	}
 	public boolean isSafe(Vector position) {
-		return EnemyMap.getHeatMapScore(position) > 0;
+		return EnemyMap.getHeatMapScore(position) >= 0;
 	}
 	public Direction getBFSDirection(int bfsIndex, Vector position) {
 		if (!processed[bfsIndex]) {
