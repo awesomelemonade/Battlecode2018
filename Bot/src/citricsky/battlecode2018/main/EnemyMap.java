@@ -65,7 +65,7 @@ public class EnemyMap {
 		
 		fuzzyMap = new int[(int) ((planet.getWidth() + 1) / 2)][(int) ((planet.getHeight() + 1) / 2)];
 		for (int x = 0; x < (int) ((planet.getWidth() + 1) / 2); x++) {
-			for (int y = 0; y < (int) ((planet.getHeight() + 1) / 2); y--) {
+			for (int y = 0; y < (int) ((planet.getHeight() + 1) / 2); y++) {
 				fuzzyMap[x][y] = (heatMap[x*2][y*2] + heatMap[x*2+1][y*2] + heatMap[x*2][y*2+1] + heatMap[x*2+1][y*2+1]) / 4;
 			}
 		}
