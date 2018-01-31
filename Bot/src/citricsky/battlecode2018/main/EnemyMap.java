@@ -4,6 +4,7 @@ import citricsky.battlecode2018.library.*;
 import citricsky.battlecode2018.util.Constants;
 
 import java.util.Arrays;
+import java.util.LinkedList;
 
 
 public class EnemyMap {
@@ -11,6 +12,7 @@ public class EnemyMap {
 	private static int[] updateTime;
 	private static int[][] heatMap;
 	private static int[][] fuzzyMap;
+	private static int[][] blobMap;
 
 	static {
 		scoreCache = new int[Constants.MAX_UNIT_ID];
@@ -39,6 +41,11 @@ public class EnemyMap {
 	public static void updateHeatMap() {
 		Planet planet = GameController.INSTANCE.getPlanet();
 		heatMap = new int[planet.getWidth()][planet.getHeight()];
+		
+		int w = planet.getWidth();
+		int h = planet.getHeight();
+		int halfW = (w + 1) / 2;
+		int halfH = (h + 1) / 2;
 		for (Unit unit : GameController.INSTANCE.getAllUnits()) {
 			if (!unit.getLocation().isOnMap() || unit.getType() == UnitType.FACTORY || unit.getType() == UnitType.ROCKET) continue;
 
@@ -50,7 +57,10 @@ public class EnemyMap {
 			int cY = pos.getY();
 
 			heatMap[cX][cY] += 3*mult;
-			fuzzyMap = new int[(int) ((planet.getWidth() + 1) / 2)][(int) ((planet.getHeight() + 1) / 2)];
+			fuzzyMap[cX / 2][cY / 2] += 3*mult;
+			fuzzyMap = new int[halfW][halfH];
+			blobMap = new int[halfW][halfH];
+
 
 			for (MapLocation targetLoc : loc.getAllMapLocationsWithin(unit.getVisionRange())) {
 				Vector targetPos = targetLoc.getPosition();
@@ -65,11 +75,67 @@ public class EnemyMap {
 				}
 			}
 		}
+		boolean[] visited = new boolean[halfW * halfH];
+		LinkedList<Integer> queue = new LinkedList<Integer>();
+		LinkedList<Integer> blobs = new LinkedList<Integer>();
+		blobs.add(0);
+		
+		for (int x = 0; x < w; x++) {
+			for (int y = 0; y < h; y++) {
+				int blobSum = 0;
+				int initialVal = heatMap[x][y];
+				if (initialVal == 0) continue;
+				boolean isFriendly = initialVal > 0;
+				visited[y*h + x] = true;
+				queue.add(y*h + x);
+				while (queue.size() > 0) {
+					int s = queue.poll();
+					int currX = s % h;
+					int currY = s / h;
+					int val = heatMap[currX][currY];
+					if (val != 0 && (val > 0) == isFriendly) {
+						blobSum += val;
+						blobMap[currX][currY] = blobs.size();
+						if (currX > 0) {
+							int num = currY*h + currX - 1;
+							if (!visited[num]) {
+								visited[num] = true;
+								queue.add(num);
+							}
+						}
+						if (currX < w-1) {
+							int num = currY*h + currX + 1;
+							if (!visited[num]) {
+								visited[num] = true;
+								queue.add(num);
+							}
+						}
+						if (currY > 0) {
+							int num = (currY-1)*h + currX;
+							if (!visited[num]) {
+								visited[num] = true;
+								queue.add(num);
+							}
+						}
+						if (currY < h-1) {
+							int num = (currY+1)*h + currX;
+							if (!visited[num]) {
+								visited[num] = true;
+								queue.add(num);
+							}
+						}
+					}
+				}
+				if (blobSum != 0) {
+					blobs.add(blobSum);
+				}
+			}
+		}
 		
 		System.out.println("MAP");
-		for (int y = (int) ((planet.getHeight() + 1) / 2) - 1; y >= 0; y--) {
-			for (int x = 0; x < (int) ((planet.getWidth() + 1) / 2); x++) {
-				String print = String.valueOf(fuzzyMap[x][y]);
+		for (int y = h - 1; y >= 0; y--) {
+			for (int x = 0; x < w; x++) {
+				String print = String.valueOf(blobs.get(blobMap[x][y]));
 				while (print.length() < 2) {
 					print += " ";
 				}
