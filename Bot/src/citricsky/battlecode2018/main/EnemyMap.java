@@ -50,30 +50,26 @@ public class EnemyMap {
 			int cY = pos.getY();
 
 			heatMap[cX][cY] += 3*mult;
+			fuzzyMap = new int[(int) ((planet.getWidth() + 1) / 2)][(int) ((planet.getHeight() + 1) / 2)];
 
 			for (MapLocation targetLoc : loc.getAllMapLocationsWithin(unit.getVisionRange())) {
 				Vector targetPos = targetLoc.getPosition();
 				heatMap[targetPos.getX()][targetPos.getY()] += 1*mult;
+				fuzzyMap[targetPos.getX() / 2][targetPos.getY() / 2] += 1*mult;
 			}
 			if (unit.getType() == UnitType.RANGER) {
 				for (MapLocation targetLoc : loc.getAllMapLocationsWithin(unit.getRangerCannotAttackRange())) {
 					Vector targetPos = targetLoc.getPosition();
 					heatMap[targetPos.getX()][targetPos.getY()] -= 1*mult;
+					fuzzyMap[targetPos.getX() / 2][targetPos.getY() / 2] -= 1*mult;
 				}
-			}
-		}
-		
-		fuzzyMap = new int[(int) ((planet.getWidth() + 1) / 2)][(int) ((planet.getHeight() + 1) / 2)];
-		for (int x = 0; x < (int) ((planet.getWidth() + 1) / 2); x++) {
-			for (int y = 0; y < (int) ((planet.getHeight() + 1) / 2); y++) {
-				fuzzyMap[x][y] = (heatMap[x*2][y*2] + heatMap[x*2+1][y*2] + heatMap[x*2][y*2+1] + heatMap[x*2+1][y*2+1]) / 4;
 			}
 		}
 		
 		System.out.println("MAP");
 		for (int y = (int) ((planet.getHeight() + 1) / 2) - 1; y >= 0; y--) {
 			for (int x = 0; x < (int) ((planet.getWidth() + 1) / 2); x++) {
-				String print = String.valueOf(heatMap[x][y]);
+				String print = String.valueOf(fuzzyMap[x][y]);
 				while (print.length() < 2) {
 					print += " ";
 				}
