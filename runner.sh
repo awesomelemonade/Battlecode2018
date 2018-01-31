@@ -7,6 +7,7 @@ BOT_DIR=~/citricsky-battlecode2018
 PREV_BOT_COMMIT=""
 NUMGAMES=0
 NUMWINS=0
+MY_BOTS=("Bot" "MysteryBot")
 BOTS=("SuperCowPowers" "QualifyingBot")
 
 resetScaffold() {
@@ -35,15 +36,17 @@ resetBot() {
 }
 
 copyBot() {
-    echo "<<<< Copying Bot"
-    mkdir -p "${SCAFF_DIR}/Bot"
-    cp "${BOT_DIR}/Bot/src/Player.java" "${SCAFF_DIR}/Bot/"
-    cp -r "${BOT_DIR}/Bot/src/citricsky" "${SCAFF_DIR}/Bot/"
-    cd "${SCAFF_DIR}/Bot"
-    javac $(find . -name '*.java') -classpath ../battlecode/java
-    echo "#!/bin/sh" > "${SCAFF_DIR}/Bot/run.sh"
-    echo "java -Xmx40m -classpath .:../battlecode/java Player" >> "${SCAFF_DIR}/Bot/run.sh"
-    echo ">>>>"
+    for bot in ${MY_BOTS[@]}; do
+        echo "<<<< Copying $bot"
+        mkdir -p "${SCAFF_DIR}/${bot}"
+        cp "${BOT_DIR}/${bot}/src/Player.java" "${SCAFF_DIR}/${bot}/"
+        cp -r "${BOT_DIR}/${bot}/src/citricsky" "${SCAFF_DIR}/${bot}/"
+        cd "${SCAFF_DIR}/${bot}"
+        javac $(find . -name '*.java') -classpath ../battlecode/java
+        echo "#!/bin/sh" > "${SCAFF_DIR}/${bot}/run.sh"
+        echo "java -Xmx40m -classpath .:../battlecode/java Player" >> "${SCAFF_DIR}/${bot}/run.sh"
+        echo ">>>>"
+    done
 }
 
 getBotCommit() {
@@ -56,14 +59,15 @@ runGame() {
     cd ${SCAFF_DIR}
 
     GAME_ID=$(date +%F_%H-%M-%S)
-    OPPONENT=${1}
-    MAP=${2}
-    CMD="./battlecode.sh -p1 ${PRE}Bot -p2 ${PRE}${OPPONENT} -m ${MAP}"
+    BOT=${1}
+    OPPONENT=${2}
+    MAP=${3}
+    CMD="./battlecode.sh -p1 ${PRE}${BOT} -p2 ${PRE}${OPPONENT} -m ${MAP}"
     LOGFILE="${GAME_ID}.txt"
     echo "<<<< Running game against ${OPPONENT} on map ${MAP}"
 
-    mv Bot ${PRE}Bot
-    mv "${1}" "${PRE}${1}"
+    mv "${BOT}" "${PRE}${BOT}"
+    mv "${OPPONENT}" "${PRE}${OPPONENT}"
 
     ssh ubuntu@ssh.pantherman594.com "sed -i '1i${PREV_BOT_COMMIT} ${GAME_ID} ${OPPONENT} ${MAP} Running' /var/www/pantherman594/battlecode/games/gamedata"
     ${CMD} | tee ${LOGFILE}
@@ -91,7 +95,7 @@ runGame() {
 
     echo "<<<< Cleaning up"
     rm "${LOGFILE}" "${GAME_ID}.bc18z"
-    mv "${PRE}Bot" "Bot"
+    mv "${PRE}${BOT}" "${BOT}"
     mv "${PRE}${OPPONENT}" "${OPPONENT}"
     ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/battlecode/games; ls -t | tail -n +101 | xargs rm --"
     echo ">>>>"
@@ -118,10 +122,12 @@ ssh ubuntu@ssh.pantherman594.com "cd /var/www/pantherman594/tinyview; git pull"
 while true; do
     cd ${SCAFF_DIR}
     for map in $(ls battlecode-maps | sort -R); do
-        for bot in ${BOTS[@]}; do
-            update
-            runGame $bot $(echo "${map}" | cut -d'.' -f1)
-            sleep 10s
+        for bot in ${MY_BOTS[@]}; do
+            for opponent in ${BOTS[@]}; do
+                update
+                runGame $bot $opponent $(echo "${map}" | cut -d'.' -f1)
+                sleep 10s
+            done
         done
     done
     for i in {1..360}; do
