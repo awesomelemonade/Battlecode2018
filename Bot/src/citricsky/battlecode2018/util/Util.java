@@ -18,6 +18,12 @@ public class Util {
 		}
 		return location.isPassableTerrain();
 	};
+	public static final Predicate<MapLocation> PASSABLE_UNIT_PREDICATE = location -> {
+		if (!PASSABLE_PREDICATE.test(location)) {
+			return false;
+		}
+		return (!location.hasUnitAtLocation());
+	};
 	public static boolean outOfBounds(MapLocation location) {
 		return outOfBounds(location.getPosition(), location.getPlanet());
 	}

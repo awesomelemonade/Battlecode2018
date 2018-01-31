@@ -66,8 +66,13 @@ public class MoveManager {
 		this.bfsArray = new BFS[15];
 		this.processed = new boolean[bfsArray.length];
 		for (int i = 0; i < bfsArray.length; ++i) {
-			bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
-					vector -> Util.PASSABLE_PREDICATE.test(planet.getMapLocation(vector)));
+			if (i == BFS_WORKER_BLUEPRINT) {
+				bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
+						vector -> Util.PASSABLE_UNIT_PREDICATE.test(planet.getMapLocation(vector)));
+			} else {
+				bfsArray[i] = new BFS(planet.getWidth(), planet.getHeight(),
+						vector -> Util.PASSABLE_PREDICATE.test(planet.getMapLocation(vector)));
+			}
 		}
 		if (planet == Planet.EARTH) {
 			for (int i = 0; i < planet.getWidth(); ++i) {
