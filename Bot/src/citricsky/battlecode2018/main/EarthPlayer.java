@@ -48,6 +48,7 @@ public class EarthPlayer {
 		executors[UnitType.MAGE.ordinal()] = new MageExecutor();
 		executors[UnitType.WORKER.ordinal()] = new WorkerExecutor(moveManager);
 		
+		EnemyMap.updateHeatMap();
 		while (true) {
 			try {
 				benchmark.push();
