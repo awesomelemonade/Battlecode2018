@@ -61,5 +61,17 @@ public class EnemyMap {
 				}
 			}
 		}
+		
+		System.out.println("MAP");
+		for (int x = 0; x < planet.getWidth(); x++) {
+			for (int y = 0; y < planet.getHeight(); y++) {
+				String print = String.valueOf(heatMap[x][y]);
+				while (print.length() < 3) {
+					print += " ";
+				}
+				System.out.print(print + " ");
+			}
+			System.out.println();
+		}
 	}
 }
