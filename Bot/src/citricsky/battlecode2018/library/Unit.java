@@ -49,7 +49,7 @@ public class Unit {
 		return (int)bcUnit.attackRange();
 	}
 	
-	public int getDamage() {
+	public int getAttackDamage() {
 		return (int)bcUnit.damage();
 	}
 	
@@ -155,6 +155,7 @@ public class Unit {
 	
 	public void attack(Unit target) {
 		gcInstance.getBcGameController().attack(id, target.getId());
+		target.addHealth(-this.getAttackDamage());
 	}
 	
 	public void beginSnipe(MapLocation location) {
@@ -268,8 +269,13 @@ public class Unit {
 	
 	public void heal(Unit target) {
 		gcInstance.getBcGameController().heal(id, target.getId());
+		target.addHealth(-this.getAttackDamage());
 	}
 
+	public void addHealth(int health) {
+		this.health = Math.min(this.health + health, maxHealth);
+	}
+	
 	public int getHealth() {
 		return health;
 	}
