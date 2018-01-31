@@ -9,6 +9,7 @@ public class Unit {
 	private Team team;
 	private UnitType type;
 	private Location location;
+	private int[] garrison;
 	private int health;
 	private int maxHealth;
 	
@@ -21,6 +22,7 @@ public class Unit {
 		this.team = Team.valueOf(bcUnit.team());
 		this.type = UnitType.valueOf(bcUnit.unitType());
 		this.location = new Location(bcUnit.location());
+		this.garrison = LibraryUtil.toArray(bcUnit.structureGarrison());
 		this.health = (int)bcUnit.health();
 		this.maxHealth = (int)bcUnit.maxHealth();
 	}
@@ -307,7 +309,7 @@ public class Unit {
 	}
 
 	public int[] getGarrisonUnitIds() {
-		return LibraryUtil.toArray(bcUnit.structureGarrison());
+		return garrison;
 	}
 	
 	public void javelin(Unit target) {

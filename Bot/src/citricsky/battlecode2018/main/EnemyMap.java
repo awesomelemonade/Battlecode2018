@@ -1,48 +1,65 @@
 package citricsky.battlecode2018.main;
 
-import citricsky.battlecode2018.library.GameController;
-import citricsky.battlecode2018.library.MapLocation;
-import citricsky.battlecode2018.library.Unit;
+import citricsky.battlecode2018.library.*;
+import citricsky.battlecode2018.util.Constants;
 
-import java.util.*;
+import java.util.Arrays;
+
 
 public class EnemyMap {
-	private static int lastRound = -1;
-	private static Map<MapLocation, Integer> scoreCache = new HashMap<>();
-	private static Unit[] enemyUnits;
+	private static int[] scoreCache;
+	private static int[] updateTime;
+	private static int[][] heatMap;
 
-	private static void update() {
-		scoreCache.clear();
-		enemyUnits = updateEnemies();
-	}
-
-	private static Unit[] updateEnemies() {
-		Unit[] enemyUnits = GameController.INSTANCE.getAllUnitsByFilter(
-				unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam() && unit.getLocation().isOnMap());
-
-		Arrays.sort(enemyUnits, (unit1, unit2) -> Integer.compare(getScore(unit2), getScore(unit1))); // Purposefully flipped, to sort largest -> smallest
-
-		lastRound = (int) GameController.INSTANCE.getRoundNumber();
-		return enemyUnits;
+	static {
+		scoreCache = new int[Constants.MAX_UNIT_ID];
+		updateTime = new int[Constants.MAX_UNIT_ID];
 	}
 
 	public static int getScore(Unit enemyUnit) {
-		MapLocation enemyLoc = enemyUnit.getLocation().getMapLocation();
-		if (scoreCache.containsKey(enemyLoc)) return scoreCache.get(enemyLoc);
-
-		Unit[] nearby = enemyLoc.senseNearbyUnitsByFilter(1, unit -> unit.getLocation().isOnMap());
+		if (!enemyUnit.getLocation().isOnMap()) {
+			return Integer.MIN_VALUE;
+		}
+		if (updateTime[enemyUnit.getId()] == RoundInfo.getRoundNumber()) {
+			return scoreCache[enemyUnit.getId()];
+		}
+		scoreCache[enemyUnit.getId()] = calcScore(enemyUnit.getLocation().getMapLocation());
+		updateTime[enemyUnit.getId()] = RoundInfo.getRoundNumber();
+		return scoreCache[enemyUnit.getId()];
+	}
+	
+	public static int calcScore(MapLocation location) {
+		Unit[] nearby = location.senseNearbyUnitsByFilter(2, unit -> unit.getLocation().isOnMap());
 		int numEnemies = (int) Arrays.stream(nearby).filter(unit -> unit.getTeam() == GameController.INSTANCE.getEnemyTeam()).count();
 		int numFriendlies = nearby.length - numEnemies;
-
-		int score = numEnemies - (3 * numFriendlies);
-		scoreCache.put(enemyLoc, score);
-		return score;
+		return numEnemies - (2 * numFriendlies);
 	}
 
-	public static Unit[] getEnemyChunks() {
-		if (GameController.INSTANCE.getRoundNumber() != lastRound) {
-			update();
+	public static void updateHeatMap() {
+		Planet planet = GameController.INSTANCE.getPlanet();
+		heatMap = new int[planet.getWidth()][planet.getHeight()];
+		for (Unit unit : GameController.INSTANCE.getAllUnits()) {
+			if (!unit.getLocation().isOnMap() || unit.getType() == UnitType.FACTORY || unit.getType() == UnitType.ROCKET) continue;
+
+			int mult = unit.getTeam() == GameController.INSTANCE.getTeam() ? 1 : -1;
+
+			MapLocation loc = unit.getLocation().getMapLocation();
+			Vector pos = loc.getPosition();
+			int cX = pos.getX();
+			int cY = pos.getY();
+
+			heatMap[cX][cY] += 3*mult;
+
+			for (MapLocation targetLoc : loc.getAllMapLocationsWithin(unit.getVisionRange())) {
+				Vector targetPos = targetLoc.getPosition();
+				heatMap[targetPos.getX()][targetPos.getY()] += 1*mult;
+			}
+			if (unit.getType() == UnitType.RANGER) {
+				for (MapLocation targetLoc : loc.getAllMapLocationsWithin(unit.getRangerCannotAttackRange())) {
+					Vector targetPos = targetLoc.getPosition();
+					heatMap[targetPos.getX()][targetPos.getY()] -= 1*mult;
+				}
+			}
 		}
-		return enemyUnits;
 	}
 }

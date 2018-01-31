@@ -6,18 +6,8 @@ import citricsky.battlecode2018.library.Direction;
 import citricsky.battlecode2018.library.MapLocation;
 import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Vector;
-import citricsky.battlecode2018.main.RoundInfo;
 
 public class Util {
-	public static final Predicate<MapLocation> PASSABLE_PREDICATE = location -> {
-		if (outOfBounds(location)) {
-			return false;
-		}
-		if (RoundInfo.hasStructure(location.getPosition().getX(), location.getPosition().getY())) {
-			return false;
-		}
-		return location.isPassableTerrain();
-	};
 	public static boolean outOfBounds(MapLocation location) {
 		return outOfBounds(location.getPosition(), location.getPlanet());
 	}
