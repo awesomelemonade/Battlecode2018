@@ -48,7 +48,7 @@ public class EnemyMap {
 		
 		heatMap = new int[planet.getWidth()][planet.getHeight()];
 		fuzzyMap = new int[halfW][halfH];
-		blobMap = new int[halfW][halfH];
+		blobMap = new int[w][h];
 		for (Unit unit : GameController.INSTANCE.getAllUnits()) {
 			if (!unit.getLocation().isOnMap() || unit.getType() == UnitType.FACTORY || unit.getType() == UnitType.ROCKET) continue;
 
