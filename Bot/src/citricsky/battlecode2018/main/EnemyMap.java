@@ -76,7 +76,7 @@ public class EnemyMap {
 				}
 			}
 		}
-		boolean[] visited = new boolean[halfW * halfH];
+		boolean[] visited = new boolean[w * h];
 		LinkedList<Integer> queue = new LinkedList<Integer>();
 		LinkedList<Integer> blobs = new LinkedList<Integer>();
 		blobs.add(0);
