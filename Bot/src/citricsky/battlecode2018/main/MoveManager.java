@@ -473,8 +473,12 @@ public class MoveManager {
 			bfsAttackIndex = BFS_FIND_ALL_ENEMY;
 		}
 		int attackStep = getBFSStep(bfsAttackIndex, position);
-		if (attackStep < 10) {
-			return bfsAttackIndex;
+		if (attackStep != Integer.MAX_VALUE) {
+			if (isSafe(bfsAttackIndex, position)) {
+				return bfsAttackIndex;
+			} else {
+				return BFS_FIND_FRIENDLY;
+			}
 		} else {
 			if (planet == Planet.EARTH) {
 				int bfsStep = getBFSStep(BFS_LOAD_ROCKET, position);
@@ -493,6 +497,11 @@ public class MoveManager {
 			}
 		}
 		return BFS_EXPLORE;
+	}
+	public boolean isSafe(int bfsIndex, Vector position) {
+		Direction direction = getBFSDirection(bfsIndex, position);
+		// TODO
+		return true;
 	}
 	public Direction getBFSDirection(int bfsIndex, Vector position) {
 		if (!processed[bfsIndex]) {
