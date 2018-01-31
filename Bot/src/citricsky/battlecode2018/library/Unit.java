@@ -173,6 +173,7 @@ public class Unit {
 	
 	public void build(Unit target) {
 		gcInstance.getBcGameController().build(id, target.getId());
+		target.addHealth(-this.getWorkerBuildHealth());
 	}
 	
 	public boolean canAttack(Unit target) {
@@ -318,6 +319,7 @@ public class Unit {
 	
 	public void javelin(Unit target) {
 		gcInstance.getBcGameController().javelin(id, target.getId());
+		target.addHealth(-this.getAttackDamage());
 	}
 	
 	public void launchRocket(MapLocation location) {
@@ -347,6 +349,7 @@ public class Unit {
 	
 	public void repair(Unit target) {
 		gcInstance.getBcGameController().repair(id, target.getId());
+		target.addHealth(-this.getWorkerRepairHealth());
 	}
 	
 	public void replicate(Direction direction) {
