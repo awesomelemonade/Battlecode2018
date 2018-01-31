@@ -7,7 +7,7 @@ BOT_DIR=~/citricsky-battlecode2018
 PREV_BOT_COMMIT=""
 NUMGAMES=0
 NUMWINS=0
-MY_BOTS=("Bot" "MysteryBot")
+MY_BOTS=("Bot")
 BOTS=("SuperCowPowers" "QualifyingBot")
 
 resetScaffold() {
