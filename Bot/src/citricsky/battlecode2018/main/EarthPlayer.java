@@ -51,7 +51,7 @@ public class EarthPlayer {
 		while (true) {
 			try {
 				benchmark.push();
-				if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000 || RoundInfo.getRoundNumber() == 749) {
+				if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000 || GameController.INSTANCE.getRoundNumber() == 749) {
 					benchmark.push();
 					RoundInfo.update();
 					communication.update();
