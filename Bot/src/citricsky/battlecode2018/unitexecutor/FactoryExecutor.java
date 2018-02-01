@@ -33,7 +33,7 @@ public class FactoryExecutor implements UnitExecutor {
 		if (RoundInfo.getRoundNumber() > 600) {
 			return UnitType.MAGE;
 		}
-		if (moveManager.nearEnemy(location.getPosition(), 4, true)) {
+		if (moveManager.nearEnemy(location.getPosition(), 6, true)) {
 			return UnitType.KNIGHT;
 		}
 		if (RoundInfo.getUnitCount(UnitType.WORKER) * 2 - 4 < RoundInfo.getUnitCount(UnitType.FACTORY)) {
