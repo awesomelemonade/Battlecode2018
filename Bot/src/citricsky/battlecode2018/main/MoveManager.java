@@ -424,6 +424,9 @@ public class MoveManager {
 			}
 		}
 		if (type == UnitType.WORKER) {
+			if (RoundInfo.getRoundNumber() > 720 || RoundInfo.getCombatUnitsCount() > RoundInfo.getRocketSpaces()) {
+				return BFS_LOAD_ROCKET;
+			}
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position) - 3;
 			if (workerTaskStep <= 3 || (WorkerExecutor.getBlueprintTargetType() == UnitType.ROCKET && workerTaskStep <= 10)) {
 				return BFS_WORKER_TASK;

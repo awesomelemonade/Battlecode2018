@@ -1,6 +1,8 @@
 package citricsky.battlecode2018.unitexecutor;
 
+import citricsky.battlecode2018.library.GameController;
 import citricsky.battlecode2018.library.MapLocation;
+import citricsky.battlecode2018.library.Planet;
 import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
 import citricsky.battlecode2018.main.RoundInfo;
@@ -15,10 +17,13 @@ public class RangerExecutor implements UnitExecutor {
 			return 1;
 		}
 		if (unitType.equals(UnitType.ROCKET)) {
-			return 2;
-		} else {
-			return 1;
+			if (GameController.INSTANCE.getPlanet() == Planet.EARTH) {
+				return 2;
+			} else {
+				return -1;
+			}
 		}
+		return 1;
 	}
 	private static int getAbilityPriorityIndex(Unit unit) {
 		UnitType unitType = unit.getType();
@@ -26,10 +31,13 @@ public class RangerExecutor implements UnitExecutor {
 			return 1;
 		}
 		if (unitType.equals(UnitType.ROCKET)) {
-			return 2;
-		} else {
-			return 0;
+			if (GameController.INSTANCE.getPlanet() == Planet.EARTH) {
+				return 2;
+			} else {
+				return -1;
+			}
 		}
+		return 0;
 	}
 	
 	@Override
