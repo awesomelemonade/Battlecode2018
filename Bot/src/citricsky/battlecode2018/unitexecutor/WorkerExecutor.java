@@ -69,16 +69,16 @@ public class WorkerExecutor implements UnitExecutor {
 					RoundInfo.getUnitCount(UnitType.FACTORY) == 0) {
 				return false;
 			}
+			if (GameController.INSTANCE.getPlanet() == Planet.EARTH) {
+				if (moveManager.getBFSStep(MoveManager.BFS_WORKER_BLUEPRINT, unit.getLocation().getMapLocation().getPosition()) == Integer.MAX_VALUE) {
+					return false;
+				}
+			}
 			if (RoundInfo.getRoundNumber() < 20) {
 				return true;
 			}
 			if (RoundInfo.getRoundNumber() > 750) {
 				return true;
-			}
-			if (GameController.INSTANCE.getPlanet() == Planet.EARTH) {
-				if (moveManager.getBFSStep(MoveManager.BFS_WORKER_BLUEPRINT, unit.getLocation().getMapLocation().getPosition()) == Integer.MAX_VALUE) {
-					return true;
-				}
 			}
 		}
 		return false;

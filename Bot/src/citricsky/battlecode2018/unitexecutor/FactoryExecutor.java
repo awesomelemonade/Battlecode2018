@@ -44,7 +44,7 @@ public class FactoryExecutor implements UnitExecutor {
 		if (RoundInfo.getUnitCount(UnitType.HEALER) == 0 && RoundInfo.getCombatUnitsCount() > 0) {
 			return UnitType.HEALER;
 		}
-		if (((double)RoundInfo.getUnitCount(UnitType.HEALER)) < ((double)RoundInfo.getCombatUnitsCount()) / 2.5) {
+		if (((double)RoundInfo.getUnitCount(UnitType.HEALER)) < ((double)RoundInfo.getCombatUnitsCount()) / 2.0) {
 			return UnitType.HEALER;
 		}
 		return UnitType.RANGER;
