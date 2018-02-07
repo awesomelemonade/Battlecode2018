@@ -424,9 +424,11 @@ public class MoveManager {
 			}
 		}
 		if (type == UnitType.WORKER) {
-			if (RoundInfo.getRoundNumber() > 720 || (RoundInfo.getRoundNumber() > 600 && RoundInfo.getCombatUnitsCount() < RoundInfo.getRocketSpaces())) {
-				if (getBFSStep(BFS_LOAD_ROCKET, position) != Integer.MAX_VALUE) {
-					return BFS_LOAD_ROCKET;
+			if (planet == Planet.EARTH) {
+				if (RoundInfo.getRoundNumber() > 720 || (RoundInfo.getRoundNumber() > 600 && RoundInfo.getCombatUnitsCount() < RoundInfo.getRocketSpaces())) {
+					if (getBFSStep(BFS_LOAD_ROCKET, position) != Integer.MAX_VALUE) {
+						return BFS_LOAD_ROCKET;
+					}
 				}
 			}
 			int workerTaskStep = getBFSStep(BFS_WORKER_TASK, position) - 3;
