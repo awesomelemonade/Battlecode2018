@@ -2,8 +2,6 @@ package citricsky.battlecode2018.library;
 
 import java.util.function.Predicate;
 
-import citricsky.battlecode2018.main.RoundInfo;
-
 public class Unit {
 	protected bc.Unit bcUnit;
 	
@@ -11,6 +9,7 @@ public class Unit {
 	private Team team;
 	private UnitType type;
 	private Location location;
+	private int[] garrison;
 	private int health;
 	private int maxHealth;
 	
@@ -23,6 +22,7 @@ public class Unit {
 		this.team = Team.valueOf(bcUnit.team());
 		this.type = UnitType.valueOf(bcUnit.unitType());
 		this.location = new Location(bcUnit.location());
+		this.garrison = LibraryUtil.toArray(bcUnit.structureGarrison());
 		this.health = (int)bcUnit.health();
 		this.maxHealth = (int)bcUnit.maxHealth();
 	}
@@ -51,7 +51,7 @@ public class Unit {
 		return (int)bcUnit.attackRange();
 	}
 	
-	public int getAttackDamage() {
+	public int getDamage() {
 		return (int)bcUnit.damage();
 	}
 	
@@ -157,7 +157,6 @@ public class Unit {
 	
 	public void attack(Unit target) {
 		gcInstance.getBcGameController().attack(id, target.getId());
-		target.addHealth(-this.getAttackDamage());
 	}
 	
 	public void beginSnipe(MapLocation location) {
@@ -175,7 +174,6 @@ public class Unit {
 	
 	public void build(Unit target) {
 		gcInstance.getBcGameController().build(id, target.getId());
-		target.addHealth(-this.getWorkerBuildHealth());
 	}
 	
 	public boolean canAttack(Unit target) {
@@ -272,13 +270,8 @@ public class Unit {
 	
 	public void heal(Unit target) {
 		gcInstance.getBcGameController().heal(id, target.getId());
-		target.addHealth(-this.getAttackDamage());
 	}
 
-	public void addHealth(int health) {
-		this.health = Math.min(this.health + health, maxHealth);
-	}
-	
 	public int getHealth() {
 		return health;
 	}
@@ -316,12 +309,11 @@ public class Unit {
 	}
 
 	public int[] getGarrisonUnitIds() {
-		return LibraryUtil.toArray(bcUnit.structureGarrison());
+		return garrison;
 	}
 	
 	public void javelin(Unit target) {
 		gcInstance.getBcGameController().javelin(id, target.getId());
-		target.addHealth(-this.getAttackDamage());
 	}
 	
 	public void launchRocket(MapLocation location) {
@@ -347,12 +339,10 @@ public class Unit {
 	
 	public void produceRobot(UnitType type) {
 		gcInstance.getBcGameController().produceRobot(id, type.getBcUnitType());
-		RoundInfo.addUnitCount(type);
 	}
 	
 	public void repair(Unit target) {
 		gcInstance.getBcGameController().repair(id, target.getId());
-		target.addHealth(-this.getWorkerRepairHealth());
 	}
 	
 	public void replicate(Direction direction) {

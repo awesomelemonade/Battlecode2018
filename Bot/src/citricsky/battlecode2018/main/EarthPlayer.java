@@ -1,137 +1,112 @@
 package citricsky.battlecode2018.main;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.Function;
-
 import citricsky.battlecode2018.library.GameController;
-import citricsky.battlecode2018.library.MapLocation;
-import citricsky.battlecode2018.library.Unit;
 import citricsky.battlecode2018.library.UnitType;
-import citricsky.battlecode2018.task.*;
-import citricsky.battlecode2018.unithandler.*;
-import citricsky.battlecode2018.util.Util;
+import citricsky.battlecode2018.unitexecutor.FactoryExecutor;
+import citricsky.battlecode2018.unitexecutor.HealerExecutor;
+import citricsky.battlecode2018.unitexecutor.KnightExecutor;
+import citricsky.battlecode2018.unitexecutor.MageExecutor;
+import citricsky.battlecode2018.unitexecutor.RangerExecutor;
+import citricsky.battlecode2018.unitexecutor.RocketExecutor;
+import citricsky.battlecode2018.unitexecutor.UnitExecutor;
+import citricsky.battlecode2018.unitexecutor.WorkerExecutor;
+import citricsky.battlecode2018.util.Benchmark;
 
 public class EarthPlayer {
 	public static void execute() {
+		Benchmark benchmark = new Benchmark();
 		GameController gc = GameController.INSTANCE;
-		UnitType[] researchOrder = new UnitType[]
-				{UnitType.RANGER, UnitType.RANGER, UnitType.ROCKET, UnitType.KNIGHT, UnitType.KNIGHT,
-						UnitType.KNIGHT, UnitType.ROCKET, UnitType.ROCKET, UnitType.WORKER, UnitType.WORKER,
-						UnitType.WORKER, UnitType.WORKER, UnitType.HEALER, UnitType.HEALER, UnitType.HEALER};
+		UnitType[] researchOrder = new UnitType[]{
+				UnitType.HEALER, // finishes at round 25
+				UnitType.HEALER, // finishes at round 125
+				UnitType.HEALER, // finishes at round 225
+				UnitType.RANGER, // finishes at round 250
+				UnitType.RANGER, // finishes at round 350
+				UnitType.ROCKET, // finishes at round 400
+				UnitType.ROCKET, // finishes at round 500
+				UnitType.ROCKET, // finishes at round 600
+				UnitType.MAGE, // finishes at round 625
+				UnitType.MAGE, // finishes at round 700
+				UnitType.MAGE, // finishes at round 800
+				UnitType.KNIGHT, // finishes at round 825
+				UnitType.KNIGHT, // finishes at round 900
+				UnitType.WORKER, // finishes at round 925
+				UnitType.WORKER, // finishes at round 1000
+		}; 
 		for (UnitType research : researchOrder) {
 			gc.queueResearch(research);
 		}
-		Map<UnitType, Set<PathfinderTask>> pathfinderTasks = new HashMap<UnitType, Set<PathfinderTask>>();
-		Map<UnitType, Set<Function<Unit, UnitHandler>>> handlers = new HashMap<UnitType, Set<Function<Unit, UnitHandler>>>();
-		for (UnitType unitType : UnitType.values()) {
-			handlers.put(unitType, new HashSet<Function<Unit, UnitHandler>>());
-			pathfinderTasks.put(unitType, new LinkedHashSet<PathfinderTask>());
-		}
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerReplicateTask());
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBlueprintTask());
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerBuildTask());
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerHarvestTask());
-		pathfinderTasks.get(UnitType.WORKER).add(new WorkerRepairTask());
-		pathfinderTasks.get(UnitType.KNIGHT).add(new KnightAttackTask());
-		pathfinderTasks.get(UnitType.RANGER).add(new RangerAttackTask());
-		pathfinderTasks.get(UnitType.MAGE).add(new MageAttackTask());
-		pathfinderTasks.get(UnitType.HEALER).add(new HealerHealTask());
-
-		handlers.get(UnitType.FACTORY).add(FactoryHandler::new);
-		handlers.get(UnitType.ROCKET).add(RocketHandler::new);
-		handlers.get(UnitType.KNIGHT).add(ExploreHandler::new);
-		handlers.get(UnitType.RANGER).add(ExploreHandler::new);
-		handlers.get(UnitType.MAGE).add(ExploreHandler::new);
-		handlers.get(UnitType.HEALER).add(ExploreHandler::new);
-		handlers.get(UnitType.WORKER).add(ExploreHandler::new);
-
-		Set<MapLocation> occupied = new HashSet<MapLocation>();
-		for (UnitType unitType : UnitType.values()) {
-			if (!pathfinderTasks.get(unitType).isEmpty()) {
-				if(unitType == UnitType.WORKER) {
-					handlers.get(unitType).add(unit -> new BFSHandler(unit, location -> {
-						for(Unit enemy: RoundInfo.getEnemiesOnMap()) {
-							if(enemy.isStructure() || enemy.getType() == UnitType.WORKER) {
-								continue;
-							}
-							if(enemy.getLocation().getMapLocation().getPosition().getDistanceSquared(location.getPosition()) <=
-									enemy.getType().getBaseVisionRange()) {
-								return false;
-							}
-						}
-						return Util.PASSABLE_PREDICATE.test(location);
-					}, occupied,
-							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
-				} else {
-					handlers.get(unitType).add(unit -> new BFSHandler(unit, Util.PASSABLE_PREDICATE, occupied,
-							pathfinderTasks.get(unitType).toArray(new PathfinderTask[pathfinderTasks.get(unitType).size()])));
-				}
-			}
-		}
-		int lastRoundNumber = GameController.INSTANCE.getRoundNumber();
+		UnitExecutor[] executors = new UnitExecutor[UnitType.values().length];
+		MoveManager moveManager = new MoveManager();
+		PlanetCommunication communication = new PlanetCommunication();
+		
+		executors[UnitType.FACTORY.ordinal()] = new FactoryExecutor(moveManager);
+		executors[UnitType.ROCKET.ordinal()] = new RocketExecutor(moveManager, communication);
+		executors[UnitType.RANGER.ordinal()] = new RangerExecutor();
+		executors[UnitType.KNIGHT.ordinal()] = new KnightExecutor();
+		executors[UnitType.HEALER.ordinal()] = new HealerExecutor(moveManager);
+		executors[UnitType.MAGE.ordinal()] = new MageExecutor();
+		executors[UnitType.WORKER.ordinal()] = new WorkerExecutor(moveManager);
+		
 		while (true) {
-			long time = System.currentTimeMillis();
-			RoundInfo.update();
-			if(RoundInfo.getRoundNumber() > lastRoundNumber + 1) {
-				System.out.println("Skipped Round? "+lastRoundNumber+" - "+RoundInfo.getRoundNumber());
-			}
-			lastRoundNumber = RoundInfo.getRoundNumber();
-			//System.out.println("Round: " + GameController.INSTANCE.getRoundNumber() + " Time: " + GameController.INSTANCE.getTimeLeft() + "ms Karbonite: " + GameController.INSTANCE.getCurrentKarbonite());
-			occupied.clear();
-			for(UnitType unitType : UnitType.values()) {
-				pathfinderTasks.get(unitType).forEach(PathfinderTask::update);
-			}
-			Unit[] myUnits = gc.getMyUnits();
-			Map<Unit, Set<UnitHandler>> map = new HashMap<Unit, Set<UnitHandler>>();
-			for (Unit unit : myUnits) {
-				map.put(unit, new HashSet<UnitHandler>());
-				for (Function<Unit, UnitHandler> function : handlers.get(unit.getType())) {
-					map.get(unit).add(function.apply(unit));
-				}
-			}
-			while (gc.getTimeLeft() > 1000) {
-				Unit bestUnit = null;
-				UnitHandler bestHandler = null;
-				int bestPriority = Integer.MIN_VALUE;
-				for (Unit unit : myUnits) {
-					for (UnitHandler handler : map.get(unit)) {
+			try {
+				benchmark.push();
+				if (benchmark.peek() / 1000000 < gc.getTimeLeft() - 2000 || GameController.INSTANCE.getRoundNumber() == 749) {
+					benchmark.push();
+					RoundInfo.update();
+					communication.update();
+					debugPop(benchmark, 5, "Round Update Time: %fms");
+					if ((benchmark.peek() / 1000000 < gc.getTimeLeft() - 3000) || (RoundInfo.getRoundNumber() % 5 == 0)) {
 						try {
-							int priority = handler.getPriority(bestPriority);
-							if (priority > bestPriority) {
-								bestPriority = priority;
-								bestHandler = handler;
-								bestUnit = unit;
-							}
+							benchmark.push();
+							moveManager.updateBFS();
+							debugPop(benchmark, 5, "UpdateBFS Time: %fms");
 						} catch (Exception ex) {
-							System.out.println(ex.getMessage());
+							System.out.println("BFS Exception: " + ex.getMessage());
 							ex.printStackTrace();
 						}
-					}
-				}
-				if (bestHandler == null) {
-					break;
-				}
-				try {
-					bestHandler.execute();
-					if (bestHandler.isRequired()) {
-						map.get(bestUnit).remove(bestHandler);
 					} else {
-						map.get(bestUnit).removeIf(handler -> !handler.isRequired());
+						System.out.println("Skipping BFS Update");
 					}
-				} catch (Exception ex) {
-					System.out.println(ex.getMessage());
-					ex.printStackTrace();
+					benchmark.push();
+					moveManager.move(unit -> {
+						try {
+							if(executors[unit.getType().ordinal()] != null) {
+								benchmark.push();
+								executors[unit.getType().ordinal()].execute(unit);
+								debugPop(benchmark, 5, "Execution Time: " + unit.getType() + " - %fms");
+							}
+						} catch (Exception ex) {
+							System.out.println("Execution Exception: "+ ex.getMessage());
+							ex.printStackTrace();
+						}
+					}, unit -> {
+						try {
+							if(executors[unit.getType().ordinal()] != null) {
+								benchmark.push();
+								executors[unit.getType().ordinal()].postExecute(unit);
+								debugPop(benchmark, 5, "Post Execution Time: " + unit.getType() + " - %fms");
+							}
+						} catch (Exception ex) {
+							System.out.println("Execution Exception: "+ ex.getMessage());
+							ex.printStackTrace();
+						}
+					});
+				} else {
+					System.out.println("Skipping Round: " + gc.getRoundNumber() + " - " + gc.getTimeLeft() + "ms");
 				}
-			}
-			time = System.currentTimeMillis() - time;
-			if(time > 20) {
-				System.out.println("Round: " + RoundInfo.getRoundNumber() + " - " + time + "ms");
+				debugPop(benchmark, 20, "Round Time: " + gc.getRoundNumber() + " - %f/" + gc.getTimeLeft()+"ms");
+			} catch (Exception ex) {
+				System.out.println("Mystery Exception: " + ex.getMessage());
+				ex.printStackTrace();
 			}
 			gc.yield();
+		}
+	}
+	public static void debugPop(Benchmark benchmark, int threshold, String message) {
+		double deltaTime = benchmark.pop() / 1000000.0;
+		if (deltaTime > threshold) {
+			System.out.println(String.format(message, deltaTime));
 		}
 	}
 }
